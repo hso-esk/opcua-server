@@ -8,9 +8,6 @@
 #ifndef OPCUAEDDL_EDDLPARSERPRINTUTIL_H_
 #define OPCUAEDDL_EDDLPARSERPRINTUTIL_H_
 
-/*
- * --- Includes ------------------------------------------------------------- *
- */
 #include "OpcUaEddl/EddlParserStruct.h"
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <iostream>
@@ -96,25 +93,23 @@ namespace OpcUaEddl
 {
 
 /**
- * enumerated types visitor class
- *
- * Prints the enumeration data types of EDDL VARIABLE constructs
+ * \brief   Prints to console parsed EDDL data stored in enumerator
+ *          variant structure.
  */
 struct print_enum_variant : public boost::static_visitor<void>
 {
-  /* print enum_variant data */
   void operator()(pair_type const & e) const
   {
     std::cout << e.first << " : " << e.second << "\n";
   }
-  /* print value of enumerator value def  */
+
   void operator()(enumerator_value_def const & s) const
   {
       std::cout << "(" << "Value" << " , " << s.value << ")\n";
       std::cout << "(" << "Help" << " , " << s.help << ")\n";
       std::cout << "(" << "Description" << " , " << s.description << ")\n";
   }
-  /* print vector of enumerato_value_def */
+
   void operator()(std::vector<enumerator_value_def> const & s) const
   {
     for (auto const & item : s) {
@@ -125,13 +120,13 @@ struct print_enum_variant : public boost::static_visitor<void>
 };
 
 /**
- * data type visitor class
- *
- * Prints data types of EDDL VARIABLE construct
+ * \brief   Prints to console parsed EDDL data stored in data
+ *          type variant structure. This structure stores the
+ *          type of data stored by EDDL Variable.
  */
 struct print_data_type_variant : public boost::static_visitor<void>
 {
-  /* print string_type_definition data */
+
   void operator()(string_type_definition const &s) const
   {
     std::cout << "(" << "Type" << " , " << s.type << ")\n";
@@ -142,7 +137,7 @@ struct print_data_type_variant : public boost::static_visitor<void>
         }
     }
   }
-  /* print enumerated type def */
+
   void operator()(enumerated_type_definition const & s) const
   {
     std::cout << "(" << "Type" << " , " << s.type << ")\n";
@@ -151,7 +146,7 @@ struct print_data_type_variant : public boost::static_visitor<void>
       boost::apply_visitor(print_enum_variant(), item);
     }
   }
-  /* print arithmetic_list data */
+
   void operator()(arithmetic_pair_list const & s) const
   {
     if (s) {
@@ -161,7 +156,7 @@ struct print_data_type_variant : public boost::static_visitor<void>
       }
     }
   }
-  /* print arithmetic_type_definition data */
+
   void operator()(arithmentic_type_definition const & s) const
   {
     std::cout << "(" << "Type" << " , " << s.type << ")\n";
@@ -175,9 +170,9 @@ struct print_data_type_variant : public boost::static_visitor<void>
 };
 
 /**
- * Command transaction visitor class
- *
- * Prints transactions of EDDL COMMAND construct
+ * \brief   Prints to console parsed EDDL data stored in transaction
+ *          variant structure. This structure stores transaction information
+ *          of the EDDL Command construct.
  */
 struct print_transaction_variant : public boost::static_visitor<void>
 {
@@ -190,7 +185,7 @@ struct print_transaction_variant : public boost::static_visitor<void>
       std::cout << s.second << ")\n";
     }
   }
-  /* print pair_type data */
+
   void operator()(pair_type_string_stringInt const & s) const
   {
     for (auto const& item : s.second) {
@@ -198,7 +193,7 @@ struct print_transaction_variant : public boost::static_visitor<void>
            << item.second <<  ")\n";
     }
   }
-  /* print variable type data */
+
   void operator()(responseCode_definition const & s) const
   {
     std::cout << "(" << "Description" << " , " << s.description << ")\n";
@@ -207,7 +202,7 @@ struct print_transaction_variant : public boost::static_visitor<void>
       std::cout << "(" << "Error code" << " , " << item << ")\n";
     }
   }
-  /* print a string */
+
   void operator()(std::string const & s) const
   {
     std::cout << "(" << "String" << " , " << s << ")\n";
@@ -216,9 +211,9 @@ struct print_transaction_variant : public boost::static_visitor<void>
 };
 
 /**
- * EDDL COMMAND visitor class
- *
- * Prints elements of EDDL COMMAND construct
+ * \brief   Prints to console parsed EDDL data stored in command
+ *          variant structure. This structure stores information
+ *          of the EDDL Command construct.
  */
 struct print_command_variant : public boost::static_visitor<void>
 {
@@ -237,9 +232,9 @@ struct print_command_variant : public boost::static_visitor<void>
 };
 
 /**
- * EDDL VARIABLE visitor class
- *
- * Prints elements of EDDL VARIABLE construct
+ * \brief   Prints to console parsed EDDL data stored in variable
+ *          variant structure. This structure stores information
+ *          of the EDDL Variable construct.
  */
 struct print_variable_vector_variant : public boost::static_visitor<void>
 {
@@ -257,9 +252,8 @@ struct print_variable_vector_variant : public boost::static_visitor<void>
 };
 
 /**
- * Parsed EDDL constructs visitor class
+ * \brief   Prints to console all parsed EDDL constructs.
  *
- * Prints all elements of parsed EDDL constructs
  */
 struct print_EDDL_construct_data : public boost::static_visitor<void>
 {
@@ -273,7 +267,6 @@ struct print_EDDL_construct_data : public boost::static_visitor<void>
     }
   }
 
-  /* EDDL VARIABLE elements */
   void operator()(variable_definition const &s) const
   {
     std::cout << "\nEDDL construct type ---> " << s.type << std::endl;
@@ -284,7 +277,6 @@ struct print_EDDL_construct_data : public boost::static_visitor<void>
     }
   }
 
-  /* EDDL COMMAND elements */
   void operator()(command_definition const &s) const
   {
     std::cout << "\nEDDL construct type ---> " << s.type << std::endl;
@@ -295,7 +287,6 @@ struct print_EDDL_construct_data : public boost::static_visitor<void>
     }
   }
 
-  /* EDDL METHOD elements */
   void operator()(method_definition const &s) const
   {
     std::cout << "\nEDDL construct type ---> " << s.type << std::endl;
@@ -307,7 +298,6 @@ struct print_EDDL_construct_data : public boost::static_visitor<void>
     }
   }
 
-  /* EDDL UNIT elements */
   void operator()(unit_definition const &s) const
   {
     std::cout << "\nEDDL construct type ---> " << s.type << std::endl;
@@ -320,9 +310,11 @@ struct print_EDDL_construct_data : public boost::static_visitor<void>
   }
 };
 
-/*
-* printEDDLDataItems()
-*/
+/**
+ * \brief   Prints all parsed EDDL data items.
+ *
+ * \param   data    EDDL parsed data to print.
+ */
 void EddlParser::printEDDLDataItems(eddlParsedData& data)
 {
   unsigned int i;

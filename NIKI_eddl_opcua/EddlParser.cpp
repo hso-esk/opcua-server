@@ -5,36 +5,13 @@
  *      Author: osboxes
  */
 
-/*
- * --- DEFINES ------------------------------------------------------------- *
- */
-
 #define BOOST_SPIRIT_DEBUG
 
-/*
- * --- Includes ------------------------------------------------------------- *
- */
 #include "OpcUaEddl/EddlParser.h"
 #include "OpcUaEddl/EddlParserUtils.h"
-
-#include "OpcUaStackServer/Server/Server.h"
-#include "OpcUaStackCore/Base/os.h"
-#include "OpcUaStackCore/Base/Log.h"
-#include "OpcUaStackCore/BuildInTypes/BuildInTypes.h"
-#include "OpcUaStackCore/Base/ObjectPool.h"
-#include "OpcUaStackServer/ServiceSetApplication/ApplicationService.h"
-#include "OpcUaStackServer/Application/Application.h"
-#include "OpcUaStackCore/ServiceSet/ServiceTransaction.h"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/fusion/include/io.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/fusion/adapted/std_pair.hpp>
 #include <boost/spirit/include/qi_omit.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/variant.hpp>
-#include <boost/fusion/include/io.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/spirit/repository/include/qi_confix.hpp>
 #include <algorithm>
@@ -45,9 +22,9 @@ namespace OpcUaEddl
 namespace spirit = boost::spirit;
 namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
-namespace phx = boost::phoenix;
 namespace fusion = boost::fusion;
 namespace repo = boost::spirit::repository;
+using namespace OpcUaStackCore;
 
 /**
  * EddlParser()
@@ -224,7 +201,6 @@ private:
   qi::rule<Iterator, pair_type(), skipper_t> string_default_value;
   qi::rule<Iterator, pair_type(), skipper_t> string_initial_value;
 
-  /* start rule */
   qi::rule<Iterator, string_type_definition(), skipper_t> start;
 };
 
@@ -312,7 +288,6 @@ private:
   /* expression parser rule */
   qi::rule<Iterator, void(), skipper_t> primary_expr;
 
-  /* start rule */
   qi::rule<Iterator, void(), skipper_t> start;
 };
 
@@ -349,7 +324,6 @@ private:
 
   /* instantiate expression parser */
   expr_parser<Iterator> parse_expression;
-
   qi::rule<Iterator, std::string(), skipper_t> expr_wrap;
   qi::rule<Iterator, std::string(), skipper_t> start;
 };
@@ -708,8 +682,7 @@ struct method_parser
       | method_access
       | definition
       | validity
-      | method_class
-      ;
+      | method_class;
 
     help %= qi::string("HELP")
       >> (parse_identifier | qi::raw[(qi::lit('[')
@@ -782,7 +755,6 @@ private:
   qi::rule<Iterator, pair_type(), skipper_t> method_attr_pair;
   qi::rule<Iterator, std::vector<pair_type>(), skipper_t> method_attr_pair_list;
 
-  /* start rule*/
   qi::rule<Iterator, method_definition(), skipper_t> start;
 };
 
@@ -930,7 +902,6 @@ private:
   qi::rule<Iterator, responseCode_definition(), skipper_t> response_code;
   qi::rule<Iterator, command_variant(), skipper_t> cmd_attr_pair_list;
 
-  /* start rule */
   qi::rule<Iterator, command_definition(), skipper_t> start;
 };
 
@@ -995,7 +966,6 @@ private:
   qi::rule<Iterator, std::string(), skipper_t> def_dependency;
   qi::rule<Iterator, std::vector<std::string>(), skipper_t> def_dependencies;
 
-  /* start rule */
   qi::rule<Iterator, unit_definition(), skipper_t> start;
 };
 
@@ -1059,7 +1029,6 @@ private:
   qi::rule<Iterator, pair_type(), skipper_t> id_pair;
   qi::rule<Iterator, std::vector<pair_type>(), skipper_t> id_pair_list;
 
-  /* start rule */
   qi::rule<Iterator, id_definition(), skipper_t> start;
 };
 
@@ -1091,7 +1060,6 @@ private:
   method_parser<Iterator> method_def;
   unit_parser<Iterator> unit_def;
 
-  /* start rule */
   qi::rule<Iterator, EddlParser::eddlParsedData(), skipper<Iterator> > start;
  };
 
@@ -1141,7 +1109,3 @@ bool EddlParser::parseEDDLfile(const std::string& eddlfile, eddlParsedData& data
 }
 
 } /* namespace OpcUaEddl */
-
-
-
-

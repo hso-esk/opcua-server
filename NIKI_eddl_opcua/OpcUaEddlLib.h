@@ -15,6 +15,7 @@
 #include "OpcUaStackServer/Application/ApplicationIf.h"
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
 #include "OpcUaSensorInterface/DeviceDataValue.h"
+#include "OpcUaSensorInterface/DeviceDataFile.h"
 
 namespace OpcUaEddl
 {

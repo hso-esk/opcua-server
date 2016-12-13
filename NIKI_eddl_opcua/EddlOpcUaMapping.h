@@ -15,28 +15,26 @@ namespace OpcUaEddl
 
 struct OPC_ACCESS {
   enum {
-    CurrentRead = 1 << 0
+      CurrentRead = 1 << 0
     , CurrentWrite = 1 << 1
-    , HistoryRead = 1 << 2
-    , HistoryWrite = 1 << 3
-    , SemanticChange = 1 << 4
-    , StatusWrite = 1 << 5
-    , TimestampWrite = 1 << 6
   };
 };
 
+/**
+ * \brief   Maps EDDL Variable to OPC UA variable node.
+ */
 struct variableMapper
     : public boost::static_visitor<void>
 {
   variableMapper()
-    : access_level(0)
+    : accessLevel(0)
     , type(DeviceDataValue::TYPE_INTEGER)
   {}
 
   void operator()(pair_type const &s)
   {
     if (s.first == "LABEL") {
-      display_name = s.second;
+      displayName = s.second;
     } else if (s.first == "HELP") {
       description = s.second;
     } else if (s.first == "CLASS") {
@@ -45,10 +43,10 @@ struct variableMapper
       std::string handling_str(s.second);
 
       if (handling_str.find("READ") != std::string::npos) {
-        access_level |= OPC_ACCESS::CurrentRead;
+        accessLevel |= OPC_ACCESS::CurrentRead;
       }
       if (handling_str.find("WRITE") != std::string::npos) {
-        access_level |= OPC_ACCESS::CurrentWrite;
+        accessLevel |= OPC_ACCESS::CurrentWrite;
       }
     }
   }
@@ -115,16 +113,18 @@ struct variableMapper
 
   }
 
+
+  /* variable Node attributes */
   std::string description;
-  std::string display_name;
+  std::string displayName;
   DeviceDataValue::e_type type;
   DeviceDataValue::u_val value;
-  uint8_t access_level;
+  uint8_t accessLevel;
 };
 
 
 /**
-* \brief   Visitor class maps the parsed EDDL data to OpcUa.
+* \brief   Maps EDDL constructs to OPC UA nodes.
 *
 */
 struct mapEddlToOpcUa
@@ -149,11 +149,11 @@ struct mapEddlToOpcUa
 
     OpcUaEddlLib::variableNodeCreateInfo info;
     info.parentNodeId = parentNodeId_;
-    info.variableNodeId = get_next_node_id();
-    info.variableBrowseName = v.display_name;
+    info.variableNodeId = getNextNodeId();
+    info.variableBrowseName = v.displayName;
     info.variableDescription = v.description;
     info.variableDisplayName = s.name;
-    info.accessLevel = v.access_level;
+    info.accessLevel = v.accessLevel;
     info.type = v.type;
     info.value = v.value;
 
@@ -172,12 +172,13 @@ struct mapEddlToOpcUa
   {
   }
 
-  uint32_t get_next_node_id()
+  uint32_t getNextNodeId()
   {
     return variableNodeId_++;
   }
 
   std::vector<OpcUaEddlLib::variableNodeCreateInfo> infos;
+
 private:
 
   uint32_t parentNodeId_;

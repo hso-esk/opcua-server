@@ -8,7 +8,7 @@
 #ifndef OPCUAEDDL_EDDLPARSER_H_
 #define OPCUAEDDL_EDDLPARSER_H_
 
-#include "OpcUaEddl/EddlParserStruct.h"
+#include "EddlParserStruct.h"
 #include "OpcUaStackCore/Base/Log.h"
 #include <string>
 #include <vector>

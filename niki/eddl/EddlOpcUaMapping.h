@@ -8,7 +8,7 @@
 #ifndef OPCUAEDDL_EDDLOPCUAMAPPING_H_
 #define OPCUAEDDL_EDDLOPCUAMAPPING_H_
 
-#include "OpcUaEddl/EddlParserStruct.h"
+#include "EddlParserStruct.h"
 
 namespace OpcUaEddl
 {

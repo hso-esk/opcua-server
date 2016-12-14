@@ -7,19 +7,15 @@
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-include_directories(
-   ${PROJECT_SOURCE_DIR}/OpcUaEddl
-)
-
-#file(GLOB OpcUaEddl_SRC ${PROJECT_SOURCE_DIR}/OpcUaEddl/*.cpp)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-sensor-interface)
 
 LIST(APPEND OpcUaEddl_SRC
-  ${PROJECT_SOURCE_DIR}/OpcUaEddl/OpcUaEddlLib.cpp
-  ${PROJECT_SOURCE_DIR}/OpcUaEddl/OpcUaEddlLib.h
-  ${PROJECT_SOURCE_DIR}/OpcUaEddl/EddlParser.cpp
-  ${PROJECT_SOURCE_DIR}/OpcUaEddl/EddlParser.h
-  ${PROJECT_SOURCE_DIR}/OpcUaEddl/EddlParserStruct.h
-  ${PROJECT_SOURCE_DIR}/OpcUaEddl/EddlParserUtils.h
+  ${PROJECT_SOURCE_DIR}/../../niki/eddl/OpcUaEddlLib.cpp
+  ${PROJECT_SOURCE_DIR}/../../niki/eddl/OpcUaEddlLib.h
+  ${PROJECT_SOURCE_DIR}/../../niki/eddl/EddlParser.cpp
+  ${PROJECT_SOURCE_DIR}/../../niki/eddl/EddlParser.h
+  ${PROJECT_SOURCE_DIR}/../../niki/eddl/EddlParserStruct.h
+  ${PROJECT_SOURCE_DIR}/../../niki/eddl/EddlParserUtils.h
 )
 
 add_library(OpcUaEddl SHARED ${OpcUaEddl_SRC})

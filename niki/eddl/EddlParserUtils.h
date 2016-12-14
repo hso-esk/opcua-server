@@ -8,7 +8,7 @@
 #ifndef OPCUAEDDL_EDDLPARSERPRINTUTIL_H_
 #define OPCUAEDDL_EDDLPARSERPRINTUTIL_H_
 
-#include "OpcUaEddl/EddlParserStruct.h"
+#include "EddlParserStruct.h"
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <iostream>
 

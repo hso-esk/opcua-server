@@ -7,8 +7,8 @@
 
 #define BOOST_SPIRIT_DEBUG
 
-#include "OpcUaEddl/EddlParser.h"
-#include "OpcUaEddl/EddlParserUtils.h"
+#include "EddlParser.h"
+#include "EddlParserUtils.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/spirit/include/qi_omit.hpp>

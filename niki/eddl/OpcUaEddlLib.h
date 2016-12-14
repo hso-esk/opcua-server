@@ -9,13 +9,13 @@
 #define OPCUAEDDL_OPCUAEDDLLIB_H_
 
 
-#include "OpcUaEddl/EddlParser.h"
+#include "EddlParser.h"
 #include "OpcUaStackCore/Application/ApplicationReadContext.h"
 #include "OpcUaStackCore/Application/ApplicationWriteContext.h"
 #include "OpcUaStackServer/Application/ApplicationIf.h"
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
-#include "OpcUaSensorInterface/DeviceDataValue.h"
-#include "OpcUaSensorInterface/DeviceDataFile.h"
+#include "DeviceDataValue.h"
+#include "DeviceDataFile.h"
 
 namespace OpcUaEddl
 {

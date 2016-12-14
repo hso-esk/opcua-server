@@ -5,8 +5,8 @@
  *      Author: osboxes
  */
 
-#include "OpcUaEddl/OpcUaEddlLib.h"
-#include "OpcUaEddl/EddlOpcUaMapping.h"
+#include "OpcUaEddlLib.h"
+#include "EddlOpcUaMapping.h"
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaStackCore/Base/ConfigXml.h"
 #include "OpcUaStackCore/Utility/Environment.h"
@@ -31,8 +31,8 @@ namespace OpcUaEddl
  */
 OpcUaEddlLib::OpcUaEddlLib(void)
   : OpcUaStackServer::ApplicationIf()
-  , eddlfileName_("sample.ddl")
-  , variableStartNodeId(1000)
+  , eddlfileName_("")
+  , variableStartNodeId(0)
   , eddlParser_()
   , namespaceIndex_(0)
   , readSensorValueCallback_(boost::bind(&OpcUaEddlLib::readValue, this, _1))

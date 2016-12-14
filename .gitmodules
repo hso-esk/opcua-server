@@ -1,3 +1,6 @@
 [submodule "asneg"]
 	path = asneg
 	url = https://git.ivesk.hs-offenburg.de/niki4-0/asneg.git
+[submodule "niki/opcua-sensor-interface"]
+	path = niki/opcua-sensor-interface
+	url = https://git.ivesk.hs-offenburg.de/niki4-0/opcua-sensor-interface.git

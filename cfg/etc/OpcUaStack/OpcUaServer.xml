@@ -19,7 +19,7 @@
     <Application>
       <Name>OpcUaEddl2</Name>
       <Library>OpcUaEddl</Library>
-      <Config>@CONF_DIR@/Nodes/NIKI-Current-Sensor.ddl.xml</Config>
+      <Config>@CONF_DIR@/Nodes/NIKI-Current-Sensor.xml</Config>
     </Application>
   </Applications>
 

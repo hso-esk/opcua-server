@@ -150,9 +150,9 @@ struct mapEddlToOpcUa
     OpcUaEddlLib::variableNodeCreateInfo info;
     info.parentNodeId = parentNodeId_;
     info.variableNodeId = getNextNodeId();
-    info.variableBrowseName = v.displayName;
+    info.variableBrowseName = s.name;
     info.variableDescription = v.description;
-    info.variableDisplayName = s.name;
+    info.variableDisplayName = v.displayName;
     info.accessLevel = v.accessLevel;
     info.type = v.type;
     info.value = v.value;

@@ -1,71 +1,44 @@
-/* sample comment */
-/* This EDDL file 2 describes a sample field device */
+/**
+ * EDDL description file for a sample NIKI Current Sensor. Currently
+ * only two variables are supported namely the actual current
+ * and its unit.
+ */
 
 
-VARIABLE phys_soft_desc_2
-{
-	LABEL		[phys_soft_desc_label];
-	HELP		[phys_soft_desc_help];
-	CLASS		CONTAINED;
-	TYPE		ASCII (32)
-	{
-		DEFAULT_VALUE "TEST String";
-	}
-	HANDLING	READ;
-}
-
+/*
+ * Comon device description section.
+ */
 
 MANUFACTURER	66,
 DEVICE_TYPE		0x070E,
 DEVICE_REVISION 1,
 DD_REVISION		1
 
-/* passed */
-VARIABLE trans1_static_press_value_2
+
+/**
+ * Variable for the actual current.
+ */
+VARIABLE var_curr_sens_curr
 {
-	LABEL		trans1_static_press_value_label;
-	HELP		trans1_static_press_value_help;
+	LABEL		Current;
+	HELP		Actual_current;
 	CLASS		CONTAINED & DYNAMIC;
 	TYPE		FLOAT;
 	HANDLING	READ;
 }
 
-
-UNIT TB_STATIC_PRESSURE_VALUE_UNIT
+/**
+ * Variable for the temperature unit.
+ */
+VARIABLE var_curr_sens_unit
 {
-	trans1_static_press_unit:
-	
-	trans1_static_press_value,
-	func2_AI_pv_upper_range_value,
-	func2_AI_pv_lower_range_value,
-	func2_AI_simulate_value
-}
-
-VARIABLE phys_set_address_2
-{
-	LABEL		[set_address];
-	HELP		[set_address_help];
-	CLASS		CONTAINED & DYNAMIC;
-	TYPE		UNSIGNED_INTEGER (1)
+	LABEL		Unit;
+	HELP		Describes_the_unit_of_the_current_sensor_value;
+	CLASS		CONTAINED;
+	TYPE		ASCII (32)
 	{
-		DEFAULT_VALUE 12;
+		DEFAULT_VALUE "mA";
 	}
-	HANDLING	READ & WRITE;
+	HANDLING	READ;
 }
 
-COMMAND write_trans1_display_cycle
-{
-	BLOCK transducer_block_1;
-	INDEX 67;
-	OPERATION WRITE;
-	TRANSACTION
-	{
-		REQUEST
-		{
-			trans1_display_cycle
-		}
-		REPLY
-		{
-		}
-	}
-}

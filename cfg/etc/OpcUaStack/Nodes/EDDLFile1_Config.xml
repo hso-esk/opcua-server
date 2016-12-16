@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EddlModel xmlns="http://eddl/EddlModel.xsd">
 
-    <EddlPath File="EDDLFile_1.ddl" />
+    <EddlPath File="@CONF_DIR@/Nodes/EDDLFile_1.ddl" />
     <ObjectNode Id="999" BrowseName="NIKI_Temperature_Sensor" DisplayName="NIKI_Temperature_Sensor" Description="NIKI_Temperature_Sensor" />
     <VariableNodes FirstId="1100" />
 

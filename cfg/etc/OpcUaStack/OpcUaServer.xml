@@ -76,7 +76,7 @@
   </Endpoints>
 
   <InformationModel>
-    <NodeSetFile>@CONF_DIR@/Opc.Ua.NodeSet.xml</NodeSetFile>
+    <NodeSetFile>@CONF_DIR@/OpcUaNodeSet.xml</NodeSetFile>
   </InformationModel>
 
 </OpcUaServer>

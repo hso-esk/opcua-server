@@ -9,6 +9,7 @@
 
 #include "EddlParser.h"
 #include "EddlParserUtils.h"
+#include "OpcUaStackCore/Base/Log.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/spirit/include/qi_omit.hpp>
@@ -1077,7 +1078,7 @@ bool EddlParser::parseEDDLfile(const std::string& eddlfile, eddlParsedData& data
 
   /* check if eddl file exist */
   if (!boost::filesystem::exists(eddlfile)) {
-        std::cout << "EDDL file not found" << std::endl;
+	  Log(Error, std::string("EDDL file not found: " + eddlfile));
   }
 
   /* read input EDD file as string */
@@ -1092,6 +1093,7 @@ bool EddlParser::parseEDDLfile(const std::string& eddlfile, eddlParsedData& data
   bool ok =  qi::phrase_parse (begin, end, p, s, data);
   if (ok)
   {
+#if ENABLE_EDDL_PARSER_DEBUG_OUTPUT
     std::cout << "Bytes left = " << std::distance(begin, end) << " -> "
              << ((begin == end) ? "SUCCEEDED" : "FAILED") << "\n";
 
@@ -1100,9 +1102,10 @@ bool EddlParser::parseEDDLfile(const std::string& eddlfile, eddlParsedData& data
 
     /* Print parsed EDDL data */
     printEDDLDataItems(data);
+#endif /* #if ENABLE_EDDL_PARSER_DEBUG_OUTPUT */
 
   } else {
-    std::cout << "PARSING FAILED COMPLETELY" << std::endl;
+	  Log(Error, std::string("EDDL parsing failed: " + eddlfile));
   }
 
   return true;

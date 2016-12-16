@@ -16,8 +16,15 @@
 #include <iostream>
 #include <fstream>
 
+#define   ENABLE_EDDL_PARSER_DEBUG_OUTPUT    0
+
+#if (ENABLE_EDDL_PARSER_DEBUG_OUTPUT)
 #define ENABLE_QI_DEBUG(v) do { v.name(#v); qi::debug(v); } while(0)
 #define ENABLE_QI_DEBUG2(v,n) do { v.name(n); qi::debug(v);} while (0)
+#else
+#define ENABLE_QI_DEBUG(v)
+#define ENABLE_QI_DEBUG2(v,n)
+#endif
 
 namespace OpcUaEddl
 {

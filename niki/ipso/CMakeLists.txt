@@ -8,6 +8,7 @@
 # -----------------------------------------------------------------------------
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-sensor-interface)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-lwm2m-server)
 
 LIST(APPEND OpcUaIPSO_SRC
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaIPSOLib.cpp

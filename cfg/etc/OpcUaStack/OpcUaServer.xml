@@ -11,7 +11,7 @@
   </Logging>
 
   <Applications>
-    <Application>
+    <!-- <Application>
       <Name>OpcUaEddl</Name>
       <Library>OpcUaEddl</Library>
       <Config>@CONF_DIR@/Nodes/NIKI-Temp-Sensor.xml</Config>
@@ -20,6 +20,11 @@
       <Name>OpcUaEddl2</Name>
       <Library>OpcUaEddl</Library>
       <Config>@CONF_DIR@/Nodes/NIKI-Current-Sensor.xml</Config>
+    </Application> -->
+    <Application>
+      <Name>OpcUaIPSO</Name>
+      <Library>OpcUaIPSO</Library>
+      <Config>@CONF_DIR@/Nodes/ipsoConfig.xml</Config>
     </Application>
   </Applications>
 

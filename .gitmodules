@@ -6,4 +6,4 @@
 	url = https://git.ivesk.hs-offenburg.de/niki4-0/opcua-sensor-interface.git
 [submodule "niki/opcua-lwm2m-server"]
 	path = niki/opcua-lwm2m-server
-	url = https://knsiah@git.ivesk.hs-offenburg.de/niki4-0/opcua-lwm2m-server.git
+	url = https://git.ivesk.hs-offenburg.de/niki3-0/opcua-lwm2m-server.git

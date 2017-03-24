@@ -14,7 +14,7 @@
 #include <cstring>
 
 
-namespace OpcUaIPSO
+namespace OpcUaLWM2M
 {
 
 using namespace OpcUaStackCore;
@@ -231,7 +231,6 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   }
 
   if (*type == "Integer") {
-    std::cout << "yes is integer" << std::endl;
 	ipsoResource.type = DeviceDataValue::TYPE_INTEGER;
     ipsoResource.value.i32  = 0;
 
@@ -272,5 +271,5 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   return true;
 }
 
-} /* namespace OpcUaIPSO */
+} /* namespace OpcUaLWM2M */
 

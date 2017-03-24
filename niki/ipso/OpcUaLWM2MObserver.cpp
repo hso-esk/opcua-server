@@ -6,20 +6,20 @@
  */
 
 #include "OpcUaLWM2MObserver.h"
-#include "OpcUaIPSOLib.h"
+#include "OpcUaLWM2MLib.h"
 #include "OpcUaStackCore/Base/Log.h"
 
 
-namespace OpcUaIPSO
+namespace OpcUaLWM2M
 {
  using namespace OpcUaStackCore;
 
  /**
   * OpcUaLWM2MObserver()
   */
-OpcUaLWM2MObserver::OpcUaLWM2MObserver(OpcUaIPSOLib& opcuaipsolib)
+OpcUaLWM2MObserver::OpcUaLWM2MObserver(OpcUaLWM2MLib& opcualwm2mlib)
   : LWM2MServerObserver()
-  , opcuaipsolib_(opcuaipsolib)
+  , opcualwm2mlib_(opcualwm2mlib)
 {
   Log(Debug, "OpcUaLWM2MObserver::OpcUaLWM2MObserver");
 }
@@ -40,7 +40,7 @@ int8_t OpcUaLWM2MObserver::notify(const LWM2MDevice* p_dev, const e_lwm2m_server
 		   .parameter("Device name", p_dev->getName());
 
 	  /* execute onDeviceRegister function */
-	  opcuaipsolib_.onDeviceRegister(p_dev);
+	  opcualwm2mlib_.onDeviceRegister(p_dev);
     }
     break;
 
@@ -60,7 +60,7 @@ int8_t OpcUaLWM2MObserver::notify(const LWM2MDevice* p_dev, const e_lwm2m_server
 	       .parameter("Device name", p_dev->getName());
 
 	  /* execute onDeviceRegister function */
-	  opcuaipsolib_.onDeviceDeregister(p_dev);
+	  opcualwm2mlib_.onDeviceDeregister(p_dev);
 
 	  return -1;
     }

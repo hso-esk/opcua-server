@@ -11,8 +11,8 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-sensor-interface)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-lwm2m-server)
 
 LIST(APPEND OpcUaIPSO_SRC
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaIPSOLib.cpp
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaIPSOLib.h
+  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MLib.cpp
+  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MLib.h
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/IPSOParser.cpp
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/IPSOParser.h
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MObserver.cpp

@@ -17,7 +17,7 @@
 #include <vector>
 
 
-namespace OpcUaIPSO
+namespace OpcUaLWM2M
 {
 
 /**
@@ -160,7 +160,7 @@ private:
 
 };
 
-} /* namespace OpcUaIPSO */
+} /* namespace OpcUaLWM2M */
 
 
 #endif /* IPSOPARSER_H_ */

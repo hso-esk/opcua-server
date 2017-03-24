@@ -14,10 +14,10 @@
 #include <iostream>
 
 
-namespace OpcUaIPSO
+namespace OpcUaLWM2M
 {
 
-class OpcUaIPSOLib;
+class OpcUaLWM2MLib;
 
 class OpcUaLWM2MObserver
   : public LWM2MServerObserver
@@ -28,7 +28,7 @@ public:
   /**
    * \brief   Default Constructor.
    */
-  OpcUaLWM2MObserver(OpcUaIPSOLib& opcuaipsolib);
+  OpcUaLWM2MObserver(OpcUaLWM2MLib& opcualwm2mlib);
 
   /**
    * \brief   Default destructor.
@@ -45,11 +45,11 @@ public:
 
 private:
 
-  OpcUaIPSOLib& opcuaipsolib_;
+  OpcUaLWM2MLib& opcualwm2mlib_;
 
 };
 
-} /* namespace OpcUaIPSO */
+} /* namespace OpcUaLWM2M */
 
 
 #endif /* OPCUALWM2MOBSERVER_H_ */

@@ -13,14 +13,11 @@
 #include "OpcUaStackCore/Application/ApplicationWriteContext.h"
 #include "OpcUaStackServer/Application/ApplicationIf.h"
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
-#include "DeviceData.h"
 #include "DeviceDataValue.h"
 #include "DeviceDataLWM2M.h"
 #include "DeviceDataFile.h"
 #include "OpcUaLWM2MObserver.h"
 #include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 
 
 namespace OpcUaLWM2M
@@ -65,16 +62,6 @@ public:
   virtual bool shutdown(void);
 
   /**
-   * \brief   Map storage for resource id and resources.
-   */
-  typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
-  typedef std::map<resourceId_t, LWM2MResource*> resourceMap_t;
-  typedef std::map<int32_t, LWM2MResource*> resourceTempMap_t;
-
-  resourceTempMap_t tempMap;
-  resourceMap_t resourceMap;
-
-  /**
    * \brief   Function triggered when a new device registers.
    */
    int8_t onDeviceRegister(const LWM2MDevice* dev);
@@ -83,6 +70,7 @@ public:
     * \brief   Function triggered when a new device deregisters.
     */
    int8_t onDeviceDeregister(const LWM2MDevice* dev);
+
 
 private:
 
@@ -115,15 +103,22 @@ private:
   typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
   objectDictionary_t objectDictionary;
 
+  typedef std::vector<LWM2MObject*> objectVec_t;
+  objectVec_t objectVec_;
+
+  typedef std::vector<IPSOParser::ipsoResourceDescription> resourceVec_t;
+  resourceVec_t resourceVec_;
+
   /* IPSO object Id */
   uint32_t id_;
 
-  bool loadConfig(void);
+  /* LWM2M device id */
+  uint16_t deviceId_;
 
   /**
    * \brief   Load IPSO file from OPC UA server configuration file.
    */
-  bool loadIPSOfile(std::string& ipsofile);
+  bool loadConfig(void);
 
   /**
    * \brief   Updates the OPC UA application read Context.
@@ -151,6 +146,11 @@ private:
   bool createObjectDictionary(IPSOParser::ipsoDescriptionVec& ipsoDesc);
 
   /**
+  * \brief   Create Variable Node to the information model.
+  */
+  bool createDeviceObjectNode(const LWM2MDevice* p_dev);
+
+  /**
    * \brief   Create Object Node to the information model.
    */
   bool createObjectNode(IPSOParser::ipsoObjectDescription const& objectInfo);
@@ -158,7 +158,8 @@ private:
   /**
     * \brief   Create Variable Node to the information model.
     */
-  bool createVariableNode(std::vector<IPSOParser::ipsoResourceDescription> const& ipsoresources);
+  bool createVariableNode(IPSOParser::ipsoResourceDescription& varInfo);
+
 
   /**
    * \brief   Creates OPC UA nodes.
@@ -175,8 +176,9 @@ private:
   /**
    * \brief   Create LWM2M resources.
    */
-  bool createLWM2MResources(LWM2MObject* lwm2mObjectInfo
-		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource);
+  bool createLWM2MResources(objectVec_t& objVec
+		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource
+		, resourceVec_t& resourceVec);
 };
 
 } /* namespace OpcUalwm2m */

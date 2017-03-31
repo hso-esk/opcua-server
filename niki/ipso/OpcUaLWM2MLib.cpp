@@ -24,6 +24,8 @@
 namespace OpcUaLWM2M
 {
 
+//uint32_t OpcUaLWM2MLib::ID_ = 6800;
+
 /**
  * OpcUaLWM2MLib()
  */
@@ -339,12 +341,16 @@ bool OpcUaLWM2MLib::createObjectNode(IPSOParser::ipsoObjectDescription const& ob
 {
   Log(Debug, "OpcUaLWM2MLib::createObjectNode");
 
+  /* set node id of object */
+    OpcUaNodeId objectNodeId;
+    objectNodeId.set(objectInfo.id, namespaceIndex_);
+
+
+  OpcUaStackServer::BaseNodeClass::SPtr objectNode = informationModel()->find(objectNodeId);
+  if (objectNode.get() == nullptr) {
+
   OpcUaStackServer::BaseNodeClass::SPtr objectNode;
   objectNode = OpcUaStackServer::ObjectNodeClass::construct();
-
-  /* set node id of object */
-  OpcUaNodeId objectNodeId;
-  objectNodeId.set(objectInfo.id, namespaceIndex_);
   objectNode->setNodeId(objectNodeId);
 
   /* set object node attributes */
@@ -359,39 +365,47 @@ bool OpcUaLWM2MLib::createObjectNode(IPSOParser::ipsoObjectDescription const& ob
    OpcUaByte executable = 1;
    objectNode->setEventNotifier(executable);
 
-   /* set OPC UA base object id */
-   OpcUaNodeId baseObjectId;
-   baseObjectId.set(OpcUaId_ObjectsFolder, namespaceIndex_);
+   /* set access rights */
+   OpcUaUInt32  writemask= 0x00;
+   objectNode->setWriteMask(writemask);
+   objectNode->setUserWriteMask(writemask);
 
-   /* set node id of OPC UA address space base object */
-   OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(baseObjectId);
+   /* set OPC UA base object id */
+   OpcUaNodeId parentObjectId;
+   parentObjectId.set(deviceId_, namespaceIndex_);
+
+   /* check existence of parent object */
+   OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(parentObjectId);
    if (baseObject.get() != nullptr) {
-     /* set reference to address space base object */
+
+     /* set reference to parent object */
      baseObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
- 		 ReferenceType_Organizes, true, objectNodeId);
+             ReferenceType_Organizes, true, objectNodeId);
 
      objectNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-         ReferenceType_Organizes, false, baseObjectId);
+             ReferenceType_Organizes, false, parentObjectId);
 
      baseObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-         ReferenceType_HasComponent, true, objectNodeId);
-    } else {
+             ReferenceType_HasComponent, true, objectNodeId);
+
+     baseObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+             ReferenceType_HasComponent, false, parentObjectId);
+   } else {
       return false;
     }
 
     /* add object node to OPC UA server information model */
     informationModel()->insert(objectNode);
+  }
 
-    rootNode_ = objectNode;
     return true;
 }
 
 /*---------------------------------------------------------------------------*/
 /**
- * createVariableNode()
+ * createObjectNode()
  */
 bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
-bool OpcUaLWM2MLib::createVariableNode(std::vector<IPSOParser::ipsoResourceDescription> const& ipsoresources)
 {
 
   Log(Debug, "OpcUaLWM2MLib::createDeviceObjectNode");
@@ -454,6 +468,8 @@ bool OpcUaLWM2MLib::createVariableNode(std::vector<IPSOParser::ipsoResourceDescr
    //rootNode_ = objectNode;
    return true;
 }
+/*---------------------------------------------------------------------------*/
+
 namespace
 {
 /**
@@ -467,151 +483,158 @@ static uint32_t offset()
 
 } /* anonymous namespace */
 
+/*---------------------------------------------------------------------------*/
+/**
+ * createVariableNode()
+ */
+bool OpcUaLWM2MLib::createVariableNode (IPSOParser::ipsoResourceDescription& varInfo)
+{
+	Log(Debug, "OpcUaLWM2MLib::createVariableNode");
+
 	OpcUaStackServer::BaseNodeClass::SPtr variableNode;
 	variableNode = OpcUaStackServer::VariableNodeClass::construct();
 
-    /* set OPC UA variable node id */
-    OpcUaNodeId varNodeId;
-    varNodeId.set(varInfo.resourceId, namespaceIndex_);
-    variableNode->setNodeId(varNodeId);
+	/* set OPC UA variable node id */
+	OpcUaNodeId varNodeId;
 	uint32_t resourceId = varInfo.resourceId + offset();
 	varNodeId.set(resourceId, namespaceIndex_);
+	variableNode->setNodeId(varNodeId);
 
-    /* set variable node attributes */
-    OpcUaQualifiedName varbrowseName(varInfo.name, namespaceIndex_);
-    variableNode->setBrowseName(varbrowseName);
+	 /* set variable node attributes */
+	OpcUaQualifiedName varbrowseName(varInfo.name, namespaceIndex_);
+	variableNode->setBrowseName(varbrowseName);
 
-    OpcUaLocalizedText vardescription("de", varInfo.desc);
-    variableNode->setDescription(vardescription);
+	OpcUaLocalizedText vardescription("de", varInfo.desc);
+	variableNode->setDescription(vardescription);
 
-    OpcUaLocalizedText  vardisplayName("de", varInfo.name);
-    variableNode->setDisplayName(vardisplayName);
+	OpcUaLocalizedText  vardisplayName("de", varInfo.name);
+	variableNode->setDisplayName(vardisplayName);
 
-    OpcUaByte accessLevel(0x05);
-    variableNode->setAccessLevel(accessLevel);
+	//OpcUaByte accessLevel(0x05);
+	OpcUaByte accessLevel(0x4F);
+	variableNode->setAccessLevel(accessLevel);
 
-    OpcUaByte userAccessLevel(0x05);
-    variableNode->setUserAccessLevel(userAccessLevel);
+	//OpcUaByte userAccessLevel(0x05);
+	OpcUaByte userAccessLevel(0x4F);
+	variableNode->setUserAccessLevel(userAccessLevel);
 
-    OpcUaDouble minimumSamplingInterval = 1;
-    variableNode->setMinimumSamplingInterval(minimumSamplingInterval);
+	OpcUaDouble minimumSamplingInterval = 1;
+	variableNode->setMinimumSamplingInterval(minimumSamplingInterval);
 
-    OpcUaBoolean historizing = true;
-    variableNode->setHistorizing(historizing);
-    OpcUaUInt32  writemask= 0x00;
-    variableNode->setWriteMask(writemask);
-    variableNode->setUserWriteMask(writemask);
+	OpcUaBoolean historizing = true;
+	variableNode->setHistorizing(historizing);
+	OpcUaUInt32  writemask= 0x01;
+	variableNode->setWriteMask(writemask);
+	variableNode->setUserWriteMask(writemask);
 
-    /* set OPC UA object node id */
-    OpcUaNodeId objectNodeId;
-    objectNodeId.set(varInfo.objectId, namespaceIndex_);
+	/* set OPC UA object node id */
+	OpcUaNodeId objectNodeId;
+	//objectNodeId.set(varInfo.resource->getParent()->getObjId(), namespaceIndex_);
+	objectNodeId.set(varInfo.objectId, namespaceIndex_);
 
-    /* create references to object node */
-    variableNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-          ReferenceType_HasComponent, false, objectNodeId);
+	OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
+	if (parentObject.get() != nullptr) {
 
-    rootNode_->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-          ReferenceType_HasComponent, true, varNodeId);
+	  /* create references to object node */
+	  variableNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+			  ReferenceType_HasComponent, false, objectNodeId);
 
-    variableContext ctx;
-    ctx.data = constructSPtr<OpcUaDataValue>();
-    ctx.data->statusCode(Success);
-    ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
-    ctx.data->serverTimestamp(boost::posix_time::microsec_clock::universal_time());
+	  parentObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+			  ReferenceType_HasComponent, true, varNodeId);
+	}
 
-    if (varInfo.operation == "R") {
-	  ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-	        varInfo.name
-		    , varInfo.desc
-		    , varInfo.type
-		    , (DeviceData::ACCESS_READ | DeviceData::ACCESS_OBSERVE)
-		    , varInfo.resource);
+	variableContext ctx;
+	ctx.data = constructSPtr<OpcUaDataValue>();
+	ctx.data->statusCode(Success);
+	ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
+	ctx.data->serverTimestamp(boost::posix_time::microsec_clock::universal_time());
 
-    } else if (varInfo.operation == "W") {
-
-	  ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-            varInfo.name
-		    , varInfo.desc
-		    , varInfo.type
-		    , (DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
-		    , varInfo.resource);
-
-    } else if (varInfo.operation == "E") {
+	if (varInfo.operation == "R") {
 
 	  ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-	        varInfo.name
-		    , varInfo.desc
-		    , varInfo.type
-		    , DeviceData::ACCESS_NONE
-		    , varInfo.resource);
-    }
+			  varInfo.deviceName
+			, varInfo.desc
+			, varInfo.type
+			, (DeviceData::ACCESS_READ | DeviceData::ACCESS_OBSERVE)
+			, varInfo.resource);
 
-    OpcUaNodeId dataTypeNodeId;
-    if (ctx.dataObject) {
+	} else if (varInfo.operation == "W") {
 
-      /* check data type of value and set value of dataFileObject accordingly */
-      if (varInfo.type == DeviceDataValue::TYPE_INTEGER) {
+	  ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+			varInfo.deviceName
+			, varInfo.desc
+			, varInfo.type
+			, (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE)
+			, varInfo.resource);
 
-	    ctx.data->variant()->variant(varInfo.value.i32);
-	    DeviceDataValue val(varInfo.type);
-	    val.setVal(varInfo.value.i32);
+	} else if (varInfo.operation == "E") {
 
-	    /* set value of LWM2M object */
-	    ctx.dataObject->setVal(&val);
+	  ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+			  varInfo.deviceName
+			, varInfo.desc
+			, varInfo.type
+			, DeviceData::ACCESS_NONE
+			, varInfo.resource);
 
-	    /* set dataType to Int32_t */
-	    dataTypeNodeId.set(OpcUaId_Int32, namespaceIndex_);
+	} else if  (varInfo.operation == "R/W") {
 
-      } else if (varInfo.type == DeviceDataValue::TYPE_FLOAT) {
-        ctx.data->variant()->variant(varInfo.value.f);
+	  ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+			varInfo.deviceName
+			, varInfo.desc
+			, varInfo.type
+			, (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
+			, varInfo.resource);
 
-        /* set value of dataFileObject */
-        DeviceDataValue val(varInfo.type);
-        val.setVal(varInfo.value.f);
-        ctx.dataObject->setVal(&val);
+	}
 
-        /* set dataType to Float */
-        dataTypeNodeId.set(OpcUaId_Float, namespaceIndex_);
+	OpcUaNodeId dataTypeNodeId;
+	if (ctx.dataObject) {
 
-      } else if (varInfo.type == DeviceDataValue::TYPE_STRING) {
-        OpcUaString::SPtr str = constructSPtr<OpcUaString>();
-        str->value(varInfo.value.cStr);
-        ctx.data->variant()->variant(str);
+	  if (varInfo.type == DeviceDataValue::TYPE_INTEGER) {
 
-        /* set value of dataFileObject_ */
-        DeviceDataValue val(varInfo.type);
-        val.setVal(varInfo.value.cStr);
-        ctx.dataObject->setVal(&val);
+        ctx.data->variant()->variant(varInfo.value.i32);
 
-        /* set dataType to string */
-        dataTypeNodeId.set(OpcUaId_String, namespaceIndex_);
+		/* set dataType to Int32_t */
+		dataTypeNodeId.set(OpcUaId_Int32, namespaceIndex_);
+
+	   } else if (varInfo.type == DeviceDataValue::TYPE_FLOAT) {
+		 ctx.data->variant()->variant(varInfo.value.f);
+
+		 /* set dataType to Float */
+		 dataTypeNodeId.set(OpcUaId_Float, namespaceIndex_);
+
+
+	   } else if (varInfo.type == DeviceDataValue::TYPE_STRING) {
+
+		 OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+		 str->value(varInfo.value.cStr);
+		 ctx.data->variant()->variant(str);
+
+		 /* set dataType to string */
+		 dataTypeNodeId.set(OpcUaId_String, namespaceIndex_);
+	   }
+
+	   /* set dataType of Variable Node */
+	   variableNode->setDataType(dataTypeNodeId);
+
+	   /* set value of Variable node to default value */
+	   variableNode->setValue(*ctx.data);
+
+	   /* add variable node to OPC UA server information model */
+	   informationModel()->insert(variableNode);
+
+	   /* store variable node info into variableContextMap */
+	   variables_.insert(std::make_pair(varNodeId, ctx));
+
+	   /* register callback for read and write access permissions */
+	   if (varInfo.operation == "R" || varInfo.operation == "W" || varInfo.operation == "R/W") {
+	     if (!registerCallbacks(resourceId)) {
+		   Log(Error, "Register callback failed");
+	    }
       }
-
-      /* set dataType of Variable Node */
-      variableNode->setDataType(dataTypeNodeId);
-
-      /* set value of Variable node to default value */
-      variableNode->setValue(*ctx.data);
-
-      /* add variable node to OPC UA server information model */
-      informationModel()->insert(variableNode);
-
-      /* store variable node info into variableContextMap */
-      variables_.insert(std::make_pair(varNodeId, ctx));
     }
-
-    /* register callback for read and write access permissions */
-    if (varInfo.operation == "R" || varInfo.operation == "W") {
-    	if (!registerCallbacks(varInfo.resourceId)) {
-    	  Log(Error, "Register callback failed");
-    	}
-    } else {
-      continue;
-    }
-  }
-  return true;
+   return true;
 }
-
 /*---------------------------------------------------------------------------*/
 /*
 * onDeviceRegister()
@@ -624,7 +647,15 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   std::map<std::string, LWM2MDevice*>::iterator deviceIterator;
   deviceIterator = p_dev->getServer()->deviceStart();
 
-  /* iterate over the objects in the device */
+  /* get device ID */
+  deviceId_ = p_dev->getID();
+
+  /* create device object */
+  if (!createDeviceObjectNode(p_dev))
+  {
+    Log (Error, "Creation of device object failed");
+  }
+
   std::vector<LWM2MObject*>::iterator objectIterator;
   for (objectIterator = deviceIterator->second->objectStart();
 	   objectIterator != deviceIterator->second->objectEnd();
@@ -632,57 +663,44 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   {
 
     /* check corresponding object ids in dictionary */
-    if (hasObjectId((*objectIterator)->getObjId(), objectDictionary)) {
-	  Log(Debug, "LWM2M Object ID exist in dictionary");
+	if (hasObjectId((*objectIterator)->getObjId(), objectDictionary)) {
+	   Log(Debug, "LWM2M Object ID exist in dictionary");
 
-	  /* create OPC UA node */
-	  int16_t instanceId = (*objectIterator)->getInstId();
+	   /* add object with their instances to vector */
+	   objectVec_.push_back((*objectIterator));
 
-	  auto dictionaryIter = objectDictionary.find((*objectIterator)->getObjId());
-	  if (!createObjectNode(dictionaryIter->second->objectDesc)) {
-	    Log(Debug, "OPC UA Object node creation failed");
-        return -1;
-      }
-
-     /* create resources for the OPC UA node */
-     if (!createLWM2MResources((*objectIterator), dictionaryIter->second->resourceDesc)) {
-	   Log(Debug, "OPC UA resource creation failed");
-       return -1;
-     }
-
-     std::vector<LWM2MResource*>::iterator resourceIterator;
-     for(resourceIterator = (*objectIterator)->resourceStart();
-       resourceIterator != (*objectIterator)->resourceEnd();
-       ++resourceIterator)
-     {
-
-       /* Iterate the created resources and create resource id tuple for each resource */
-       resourceId_t resourceId((*resourceIterator)->getParent()->getParent()->getName()
-             , (*resourceIterator)->getParent()->getObjId()
-    	     , (*resourceIterator)->getParent()->getInstId()
-    	     , (*resourceIterator)->getResId());
-
-       /* insert resource information into resource Map */
-       int16_t resid = (*resourceIterator)->getResId();
-       auto iter = tempMap.find(resid);
-       if (iter ==  tempMap.end()) {
-         Log(Debug, "ResourceId not found");
-         std::cout << "ID not found" << std::endl;
-       }
-
-       resourceMap.insert(resourceMap_t::value_type(resourceId
-	         , iter->second));
-     }
-
-     /* create OPC UA variables for the resources */
-     if (!createVariableNode(dictionaryIter->second->resourceDesc)) {
-       Log(Debug, "OPC UA variable node creation failed");
-       return -1;
-      }
-    } else {
-	  continue;
+	   /* create OPC UA object node */
+	   for (auto& entry : objectDictionary)
+	   {
+         if (!createObjectNode(entry.second->objectDesc)) {
+             Log(Debug, "Object node creation failed");
+         }
+	   }
+	 } else {
+	   continue;
 	 }
   }
+
+  /* create LWM2M resources */
+  for (auto& dictItem : objectDictionary)
+    {
+      if(!createLWM2MResources(objectVec_, dictItem.second->resourceDesc, resourceVec_))
+      {
+        Log(Debug, "Creation of resources failed");
+        return -1;
+      }
+    }
+
+  /* create OPC UA variables from resource information */
+  for (auto& resource : resourceVec_)
+  {
+    if (!createVariableNode(resource))
+	  {
+	    Log(Debug, "Creation of variable node B failed");
+		return -1;
+	  }
+  }
+
   return 0;
 }
 
@@ -756,62 +774,99 @@ bool OpcUaLWM2MLib::hasObjectId(int16_t id, objectDictionary_t dictionary)
 
 /*---------------------------------------------------------------------------*/
 /*
-* createLWM2MResources()
+* createLWM2MResourcesB()
 */
-bool OpcUaLWM2MLib::createLWM2MResources(LWM2MObject* lwm2mObjectInfo
-		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource)
+bool OpcUaLWM2MLib::createLWM2MResources(objectVec_t& objVec
+		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource
+		, resourceVec_t& resourceVec)
 {
+
   Log(Debug, "OpcUaLWM2MLib::createLWM2MResources");
 
-  for (auto& item : ipsoResource)
+  for (auto& objitem : objVec)
   {
-	/* create LWM2M Resource object with corresponding access permissions */
-    if (item.operation == "R") {
+    for (auto& resItem : ipsoResource)
+    {
 
-	  /* create resource for READ access */
-	  LWM2MResource* resource =
-              new  LWM2MResource(item.resourceId, true, false, false);
+      /* create new resource per instance */
+      IPSOParser::ipsoResourceDescription res = {};
+	  res.deviceName = objitem->getParent()->getName();
+	  res.objectId =  objitem->getObjId();
+	  res.objectInstanceId =  objitem->getInstId();
 
-	  /* add resource to object */
-	  lwm2mObjectInfo->addResource(resource);
+	  res.name = resItem.name;
+	  res.desc = resItem.desc;
+	  res.type = resItem.type;
+	  res.resourceId = resItem.resourceId;
+	  res.value = resItem.value;
 
-	  /* store created resource */
-	  item.resource = resource;
-	  tempMap.insert(resourceTempMap_t::value_type(item.resourceId, resource));
+	  if (resItem.operation == "R") {
 
-    } else if (item.operation == "W") {
+	    /* create resource for READ access */
+	    LWM2MResource* resource =
+			  new  LWM2MResource(resItem.resourceId, true, false, false);
 
-	  /* create resource for WRITE access */
-	  LWM2MResource* resource =
-	          new LWM2MResource(item.resourceId, false, true, false);
+	    /* add resource to parent object */
+	    objitem->addResource(resource);
 
-	  /* add resource to object */
-	  lwm2mObjectInfo->addResource(resource);
+	    /* copy resource attributes */
+	    res.resource = resource;
+	    res.operation = resItem.operation;
 
-	  /* store created resource */
-	  item.resource = resource;
-	  tempMap.insert(resourceTempMap_t::value_type(item.resourceId, resource));
+	    /* add resource to vector */
+	    resourceVec.push_back(res);
 
-    } else if (item.operation == "E") {
 
-	  /* create resource for EXEC access */
-	  LWM2MResource* resource =
-              new LWM2MResource(item.resourceId, false, false, true);
+	  } else if (resItem.operation == "W") {
 
-	  /* add resource to object */
-	  lwm2mObjectInfo->addResource(resource);
+	    /* create resource for WRITE access */
+	    LWM2MResource* resource =
+			  new LWM2MResource(resItem.resourceId, false, true, false);
 
-	  /* store created resource */
-	  item.resource = resource;
-	  tempMap.insert(resourceTempMap_t::value_type(item.resourceId, resource));
+	    /* add resource to object */
+	    objitem->addResource(resource);
+
+	    /* store created resource */
+	    res.resource = resource;
+	    res.operation = resItem.operation;
+
+        /* add resource to vector */
+	    resourceVec.push_back(res);
+
+	  } else if (resItem.operation == "E") {
+
+	    /* create resource for EXEC access */
+	    LWM2MResource* resource =
+			  new LWM2MResource(resItem.resourceId, false, false, true);
+
+	    /* add resource to parent object */
+	    objitem->addResource(resource);
+
+	    /* copy resource attributes */
+	    res.resource = resource;
+	    res.operation = resItem.operation;
+
+	    /* add resource to vector */
+	    resourceVec.push_back(res);
+
+	  } else if  (resItem.operation == "R/W") {
+
+		/* create resource for READ and WRITE access */
+		LWM2MResource* resource =
+			  new LWM2MResource(resItem.resourceId, true, true, false);
+
+		/* add resource to parent object */
+		objitem->addResource(resource);
+
+		/* copy resource attributes */
+		res.resource = resource;
+		res.operation = resItem.operation;
+
+		/* add resource to vector */
+		resourceVec.push_back(res);
+	  }
     }
-
-    /* store device attributes */
-    item.deviceName = lwm2mObjectInfo->getParent()->getName();
-    item.objectId = lwm2mObjectInfo->getObjId();
-    item.objectInstanceId = lwm2mObjectInfo->getInstId();
   }
-
   return true;
 }
 

@@ -390,12 +390,70 @@ bool OpcUaLWM2MLib::createObjectNode(IPSOParser::ipsoObjectDescription const& ob
 /**
  * createVariableNode()
  */
+bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
 bool OpcUaLWM2MLib::createVariableNode(std::vector<IPSOParser::ipsoResourceDescription> const& ipsoresources)
 {
-  Log(Debug, "OpcUaLWM2MLib::createVariableNode");
 
-  for (auto& varInfo : ipsoresources)
-  {
+  Log(Debug, "OpcUaLWM2MLib::createDeviceObjectNode");
+
+  OpcUaStackServer::BaseNodeClass::SPtr deviceobjectNode;
+  deviceobjectNode = OpcUaStackServer::ObjectNodeClass::construct();
+
+  /* set node id of object */
+  OpcUaNodeId deviceObjectNodeId;
+  deviceObjectNodeId.set(device->getID(), namespaceIndex_);
+  deviceobjectNode->setNodeId(deviceObjectNodeId);
+
+  /* set object node attributes */
+  OpcUaQualifiedName browseName(device->getName(), namespaceIndex_);
+  deviceobjectNode->setBrowseName(browseName);
+  OpcUaLocalizedText description("de", device->getName());
+  deviceobjectNode->setDescription(description);
+  OpcUaLocalizedText displayName("de", device->getName());
+  deviceobjectNode->setDisplayName(displayName);
+
+  /* set event notifier attribute of object Node */
+  OpcUaByte executable = 0;
+  deviceobjectNode->setEventNotifier(executable);
+
+  /* set OPC UA base object id */
+  OpcUaNodeId baseObjectId;
+  baseObjectId.set(OpcUaId_ObjectsFolder, namespaceIndex_);
+
+  /* set access permissions */
+  OpcUaUInt32  writemask= 0x00;
+  deviceobjectNode->setWriteMask(writemask);
+  deviceobjectNode->setUserWriteMask(writemask);
+
+  /* set node id of OPC UA address space base object */
+  OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(baseObjectId);
+
+  if (baseObject.get() != nullptr) {
+
+    /* set reference to address space base object */
+    baseObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+	        ReferenceType_Organizes, true, deviceObjectNodeId);
+
+    deviceobjectNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+            ReferenceType_Organizes, false, baseObjectId);
+
+    OpcUaNodeId typeNodeId;
+    typeNodeId.set(OpcUaId_FolderType);
+    deviceobjectNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+            ReferenceType_HasTypeDefinition, true, typeNodeId);
+
+    baseObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+            ReferenceType_HasComponent, true, deviceObjectNodeId);
+   } else {
+      return false;
+   }
+
+   /* add object node to OPC UA server information model */
+   informationModel()->insert(deviceobjectNode);
+
+   //rootNode_ = objectNode;
+   return true;
+}
 namespace
 {
 /**

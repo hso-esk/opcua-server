@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <IPSOModel xmlns="http://ipso/IPSOModel.xsd">
 
-    <IPSOPath File="@CONF_DIR@/Nodes/ipsoSensor.xml" />
+    <!-- <IPSOPath File="@CONF_DIR@/Nodes/ipsoSensor.xml" /> -->
+    <IPSOPath File="@CONF_DIR@/Nodes/ipsoWakaamaTestObj.xml" />
 
 </IPSOModel>
 

@@ -396,6 +396,18 @@ bool OpcUaLWM2MLib::createVariableNode(std::vector<IPSOParser::ipsoResourceDescr
 
   for (auto& varInfo : ipsoresources)
   {
+namespace
+{
+/**
+ * offset ()
+ */
+static uint32_t offset()
+{
+	static uint32_t ID = 6800;
+	return ID++;
+}
+
+} /* anonymous namespace */
 
 	OpcUaStackServer::BaseNodeClass::SPtr variableNode;
 	variableNode = OpcUaStackServer::VariableNodeClass::construct();
@@ -404,6 +416,8 @@ bool OpcUaLWM2MLib::createVariableNode(std::vector<IPSOParser::ipsoResourceDescr
     OpcUaNodeId varNodeId;
     varNodeId.set(varInfo.resourceId, namespaceIndex_);
     variableNode->setNodeId(varNodeId);
+	uint32_t resourceId = varInfo.resourceId + offset();
+	varNodeId.set(resourceId, namespaceIndex_);
 
     /* set variable node attributes */
     OpcUaQualifiedName varbrowseName(varInfo.name, namespaceIndex_);

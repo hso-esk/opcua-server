@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<IPSOModel xmlns="http://ipso/IPSOModel.xsd">
-
-    <IPSOPath File="@CONF_DIR@/Nodes/Current.xml" /> 
-
-</IPSOModel>
-

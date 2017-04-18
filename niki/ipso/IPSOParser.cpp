@@ -240,7 +240,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
 
   } else if (*type == "String") {
     ipsoResource.type = DeviceDataValue::TYPE_STRING;
-    memcpy(ipsoResource.value.cStr, 0, DEVICEDATAVALUE_STRMAX);
+    memset(ipsoResource.value.cStr, 0, DEVICEDATAVALUE_STRMAX);
   }
 
   /* read IPSO range enumeration */

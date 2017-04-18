@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
+	<Object ObjectType="MODefinition">
+		<Name>Barometer</Name>
+		<Description1>Description: This IPSO object describes the EIS .</Description1>
+		<ObjectID>3601</ObjectID>
+		<ObjectURN>urn:oma:lwm2m:ext:3601</ObjectURN>
+		<MultipleInstances>Multiple</MultipleInstances>
+		<Mandatory>Optional</Mandatory>
+		<Resources>
+			<Item ID="5700">
+				<Name>Max. Luft X</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units>1/100 m/s.</Units>
+				<Description>Maximum measured luft X from the sensor</Description>
+			</Item>
+			<Item ID="5601">
+				<Name>Max. Luft Y</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Maximum measured luft Y from the sensor</Description>
+			</Item>
+			<Item ID="5602">
+				<Name>Avg. Luft X</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Average measured luft X from the sensor</Description>
+			</Item>
+			<Item ID="5603">
+				<Name>Avg. Luft Y</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Average measured luft Y from the sensor</Description>
+			</Item>
+			<Item ID="5604">
+				<Name>Flow status</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Measured flow status from the sensor</Description>
+			</Item>
+			<Item ID="5701">
+				<Name>CO2 in ppm</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units>PPM</Units>
+				<Description>Measured CO2 in ppm from the sensor.</Description>
+			</Item>
+			<Item ID="5605">
+				<Name>CO2 status</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Integer</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Measured CO2 status from the sensor</Description>
+			</Item>
+		</Resources>
+		<Description2></Description2>
+	</Object>
+</LWM2M>
+
+

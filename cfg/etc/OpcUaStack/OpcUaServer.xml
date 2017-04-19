@@ -25,50 +25,8 @@
       <Name>OpcUaIPSO</Name>
       <Library>OpcUaIPSO</Library>
       <Config>@CONF_DIR@/Nodes/ipsoConfig.xml</Config>
-    </Application>
-    <Application>
-      <Name>OpcUaIPSO2</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/VoltageConfig.xml</Config>
     </Application> 
-    <Application>
-      <Name>OpcUaIPSO3</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/CurrentConfig.xml</Config>
-    </Application> 
-    <Application>
-      <Name>OpcUaIPSO4</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/PowerConfig.xml</Config>
-    </Application>
-    <Application>
-      <Name>OpcUaIPSO5</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/TemperatureConfig.xml</Config>
-    </Application>
-    <Application>
-      <Name>OpcUaIPSO6</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/IlluminanceConfig.xml</Config>
-    </Application>
-    <Application>
-      <Name>OpcUaIPSO7</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/HumidityConfig.xml</Config>
-    </Application>
-    <Application>
-      <Name>OpcUaIPSO8</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/BarometerConfig.xml</Config>
-    </Application>
-    <Application>
-      <Name>OpcUaIPSO9</Name>
-      <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/EISConfig.xml</Config>
-    </Application>  
   </Applications>
-
-
 
   <Endpoints>
     <EndpointDescription>

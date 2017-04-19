@@ -64,10 +64,13 @@ bool OpcUaLWM2MLib::startup(void)
   }
 
   /* parse the IPSO file */
-  if (!ipsoParser_.parseIPSOfile(ipsofileName_, data_))
+  for (auto& ipsofileName : ipsofileNameVec_)
   {
-	Log(Error, "Parsing of IPSO file failed");
-	return false;
+    if (!ipsoParser_.parseIPSOfile(ipsofileName, data_))
+    {
+	    Log(Error, "Parsing of IPSO file failed");
+	    return false;
+    }
   }
 
   /* create object dictionary */
@@ -138,18 +141,55 @@ bool OpcUaLWM2MLib::loadConfig(void)
       .parameter("Reason", configXml.errorMessage());
     return false;
   }
+#if 0
+   /* read configuration parameter */
+   std::vector<Config> ipsoConfigVec;
+   config.getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
 
-  /* read configuration parameter */
-  boost::optional<std::string> ipsoFileName = config.getValue("IPSOModel.IPSOPath.<xmlattr>.File");
-  if (!ipsoFileName) {
-    Log(Error, "eddl path do not exist in configuration file")
-      .parameter("Variable", "IPSOModel.IPSOPath.<xmlattr>.File")
-      .parameter("ConfigFileName", applicationInfo()->configFileName());
-    return false;
-  } else {
+   if (ipsoConfigVec.size() == 0) {
+     Log(Error, "IPSO XML file does not exist");
+     return false;
+   }
+
+  for (auto& configItem : ipsoConfigVec)
+  {
+    boost::optional<std::string> ipsoFileName = configItem.getValue("<xmlattr>.File");
+
+    if (!ipsoFileName) {
+      Log (Error, "ipso path does not exist in configuration file")
+        .parameter("Variable", "IPSOModel.IPSOPath.<xmlattr>.File")
+        .parameter("ConfigFileName", applicationInfo()->configFileName());
+
+      return false;
+    } else {
     ipsofileName_ = *ipsoFileName;
+    ipsofileNameVec_.push_back(ipsofileName_);
+    }
   }
+#else
+   std::vector<Config> ipsoConfigVec;
+   config.getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
 
+   if (ipsoConfigVec.size() == 0) {
+     Log(Error, "IPSO XML file does not exist");
+     return false;
+   }
+
+   for (auto& ipsoConfig : ipsoConfigVec)
+   {
+     /* read configuration parameter */
+     boost::optional<std::string> ipsoFileName = ipsoConfig.getValue("<xmlattr>.File");
+     if (!ipsoFileName) {
+       Log(Error, "eddl path do not exist in configuration file")
+          .parameter("Variable", "IPSOModel.IPSOPath.<xmlattr>.File")
+          .parameter("ConfigFileName", applicationInfo()->configFileName());
+       return false;
+     } else {
+       ipsofileName_ = *ipsoFileName;
+       ipsofileNameVec_.push_back(ipsofileName_);
+     }
+   }
+#endif
   return true;
 }
 
@@ -666,15 +706,20 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 	if (hasObjectId((*objectIterator)->getObjId(), objectDictionary)) {
 	   Log(Debug, "LWM2M Object ID exist in dictionary");
 
+	   /* store matching Object Ids */
+	   objectIdVec_.push_back((*objectIterator)->getObjId());
+
 	   /* add object with their instances to vector */
 	   objectVec_.push_back((*objectIterator));
 
 	   /* create OPC UA object node */
 	   for (auto& entry : objectDictionary)
 	   {
-         if (!createObjectNode(entry.second->objectDesc)) {
-             Log(Debug, "Object node creation failed");
-         }
+		 if (std::find(objectIdVec_.begin(), objectIdVec_.end(), entry.second->objectDesc.id) != objectIdVec_.end()) {
+           if (!createObjectNode(entry.second->objectDesc)) {
+               Log(Debug, "Object node creation failed");
+           }
+		 }
 	   }
 	 } else {
 	   continue;
@@ -683,13 +728,15 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 
   /* create LWM2M resources */
   for (auto& dictItem : objectDictionary)
-    {
-      if(!createLWM2MResources(objectVec_, dictItem.second->resourceDesc, resourceVec_))
-      {
-        Log(Debug, "Creation of resources failed");
-        return -1;
-      }
-    }
+  {
+	if (std::find(objectIdVec_.begin(), objectIdVec_.end(), dictItem.second->objectDesc.id) != objectIdVec_.end()) {
+	  if(!createLWM2MResources(objectVec_, dictItem.second->resourceDesc, resourceVec_))
+	  {
+	    Log(Debug, "Creation of resources failed");
+	    return -1;
+	   }
+	 }
+   }
 
   /* create OPC UA variables from resource information */
   for (auto& resource : resourceVec_)
@@ -766,7 +813,7 @@ bool OpcUaLWM2MLib::hasObjectId(int16_t id, objectDictionary_t dictionary)
     if (id == dict.second->objectDesc.id){
       ret = true;
     } else {
-      ret = false;
+     continue;
     }
   }
   return ret;

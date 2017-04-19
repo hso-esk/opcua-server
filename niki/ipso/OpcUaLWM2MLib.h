@@ -76,6 +76,8 @@ private:
 
   /* string to store loaded ipso file */
   std::string ipsofileName_;
+  std::vector<std::string> ipsofileNameVec_;
+  std::vector<int16_t> objectIdVec_;
 
   /* namespaceIndex of OPC UA nodes */
   OpcUaUInt16 namespaceIndex_;

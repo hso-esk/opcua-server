@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
 	<Object ObjectType="MODefinition">
-		<Name>Barometer</Name>
+		<Name>EIS</Name>
 		<Description1>Description: This IPSO object describes the EIS .</Description1>
 		<ObjectID>3601</ObjectID>
 		<ObjectURN>urn:oma:lwm2m:ext:3601</ObjectURN>

@@ -20,6 +20,7 @@
 #include <boost/make_shared.hpp>
 #include <iostream>
 #include <algorithm>
+#include <string>
 
 namespace OpcUaLWM2M
 {
@@ -141,32 +142,6 @@ bool OpcUaLWM2MLib::loadConfig(void)
       .parameter("Reason", configXml.errorMessage());
     return false;
   }
-#if 0
-   /* read configuration parameter */
-   std::vector<Config> ipsoConfigVec;
-   config.getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
-
-   if (ipsoConfigVec.size() == 0) {
-     Log(Error, "IPSO XML file does not exist");
-     return false;
-   }
-
-  for (auto& configItem : ipsoConfigVec)
-  {
-    boost::optional<std::string> ipsoFileName = configItem.getValue("<xmlattr>.File");
-
-    if (!ipsoFileName) {
-      Log (Error, "ipso path does not exist in configuration file")
-        .parameter("Variable", "IPSOModel.IPSOPath.<xmlattr>.File")
-        .parameter("ConfigFileName", applicationInfo()->configFileName());
-
-      return false;
-    } else {
-    ipsofileName_ = *ipsoFileName;
-    ipsofileNameVec_.push_back(ipsofileName_);
-    }
-  }
-#else
    std::vector<Config> ipsoConfigVec;
    config.getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
 
@@ -189,7 +164,7 @@ bool OpcUaLWM2MLib::loadConfig(void)
        ipsofileNameVec_.push_back(ipsofileName_);
      }
    }
-#endif
+
   return true;
 }
 
@@ -540,14 +515,16 @@ bool OpcUaLWM2MLib::createVariableNode (IPSOParser::ipsoResourceDescription& var
 	varNodeId.set(resourceId, namespaceIndex_);
 	variableNode->setNodeId(varNodeId);
 
-	 /* set variable node attributes */
+	/* set variable node attributes */
 	OpcUaQualifiedName varbrowseName(varInfo.name, namespaceIndex_);
 	variableNode->setBrowseName(varbrowseName);
 
 	OpcUaLocalizedText vardescription("de", varInfo.desc);
 	variableNode->setDescription(vardescription);
 
-	OpcUaLocalizedText  vardisplayName("de", varInfo.name);
+	std::string varDisplayName = varInfo.name + std::string("<") +
+	    boost::lexical_cast<std::string>(varInfo.objectInstanceId) + std::string(">");
+	OpcUaLocalizedText  vardisplayName("de", varDisplayName);
 	variableNode->setDisplayName(vardisplayName);
 
 	//OpcUaByte accessLevel(0x05);
@@ -561,11 +538,23 @@ bool OpcUaLWM2MLib::createVariableNode (IPSOParser::ipsoResourceDescription& var
 	OpcUaDouble minimumSamplingInterval = 1;
 	variableNode->setMinimumSamplingInterval(minimumSamplingInterval);
 
+	/* Set true to allow server to collect historical data */
 	OpcUaBoolean historizing = true;
 	variableNode->setHistorizing(historizing);
+
+	/* set access permissions */
 	OpcUaUInt32  writemask= 0x01;
 	variableNode->setWriteMask(writemask);
 	variableNode->setUserWriteMask(writemask);
+
+	/* set value attribute to scalar or array */
+	OpcUaInt32 valueRank = -2;
+	variableNode->setValueRank(valueRank);
+
+	/* set Array Dimensions */
+	OpcUaUInt32Array arrayDimension;
+	arrayDimension.resize(0);
+	variableNode->setArrayDimensions(arrayDimension);
 
 	/* set OPC UA object node id */
 	OpcUaNodeId objectNodeId;
@@ -712,14 +701,17 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 	   /* add object with their instances to vector */
 	   objectVec_.push_back((*objectIterator));
 
+	   std::cout << "ObjectIdVec size is: " << objectIdVec_.size() << std::endl;
+	   std::cout << "ObjectVec_ size is: " << objectVec_.size() << std::endl;
+
 	   /* create OPC UA object node */
 	   for (auto& entry : objectDictionary)
 	   {
-		 if (std::find(objectIdVec_.begin(), objectIdVec_.end(), entry.second->objectDesc.id) != objectIdVec_.end()) {
+	     if (std::find(objectIdVec_.begin(), objectIdVec_.end(), entry.second->objectDesc.id) != objectIdVec_.end()) {
            if (!createObjectNode(entry.second->objectDesc)) {
                Log(Debug, "Object node creation failed");
            }
-		 }
+	     }
 	   }
 	 } else {
 	   continue;
@@ -729,23 +721,23 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   /* create LWM2M resources */
   for (auto& dictItem : objectDictionary)
   {
-	if (std::find(objectIdVec_.begin(), objectIdVec_.end(), dictItem.second->objectDesc.id) != objectIdVec_.end()) {
-	  if(!createLWM2MResources(objectVec_, dictItem.second->resourceDesc, resourceVec_))
-	  {
-	    Log(Debug, "Creation of resources failed");
-	    return -1;
-	   }
-	 }
+    if (std::find(objectIdVec_.begin(), objectIdVec_.end(), dictItem.second->objectDesc.id) != objectIdVec_.end()) {
+      if(!createLWM2MResources(objectVec_, dictItem.second->resourceDesc, resourceMap_))
+      {
+        Log(Debug, "Creation of resources failed");
+        return -1;
+      }
+    }
    }
 
   /* create OPC UA variables from resource information */
-  for (auto& resource : resourceVec_)
+  for (auto& resource : resourceMap_)
   {
-    if (!createVariableNode(resource))
-	  {
-	    Log(Debug, "Creation of variable node B failed");
-		return -1;
-	  }
+	  if (!createVariableNode(resource.second))
+	    {
+	      Log(Debug, "Creation of variable node B failed");
+	      return -1;
+	    }
   }
 
   return 0;
@@ -825,9 +817,8 @@ bool OpcUaLWM2MLib::hasObjectId(int16_t id, objectDictionary_t dictionary)
 */
 bool OpcUaLWM2MLib::createLWM2MResources(objectVec_t& objVec
 		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource
-		, resourceVec_t& resourceVec)
+		, resourceMap_t& resourceMap)
 {
-
   Log(Debug, "OpcUaLWM2MLib::createLWM2MResources");
 
   for (auto& objitem : objVec)
@@ -837,83 +828,89 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectVec_t& objVec
 
       /* create new resource per instance */
       IPSOParser::ipsoResourceDescription res = {};
-	  res.deviceName = objitem->getParent()->getName();
-	  res.objectId =  objitem->getObjId();
-	  res.objectInstanceId =  objitem->getInstId();
+      res.deviceName = objitem->getParent()->getName();
+      res.objectId =  objitem->getObjId();
+      res.objectInstanceId =  objitem->getInstId();
 
-	  res.name = resItem.name;
-	  res.desc = resItem.desc;
-	  res.type = resItem.type;
-	  res.resourceId = resItem.resourceId;
-	  res.value = resItem.value;
+      res.name = resItem.name;
+      res.desc = resItem.desc;
+      res.type = resItem.type;
+      res.resourceId = resItem.resourceId;
+      res.value = resItem.value;
 
-	  if (resItem.operation == "R") {
+      /* create new resource tuple */
+      resourceId_t resourceId(res.deviceName
+            , res.objectId
+            , res.objectInstanceId
+            , res.resourceId);
 
-	    /* create resource for READ access */
-	    LWM2MResource* resource =
-			  new  LWM2MResource(resItem.resourceId, true, false, false);
+      if (resItem.operation == "R") {
 
-	    /* add resource to parent object */
-	    objitem->addResource(resource);
+        /* create resource for READ access */
+        LWM2MResource* resource =
+          new  LWM2MResource(resItem.resourceId, true, false, false);
 
-	    /* copy resource attributes */
-	    res.resource = resource;
-	    res.operation = resItem.operation;
+        /* add resource to parent object */
+        objitem->addResource(resource);
 
-	    /* add resource to vector */
-	    resourceVec.push_back(res);
+        /* copy resource attributes */
+        res.resource = resource;
+        res.operation = resItem.operation;
 
+        /* add resource info to map */
+        resourceMap.insert(resourceMap_t::value_type(resourceId, res));
 
-	  } else if (resItem.operation == "W") {
+      } else if (resItem.operation == "W") {
 
-	    /* create resource for WRITE access */
-	    LWM2MResource* resource =
-			  new LWM2MResource(resItem.resourceId, false, true, false);
+        /* create resource for WRITE access */
+        LWM2MResource* resource =
+          new LWM2MResource(resItem.resourceId, false, true, false);
 
-	    /* add resource to object */
-	    objitem->addResource(resource);
+        /* add resource to object */
+        objitem->addResource(resource);
 
-	    /* store created resource */
-	    res.resource = resource;
-	    res.operation = resItem.operation;
+        /* store created resource */
+        res.resource = resource;
+        res.operation = resItem.operation;
 
-        /* add resource to vector */
-	    resourceVec.push_back(res);
+        /* add resource info to map */
+        resourceMap.insert(resourceMap_t::value_type(resourceId, res));
 
-	  } else if (resItem.operation == "E") {
+      } else if (resItem.operation == "E") {
 
-	    /* create resource for EXEC access */
-	    LWM2MResource* resource =
-			  new LWM2MResource(resItem.resourceId, false, false, true);
+        /* create resource for EXEC access */
+        LWM2MResource* resource =
+          new LWM2MResource(resItem.resourceId, false, false, true);
 
-	    /* add resource to parent object */
-	    objitem->addResource(resource);
+        /* add resource to parent object */
+        objitem->addResource(resource);
 
-	    /* copy resource attributes */
-	    res.resource = resource;
-	    res.operation = resItem.operation;
+        /* copy resource attributes */
+        res.resource = resource;
+        res.operation = resItem.operation;
 
-	    /* add resource to vector */
-	    resourceVec.push_back(res);
+        /* add resource info to map */
+        resourceMap.insert(resourceMap_t::value_type(resourceId, res));
 
-	  } else if  (resItem.operation == "R/W") {
+      } else if  (resItem.operation == "R/W") {
 
-		/* create resource for READ and WRITE access */
-		LWM2MResource* resource =
-			  new LWM2MResource(resItem.resourceId, true, true, false);
+      /* create resource for READ and WRITE access */
+      LWM2MResource* resource =
+          new LWM2MResource(resItem.resourceId, true, true, false);
 
-		/* add resource to parent object */
-		objitem->addResource(resource);
+      /* add resource to parent object */
+      objitem->addResource(resource);
 
-		/* copy resource attributes */
-		res.resource = resource;
-		res.operation = resItem.operation;
+      /* copy resource attributes */
+      res.resource = resource;
+      res.operation = resItem.operation;
 
-		/* add resource to vector */
-		resourceVec.push_back(res);
-	  }
+      /* add resource info to map */
+      resourceMap.insert(resourceMap_t::value_type(resourceId, res));
+      }
     }
   }
+
   return true;
 }
 

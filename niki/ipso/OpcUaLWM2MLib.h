@@ -18,6 +18,8 @@
 #include "DeviceDataFile.h"
 #include "OpcUaLWM2MObserver.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
 
 
 namespace OpcUaLWM2M
@@ -108,8 +110,10 @@ private:
   typedef std::vector<LWM2MObject*> objectVec_t;
   objectVec_t objectVec_;
 
-  typedef std::vector<IPSOParser::ipsoResourceDescription> resourceVec_t;
-  resourceVec_t resourceVec_;
+  typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
+
+  typedef std::map<resourceId_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
+  resourceMap_t resourceMap_;
 
   /* IPSO object Id */
   uint32_t id_;
@@ -180,7 +184,7 @@ private:
    */
   bool createLWM2MResources(objectVec_t& objVec
 		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource
-		, resourceVec_t& resourceVec);
+		, resourceMap_t& resourceMap);
 };
 
 } /* namespace OpcUalwm2m */

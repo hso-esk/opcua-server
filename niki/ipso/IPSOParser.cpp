@@ -23,7 +23,6 @@ using namespace OpcUaStackCore;
  * IPSOParser ()
  */
 IPSOParser::IPSOParser(void)
-  : IPSOfile_()
 {
   Log(Debug, "IPSOParser::IPSOParser");
 }
@@ -56,10 +55,10 @@ bool IPSOParser::parseIPSOfile(const std::string& IPSOfile, ipsoDescriptionVec& 
   /* parse the IPSO file */
   if (!configXml.parse(IPSOfile, &config_))
   {
-	std::string errorMessage = configXml.errorMessage();
-	Log (Debug, "Could not parse IPSO file")
-	  .parameter("Error message", errorMessage);
-	  return false;
+    std::string errorMessage = configXml.errorMessage();
+    Log (Debug, "Could not parse IPSO file")
+      .parameter("Error message", errorMessage);
+    return false;
   }
 
   /* Parse IPSO objects */
@@ -170,13 +169,13 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   /* process IPSO resource descriptions */
   for (auto& resourceChild : resourceVec)
   {
-	ipsoResourceDescription ipsoResource;
+    ipsoResourceDescription ipsoResource;
 
-	if (!processIpsoResource(resourceChild, ipsoResource))
-	{
-	  Log(Debug, "IPSO resource descriptions processing failed.");
-	  return false;
-	}
+    if (!processIpsoResource(resourceChild, ipsoResource))
+    {
+      Log(Debug, "IPSO resource descriptions processing failed.");
+      return false;
+    }
 
     /* store parsed IPSO resource */
     ipsoDescription.resourceDesc.push_back(ipsoResource);
@@ -227,7 +226,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   if (!type)
   {
     Log(Debug, "IPSO resource data type not defined");
-	return false;
+    return false;
   }
 
   if (*type == "Integer") {

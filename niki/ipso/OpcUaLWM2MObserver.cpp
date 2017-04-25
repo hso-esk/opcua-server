@@ -36,33 +36,33 @@ int8_t OpcUaLWM2MObserver::notify(const LWM2MDevice* p_dev, const e_lwm2m_server
   {
     case e_lwm2m_serverobserver_event_register:
     {
-	  Log(Debug, "Event device registration triggered")
-		   .parameter("Device name", p_dev->getName());
+      Log(Debug, "Event device registration triggered")
+		        .parameter("Device name", p_dev->getName());
 
-	  /* execute onDeviceRegister function */
-	  opcualwm2mlib_.onDeviceRegister(p_dev);
+      /* execute onDeviceRegister function */
+      opcualwm2mlib_.onDeviceRegister(p_dev);
     }
     break;
 
     case e_lwm2m_serverobserver_event_update:
     {
-	  Log(Debug, "Event device update triggered")
-		   .parameter("Device name", p_dev->getName());
-	  /** TODO */
+      Log(Debug, "Event device update triggered")
+		        .parameter("Device name", p_dev->getName());
+      /** TODO */
 
-	  Log(Warning, "Update event not implemented yet");
+      Log(Warning, "Update event not implemented yet");
     }
     break;
 
     case e_lwm2m_serverobserver_event_deregister:
     {
-	  Log(Debug, "Event device deregistration triggered")
-	       .parameter("Device name", p_dev->getName());
+      Log(Debug, "Event device deregistration triggered")
+	          .parameter("Device name", p_dev->getName());
 
-	  /* execute onDeviceRegister function */
-	  opcualwm2mlib_.onDeviceDeregister(p_dev);
+      /* execute onDeviceRegister function */
+      opcualwm2mlib_.onDeviceDeregister(p_dev);
 
-	  return -1;
+      return -1;
     }
     break;
  }

@@ -65,8 +65,7 @@ public:
     /* IPSO object instance type */
     std::string instanceType;
 
-    /* device object is attached to */
-    std::string deviceName;
+    LWM2MObject* object;
   };
 
   /**
@@ -79,9 +78,6 @@ public:
 
     /* parent id of resource */
     uint32_t objectId;
-
-    /* parent instance id */
-    uint32_t objectInstanceId;
 
     /* IPSO resource name */
     std::string name;
@@ -107,9 +103,6 @@ public:
     /* IPSO resource description */
     std::string desc;
 
-    /* parent device */
-    std::string deviceName;
-
     LWM2MResource* resource;
   };
 
@@ -119,7 +112,6 @@ public:
   struct ipsoDescriptions
   {
     /* IPSO object Id */
-    //uint32_t id;
     int16_t id;
 
     /* IPSO object descriptions */
@@ -141,23 +133,17 @@ public:
    * \brief   process IPSO objects.
    */
   bool processIpsoObject(OpcUaStackCore::Config& node
-		  , ipsoDescriptions& ipsoDescription);
+      , ipsoDescriptions& ipsoDescription);
 
   /**
    * \brief   process IPSO resources.
    */
   bool processIpsoResource(OpcUaStackCore::Config& resourceChild
-  		, IPSOParser::ipsoResourceDescription& ipsoDescription);
+      , IPSOParser::ipsoResourceDescription& ipsoDescription);
 
 private:
 
-  /* IPSO file to parse */
-  std::string IPSOfile_;
-
   OpcUaStackCore::Config config_;
-
-  friend class OpcUaLWM2MObserver;
-
 };
 
 } /* namespace OpcUaLWM2M */

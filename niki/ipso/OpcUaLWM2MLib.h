@@ -79,25 +79,25 @@ private:
   /* string to store loaded ipso file */
   std::string ipsofileName_;
   std::vector<std::string> ipsofileNameVec_;
-  std::vector<int16_t> objectIdVec_;
 
   /* namespaceIndex of OPC UA nodes */
   OpcUaUInt16 namespaceIndex_;
-  OpcUaStackServer::BaseNodeClass::SPtr rootNode_;
 
-  /* OPC UA variable node read and write callbacks */
+  /* OPC UA variable node read write Callbacks */
   Callback readSensorValueCallback_;
   Callback writeSensorValueCallback_;
 
   /* IPSOParser instance */
   IPSOParser ipsoParser_;
+
+  /* storage for parsed IPSO XML files */
   IPSOParser::ipsoDescriptionVec data_;
 
   /* LWM2MServer instance */
   boost::shared_ptr<LWM2MServer> lwm2mServer_;
 
   /* OpcUa LWM2M server observer instance */
-  OpcUaLWM2MObserver opcUalwm2mObs;
+  OpcUaLWM2MObserver opcUalwm2mObs_;
 
   /* variable context map */
   typedef std::map<OpcUaNodeId, variableContext> variableContextMap;
@@ -105,21 +105,15 @@ private:
 
   /* object dictionary map */
   typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
-  objectDictionary_t objectDictionary;
-
-  typedef std::vector<LWM2MObject*> objectVec_t;
-  objectVec_t objectVec_;
+  objectDictionary_t objectDictionary_;
 
   typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
 
   typedef std::map<resourceId_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
   resourceMap_t resourceMap_;
 
-  /* IPSO object Id */
-  uint32_t id_;
-
-  /* LWM2M device id */
-  uint16_t deviceId_;
+  typedef std::map<uint32_t, IPSOParser::ipsoObjectDescription> objectMap_t;
+  objectMap_t objectMap_;
 
   /**
    * \brief   Load IPSO file from OPC UA server configuration file.
@@ -159,32 +153,27 @@ private:
   /**
    * \brief   Create Object Node to the information model.
    */
-  bool createObjectNode(IPSOParser::ipsoObjectDescription const& objectInfo);
+  bool createObjectNode(objectMap_t& objectMap);
 
   /**
     * \brief   Create Variable Node to the information model.
     */
-  bool createVariableNode(IPSOParser::ipsoResourceDescription& varInfo);
-
-
-  /**
-   * \brief   Creates OPC UA nodes.
-   */
-  bool createNodes(void);
-
+  bool createVariableNode(resourceMap_t& resourceMap);
 
   /**
-    * \brief   Checks for Object ID match between LWM2M server and object dictionary.
+    * \brief   Checks for object ID match between LWM2M Device objects
+    *  and object dictionary objects.
     */
-  bool hasObjectId(int16_t id, objectDictionary_t dictionary);
-
+  bool matchObjectId(LWM2MObject* lwm2mObj
+      , objectDictionary_t& dictionary
+      , objectMap_t& objectMap);
 
   /**
    * \brief   Create LWM2M resources.
    */
-  bool createLWM2MResources(objectVec_t& objVec
-		, std::vector<IPSOParser::ipsoResourceDescription>& ipsoResource
-		, resourceMap_t& resourceMap);
+  bool createLWM2MResources(objectMap_t& objectMap
+      , objectDictionary_t& dictionary
+      , resourceMap_t& resourceMap);
 };
 
 } /* namespace OpcUalwm2m */

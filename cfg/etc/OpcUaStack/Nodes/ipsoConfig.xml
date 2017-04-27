@@ -9,7 +9,8 @@
     <IPSOPath File="@CONF_DIR@/Nodes/ipsoWakaamaTestObj.xml" />
     <IPSOPath File="@CONF_DIR@/Nodes/Power.xml" />
     <IPSOPath File="@CONF_DIR@/Nodes/Temperature.xml" />
-    <IPSOPath File="@CONF_DIR@/Nodes/Voltage.xml" />    
+    <IPSOPath File="@CONF_DIR@/Nodes/Voltage.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/deviceObject.xml" />
 
 </IPSOModel>
 

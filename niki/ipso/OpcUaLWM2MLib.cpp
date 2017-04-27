@@ -350,14 +350,21 @@ namespace
 /* offset for OPC UA object nodes */
 static uint32_t offset()
 {
-  static uint32_t ID = 20000;
+  static uint32_t ID = 40000;
   return ID++;
 }
 
 /* offset for OPC UA variable nodes */
 static uint32_t offset2()
 {
-  static uint32_t ID = 30000;
+  static uint32_t ID = 60000;
+  return ID++;
+}
+
+/* offset for OPC UA device nodes */
+static uint32_t offset3()
+{
+  static uint32_t ID = 20000;
   return ID++;
 }
 
@@ -454,6 +461,8 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
 
   /* set node id of object */
   OpcUaNodeId deviceObjectNodeId;
+  deviceId_ = offset3();
+  deviceObjectNodeId.set(deviceId_, namespaceIndex_);
   deviceObjectNodeId.set(device->getID(), namespaceIndex_);
   deviceobjectNode->setNodeId(deviceObjectNodeId);
 
@@ -523,6 +532,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
     /* set OPC UA variable node id */
     OpcUaNodeId varNodeId;
+    uint32_t resourceId =  offset2();
     uint32_t resourceId = varInfo.second.resourceId + offset2();
     varNodeId.set(resourceId, namespaceIndex_);
     variableNode->setNodeId(varNodeId);
@@ -792,6 +802,7 @@ bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dic
       objectInfo.type = dict.second->objectDesc.type;
 
       /* unique id for object instances  */
+      uint32_t id = offset();
       uint32_t id = objectInfo.id + offset();
 
       /* store info of matching Object in map */

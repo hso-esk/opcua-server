@@ -83,6 +83,9 @@ private:
   /* namespaceIndex of OPC UA nodes */
   OpcUaUInt16 namespaceIndex_;
 
+  /* LWM2M device id */
+  uint32_t deviceId_;
+
   /* OPC UA variable node read write Callbacks */
   Callback readSensorValueCallback_;
   Callback writeSensorValueCallback_;

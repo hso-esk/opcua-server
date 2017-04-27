@@ -32,7 +32,6 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   : OpcUaStackServer::ApplicationIf()
   , ipsofileName_("")
   , namespaceIndex_(0)
-  , objectDictionary_()
   , opcUalwm2mObs_(*this)
   , readSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::readSensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
@@ -418,7 +417,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
 
       /* set OPC UA base object id */
       OpcUaNodeId parentObjectId;
-      parentObjectId.set(objectInfo.second.object->getParent()->getID(), namespaceIndex_);
+      parentObjectId.set(deviceId_, namespaceIndex_);
 
       /* check existence of parent object */
       OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(parentObjectId);
@@ -463,7 +462,6 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
   OpcUaNodeId deviceObjectNodeId;
   deviceId_ = offset3();
   deviceObjectNodeId.set(deviceId_, namespaceIndex_);
-  deviceObjectNodeId.set(device->getID(), namespaceIndex_);
   deviceobjectNode->setNodeId(deviceObjectNodeId);
 
   /* set object node attributes */
@@ -533,7 +531,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
     /* set OPC UA variable node id */
     OpcUaNodeId varNodeId;
     uint32_t resourceId =  offset2();
-    uint32_t resourceId = varInfo.second.resourceId + offset2();
+
     varNodeId.set(resourceId, namespaceIndex_);
     variableNode->setNodeId(varNodeId);
 
@@ -623,7 +621,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
           , DeviceData::ACCESS_NONE
           , varInfo.second.resource);
 
-    } else if  (varInfo.second.operation == "R/W") {
+    } else if  (varInfo.second.operation == "RW") {
 
       ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
             varInfo.second.resource->getParent()->getParent()->getName()
@@ -672,13 +670,16 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
       /* register callback for read and write access permissions */
       if (varInfo.second.operation == "R" || varInfo.second.operation == "W"
-                                          || varInfo.second.operation == "R/W") {
+                                          || varInfo.second.operation == "RW") {
         if (!registerCallbacks(resourceId)) {
           Log(Error, "Register callback failed");
         }
       }
     }
   }
+
+  /* clear resource map */
+  resourceMap.clear();
 
   return true;
 }
@@ -690,23 +691,21 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 {
   Log(Debug, "OpcUaLWM2MLib::onDeviceRegister");
 
-  /* get iterator to the device map structure */
-  std::map<std::string, LWM2MDevice*>::iterator deviceIterator;
-  deviceIterator = p_dev->getServer()->deviceStart();
-
   /* create device object */
   if (!createDeviceObjectNode(p_dev))
   {
     Log (Error, "Creation of device object failed");
   }
 
+  LWM2MDevice* device = const_cast<LWM2MDevice*>(p_dev);
+
   std::vector<LWM2MObject*>::iterator objectIterator;
-  for (objectIterator = deviceIterator->second->objectStart();
-      objectIterator != deviceIterator->second->objectEnd();
+  for (objectIterator = device->objectStart();
+      objectIterator != device->objectEnd();
       ++objectIterator)
   {
     /* check id match between LWM2M device and object dictionary objects  */
-    if (matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
+    if (!matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
       Log(Debug, "LWM2M Object ID exist in dictionary");
     }
   }
@@ -740,17 +739,14 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(const LWM2MDevice* p_dev)
 {
   Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister");
 
-  /* get iterator to the device map structure */
-  std::map<std::string, LWM2MDevice*>::iterator deviceIterator;
-  deviceIterator = p_dev->getServer()->deviceStart();
+  LWM2MDevice* device = const_cast<LWM2MDevice*>(p_dev);
 
   std::vector< LWM2MResource* >::iterator resourceIterator;
   std::vector<LWM2MObject*>::iterator objectIterator;
-  variableContextMap::iterator iter;
 
   /* iterate over the objects of this device */
-  for (objectIterator = deviceIterator->second->objectStart();
-      objectIterator != deviceIterator->second->objectEnd();
+  for (objectIterator = device->objectStart();
+      objectIterator != device->objectEnd();
       ++objectIterator)
   {
     /* iterate over the resources of this object */
@@ -803,7 +799,6 @@ bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dic
 
       /* unique id for object instances  */
       uint32_t id = offset();
-      uint32_t id = objectInfo.id + offset();
 
       /* store info of matching Object in map */
       objectMap.insert(objectMap_t::value_type(id, objectInfo));
@@ -898,7 +893,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             /* add resource info to map */
             resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
 
-          } else if  (resourceItem.operation == "R/W") {
+          } else if  (resourceItem.operation == "RW") {
 
             /* create resource for READ and WRITE access */
             LWM2MResource* resource =
@@ -917,6 +912,9 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
       }
     }
   }
+
+  /* clear object map */
+  objectMap.clear();
 
   return true;
 }

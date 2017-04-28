@@ -723,6 +723,91 @@ bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
   methodMap.clear();
 }
 
+/*---------------------------------------------------------------------------*/
+/*
+* createDeviceDataLWM2M()
+*/
+OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
+  (IPSOParser::ipsoResourceDescription opcUaNodeInfo , OpcUaStackServer::BaseNodeClass::SPtr opcUaNode)
+{
+  Log (Debug, "OpcUaLWM2MLib::createDeviceDataLWM2M");
+
+  opcUaNodeContext ctx;
+  ctx.data = constructSPtr<OpcUaDataValue>();
+  ctx.data->statusCode(Success);
+  ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
+  ctx.data->serverTimestamp(boost::posix_time::microsec_clock::universal_time());
+
+  if (opcUaNodeInfo.operation == "R") {
+
+    ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+        , opcUaNodeInfo.desc
+        , opcUaNodeInfo.type
+        , (DeviceData::ACCESS_READ | DeviceData::ACCESS_OBSERVE)
+        , opcUaNodeInfo.resource);
+
+  } else if (opcUaNodeInfo.operation == "W") {
+
+    ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+        , opcUaNodeInfo.desc
+        , opcUaNodeInfo.type
+        , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE)
+        , opcUaNodeInfo.resource);
+
+  } else if (opcUaNodeInfo.operation == "E") {
+
+    ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+        , opcUaNodeInfo.desc
+        , opcUaNodeInfo.type
+        , DeviceData::ACCESS_NONE
+        , opcUaNodeInfo.resource);
+
+  } else if  (opcUaNodeInfo.operation == "RW") {
+
+    ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
+          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+        , opcUaNodeInfo.desc
+        , opcUaNodeInfo.type
+        , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
+        , opcUaNodeInfo.resource);
+  }
+
+  OpcUaNodeId dataTypeNodeId;
+  if (ctx.dataObject) {
+
+    if (opcUaNodeInfo.type == DeviceDataValue::TYPE_INTEGER) {
+      ctx.data->variant()->variant(opcUaNodeInfo.value.i32);
+
+      /* set dataType to Int32_t */
+      dataTypeNodeId.set(OpcUaId_Int32, namespaceIndex_);
+
+    } else if (opcUaNodeInfo.type == DeviceDataValue::TYPE_FLOAT) {
+      ctx.data->variant()->variant(opcUaNodeInfo.value.f);
+
+      /* set dataType to Float */
+      dataTypeNodeId.set(OpcUaId_Float, namespaceIndex_);
+
+    } else if (opcUaNodeInfo.type == DeviceDataValue::TYPE_STRING) {
+
+      OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+      str->value(opcUaNodeInfo.value.cStr);
+      ctx.data->variant()->variant(str);
+
+      /* set dataType to string */
+      dataTypeNodeId.set(OpcUaId_String, namespaceIndex_);
+    }
+
+    /* set dataType of Variable Node */
+    opcUaNode->setDataType(dataTypeNodeId);
+
+    /* set value of Variable node to default value */
+    opcUaNode->setValue(*ctx.data);
+  }
+
+  return ctx;
   return true;
 }
 /*---------------------------------------------------------------------------*/

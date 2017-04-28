@@ -42,9 +42,9 @@ public:
   virtual ~OpcUaLWM2MLib(void);
 
   /**
-   * \brief   Variable context
+   * \brief   OPC UA node context
    */
-  struct variableContext
+  struct opcUaNodeContext
   {
     /* data of OPC UA variable Node */
     OpcUaDataValue::SPtr data;
@@ -86,11 +86,12 @@ private:
   /* LWM2M device id */
   uint32_t deviceId_;
 
-  /* OPC UA variable node read write Callbacks */
+  /* OPC UA nodes Callbacks */
   Callback readSensorValueCallback_;
   Callback writeSensorValueCallback_;
+  Callback methodCallback_;
 
-  /* IPSOParser instance */
+  /* IPSO Parser instance */
   IPSOParser ipsoParser_;
 
   /* storage for parsed IPSO XML files */
@@ -102,9 +103,13 @@ private:
   /* OpcUa LWM2M server observer instance */
   OpcUaLWM2MObserver opcUalwm2mObs_;
 
-  /* variable context map */
-  typedef std::map<OpcUaNodeId, variableContext> variableContextMap;
+  /* OPC UA variable context map */
+  typedef std::map<OpcUaNodeId, opcUaNodeContext> variableContextMap;
   variableContextMap variables_;
+
+  /* OPC UA method context map */
+  typedef std::map<OpcUaNodeId, opcUaNodeContext> methodContextMap;
+  methodContextMap methods_;
 
   /* object dictionary map */
   typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
@@ -114,6 +119,9 @@ private:
 
   typedef std::map<resourceId_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
   resourceMap_t resourceMap_;
+
+  typedef std::map<uint32_t, IPSOParser::ipsoResourceDescription> methodMap_t;
+  methodMap_t methodMap_;
 
   typedef std::map<uint32_t, IPSOParser::ipsoObjectDescription> objectMap_t;
   objectMap_t objectMap_;
@@ -134,8 +142,14 @@ private:
   void writeSensorValue (ApplicationWriteContext* applicationWriteContext);
 
   /**
-     * \brief   Registers read and write callbacks of variable node.
-     */
+   * \brief   Call Sensor Method - not implemented.
+   */
+  void callSensorMethod(ApplicationReadContext* applicationReadContext);
+
+
+  /**
+   * \brief   Registers read and write callbacks of variable node.
+   */
   bool registerCallbacks(OpcUaUInt32 id);
 
   /**
@@ -164,6 +178,11 @@ private:
   bool createVariableNode(resourceMap_t& resourceMap);
 
   /**
+   * \brief   Create method Node to the information model.
+   */
+  bool createMethodNode(methodMap_t& methodMap);
+
+  /**
     * \brief   Checks for object ID match between LWM2M Device objects
     *  and object dictionary objects.
     */
@@ -176,7 +195,14 @@ private:
    */
   bool createLWM2MResources(objectMap_t& objectMap
       , objectDictionary_t& dictionary
-      , resourceMap_t& resourceMap);
+      , resourceMap_t& resourceMap
+      , methodMap_t& methodMap);
+
+  /**
+   * \brief   Create LWM2M device data for nodes.
+   */
+  opcUaNodeContext createDeviceDataLWM2M(IPSOParser::ipsoResourceDescription opcUaNodeInfo
+     , OpcUaStackServer::BaseNodeClass::SPtr opcUaNode);
 };
 
 } /* namespace OpcUalwm2m */

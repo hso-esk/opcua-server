@@ -12,6 +12,7 @@
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
 #include "OpcUaStackServer/AddressSpaceModel/ObjectNodeClass.h"
 #include "OpcUaStackServer/AddressSpaceModel/VariableNodeClass.h"
+#include "OpcUaStackServer/AddressSpaceModel/MethodNodeClass.h"
 #include "OpcUaStackCore/Base/ConfigXml.h"
 #include "LWM2MDevice.h"
 #include "LWM2MResource.h"
@@ -256,6 +257,17 @@ void OpcUaLWM2MLib::writeSensorValue (ApplicationWriteContext* applicationWriteC
     it->second.dataObject->setVal(&val);
   }
 }
+
+/*---------------------------------------------------------------------------*/
+/**
+ * registerResourceCallback()
+ */
+void OpcUaLWM2MLib::callSensorMethod(ApplicationReadContext* applicationReadContext)
+{
+
+  /** TODO  */
+}
+
 /*---------------------------------------------------------------------------*/
 /**
  * registerResourceCallback()
@@ -273,6 +285,7 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
 
   req->forwardInfoSync()->setReadCallback(readSensorValueCallback_);
   req->forwardInfoSync()->setWriteCallback(writeSensorValueCallback_);
+  req->forwardInfoSync()->setMethodCallback(methodCallback_);
   req->nodesToRegister()->resize(1);
   req->nodesToRegister()->set(0, nodeId);
 
@@ -365,6 +378,13 @@ static uint32_t offset2()
 static uint32_t offset3()
 {
   static uint32_t ID = 20000;
+  return ID++;
+}
+
+/* offset for OPC UA method nodes */
+static uint32_t offset4()
+{
+  static uint32_t ID = 80000;
   return ID++;
 }
 
@@ -589,63 +609,27 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
             ReferenceType_HasComponent, true, varNodeId);
     }
 
-    variableContext ctx;
-    ctx.data = constructSPtr<OpcUaDataValue>();
-    ctx.data->statusCode(Success);
-    ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
-    ctx.data->serverTimestamp(boost::posix_time::microsec_clock::universal_time());
+      /* create LWM2M device data for OPC UA variables */
+      opcUaNodeContext variableCtx;
+      variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
 
-    if (varInfo.second.operation == "R") {
+      /* store variable node info into variableContextMap */
+      variables_.insert(std::make_pair(varNodeId, variableCtx));
 
-      ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-            varInfo.second.resource->getParent()->getParent()->getName()
-          , varInfo.second.desc
-          , varInfo.second.type
-          , (DeviceData::ACCESS_READ | DeviceData::ACCESS_OBSERVE)
-          , varInfo.second.resource);
+      /* add variable node to OPC UA server information model */
+      informationModel()->insert(variableNode);
 
-    } else if (varInfo.second.operation == "W") {
+      /* register callback for OPC UA variable nodes */
+      if (!registerCallbacks(resourceId)) {
+        Log(Error, "Register callback failed");
+      }
+  }
 
-      ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-            varInfo.second.resource->getParent()->getParent()->getName()
-          , varInfo.second.desc
-          , varInfo.second.type
-          , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE)
-          , varInfo.second.resource);
+  /* clear resource map */
+  resourceMap.clear();
 
-    } else if (varInfo.second.operation == "E") {
-
-      ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-            varInfo.second.resource->getParent()->getParent()->getName()
-          , varInfo.second.desc
-          , varInfo.second.type
-          , DeviceData::ACCESS_NONE
-          , varInfo.second.resource);
-
-    } else if  (varInfo.second.operation == "RW") {
-
-      ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-            varInfo.second.resource->getParent()->getParent()->getName()
-          , varInfo.second.desc
-          , varInfo.second.type
-          , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
-          , varInfo.second.resource);
-    }
-
-    OpcUaNodeId dataTypeNodeId;
-    if (ctx.dataObject) {
-
-      if (varInfo.second.type == DeviceDataValue::TYPE_INTEGER) {
-        ctx.data->variant()->variant(varInfo.second.value.i32);
-
-        /* set dataType to Int32_t */
-        dataTypeNodeId.set(OpcUaId_Int32, namespaceIndex_);
-
-      } else if (varInfo.second.type == DeviceDataValue::TYPE_FLOAT) {
-        ctx.data->variant()->variant(varInfo.second.value.f);
-
-        /* set dataType to Float */
-        dataTypeNodeId.set(OpcUaId_Float, namespaceIndex_);
+  return true;
+}
 
 /*---------------------------------------------------------------------------*/
 /**
@@ -654,10 +638,9 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
 {
   Log (Debug, "OpcUaLWM2MLib::createMethodNode");
-      } else if (varInfo.second.type == DeviceDataValue::TYPE_STRING) {
 
   /* create Method node */
-  /* iterate through resource map and create OPC UA variable nodes */
+  /* iterate through method map and create OPC UA method nodes */
   for (auto& methodInfo : methodMap)
   {
 
@@ -708,11 +691,11 @@ bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
             ReferenceType_HasComponent, true, methodNodeId);
     }
 
-    /* create LWM2M device data for OPC UA variables */
+    /* create LWM2M device data for OPC UA methods */
      opcUaNodeContext methodCtx;
      methodCtx = createDeviceDataLWM2M(methodInfo.second, methodNode);
 
-     /* store variable node info into variableContextMap */
+     /* store method node info into methodContextMap */
      methods_.insert(std::make_pair(methodNodeId, methodCtx));
 
     /* add the method node to the information model */
@@ -808,8 +791,8 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   }
 
   return ctx;
-  return true;
 }
+
 /*---------------------------------------------------------------------------*/
 /*
 * onDeviceRegister()
@@ -844,7 +827,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   }
 
   /* create LWM2M resources of LWM2M object instances */
-  if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
+  if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_, methodMap_)) {
     Log(Debug, "Creation of resources failed");
     return -1;
   }
@@ -854,6 +837,12 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
     Log(Debug, "Creation of variable node failed");
     return -1;
   }
+
+  /* create OPC UA method nodes from method map */
+   if (!createMethodNode(methodMap_)) {
+     Log (Debug, "Creation of method node failed");
+     return -1;
+   }
 
   return 0;
 }
@@ -944,7 +933,8 @@ bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dic
 */
 bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
     , objectDictionary_t& dictionary
-    , resourceMap_t& resourceMap)
+    , resourceMap_t& resourceMap
+    , methodMap_t& methodMap)
 {
   Log(Debug, "OpcUaLWM2MLib::createLWM2MResources");
 
@@ -1017,8 +1007,9 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             /* copy resource attributes */
             resourceInfo.resource = resource;
 
-            /* add resource info to map */
-            resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
+            /* add executable resource info to method map */
+            uint32_t methodId = offset4();
+            methodMap.insert(methodMap_t::value_type(methodId, resourceInfo));
 
           } else if  (resourceItem.operation == "RW") {
 

@@ -35,6 +35,7 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   , opcUalwm2mObs_(*this)
   , readSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::readSensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
+  , methodCallback_(boost::bind(&OpcUaLWM2MLib::callSensorMethod, this, _1))
 {
   Log(Debug, "OpcUaLWM2MLib::OpcUaLWM2MLib");
 }
@@ -646,40 +647,81 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         /* set dataType to Float */
         dataTypeNodeId.set(OpcUaId_Float, namespaceIndex_);
 
+/*---------------------------------------------------------------------------*/
+/**
+ * createMethodNode()
+ */
+bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
+{
+  Log (Debug, "OpcUaLWM2MLib::createMethodNode");
       } else if (varInfo.second.type == DeviceDataValue::TYPE_STRING) {
 
-        OpcUaString::SPtr str = constructSPtr<OpcUaString>();
-        str->value(varInfo.second.value.cStr);
-        ctx.data->variant()->variant(str);
+  /* create Method node */
+  /* iterate through resource map and create OPC UA variable nodes */
+  for (auto& methodInfo : methodMap)
+  {
 
-        /* set dataType to string */
-        dataTypeNodeId.set(OpcUaId_String, namespaceIndex_);
-      }
+    OpcUaStackServer::BaseNodeClass::SPtr methodNode;
+    methodNode = OpcUaStackServer::MethodNodeClass::construct();
 
-      /* set dataType of Variable Node */
-      variableNode->setDataType(dataTypeNodeId);
+    /* set OPC UA method node id */
+    OpcUaNodeId methodNodeId;
+    uint32_t methodId =  methodInfo.first;
 
-      /* set value of Variable node to default value */
-      variableNode->setValue(*ctx.data);
+    methodNodeId.set(methodId, namespaceIndex_);
+    methodNode->setNodeId(methodNodeId);
 
-      /* add variable node to OPC UA server information model */
-      informationModel()->insert(variableNode);
+    /* set method node attributes */
+    OpcUaQualifiedName methodBrowseName(methodInfo.second.name, namespaceIndex_);
+    methodNode->setBrowseName(methodBrowseName);
 
-      /* store variable node info into variableContextMap */
-      variables_.insert(std::make_pair(varNodeId, ctx));
+    OpcUaLocalizedText methodDescription("de", methodInfo.second.desc);
+    methodNode->setDescription(methodDescription);
 
-      /* register callback for read and write access permissions */
-      if (varInfo.second.operation == "R" || varInfo.second.operation == "W"
-                                          || varInfo.second.operation == "RW") {
-        if (!registerCallbacks(resourceId)) {
-          Log(Error, "Register callback failed");
-        }
-      }
+    OpcUaLocalizedText  methodDisplayName("de", methodInfo.second.name);
+    methodNode->setDisplayName(methodDisplayName);
+
+    OpcUaBoolean isExecutable = true;
+    methodNode->setExecutable(isExecutable);
+
+    OpcUaBoolean userExecutable = true;
+    methodNode->setUserExecutable(userExecutable);
+
+    /* set access permissions */
+    OpcUaUInt32  writemask= 0x01;
+    methodNode->setWriteMask(writemask);
+    methodNode->setUserWriteMask(writemask);
+
+    /* set node id of parent object */
+    OpcUaNodeId objectNodeId;
+    uint32_t parentObjectId = methodInfo.second.objectId;
+    objectNodeId.set(parentObjectId, namespaceIndex_);
+
+    OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
+    if (parentObject.get() != nullptr) {
+
+      /* create references to object node */
+      methodNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+            ReferenceType_HasComponent, false, objectNodeId);
+
+      parentObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+            ReferenceType_HasComponent, true, methodNodeId);
     }
+
+    /* create LWM2M device data for OPC UA variables */
+     opcUaNodeContext methodCtx;
+     methodCtx = createDeviceDataLWM2M(methodInfo.second, methodNode);
+
+     /* store variable node info into variableContextMap */
+     methods_.insert(std::make_pair(methodNodeId, methodCtx));
+
+    /* add the method node to the information model */
+    informationModel()->insert(methodNode);
   }
 
-  /* clear resource map */
-  resourceMap.clear();
+  /* clear the method Map */
+  methodMap.clear();
+}
 
   return true;
 }

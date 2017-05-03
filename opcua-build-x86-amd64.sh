@@ -1,7 +1,7 @@
 #! /bin/sh
 
-set BUILD_TYPE=Release
-#set BUILD_TYPE=Debug
+#BUILD_TYPE=Release
+BUILDTYPE=Debug
 
 # create the build directory
 rm -rf asneg/build
@@ -11,5 +11,5 @@ mkdir -p asneg/build
 cd asneg/build
 
 #build
-cmake -DCMAKE_TOOLCHAIN_FILE=../../x86-amd64-linux-toolchain.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ../src
+cmake -DCMAKE_TOOLCHAIN_FILE=../../x86-amd64-linux-toolchain.cmake -DCMAKE_BUILD_TYPE=$BUILDTYPE ../src
 make --jobs=3

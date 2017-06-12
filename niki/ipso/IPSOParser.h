@@ -50,6 +50,9 @@ public:
     /* instance id */
     uint32_t instanceId;
 
+    /* parent device id of object */
+    uint32_t deviceId;
+
     /* IPSO object type */
     std::string type;
 
@@ -87,6 +90,7 @@ public:
 
     /* IPSO resource mandatory type */
     std::string mandatoryType;
+
     /* IPSO resource instance Type */
     std::string instanceType;
 

@@ -22,6 +22,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <csignal>
 
 namespace OpcUaLWM2M
 {
@@ -34,9 +35,13 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   , ipsofileName_("")
   , namespaceIndex_(0)
   , opcUalwm2mObs_(*this)
+  , resourceMap_()
+  , objectMap_()
+  , resourceMaps_()
+  , objectMaps_()
   , readSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::readSensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
-  , methodCallback_(boost::bind(&OpcUaLWM2MLib::callSensorMethod, this, _1))
+  , execSensorMethodCallback_(boost::bind(&OpcUaLWM2MLib::execSensorMethod, this, _1))
 {
   Log(Debug, "OpcUaLWM2MLib::OpcUaLWM2MLib");
 }
@@ -62,6 +67,8 @@ void signalHandler(int signum)
 }
 } /* anonymous namespace */
 
+
+/*---------------------------------------------------------------------------*/
 /**
  * startup()
  */
@@ -70,6 +77,7 @@ bool OpcUaLWM2MLib::startup(void)
   Log(Debug, "OpcUaLWM2MLib::startup");
 
   signal(SIGINT, signalHandler);
+
   /* load config file */
   if (!loadConfig()) {
     Log(Error, "Could not load config file");
@@ -210,10 +218,6 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
     if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
       int32_t readSensorVal = p_val->getVal().i32;
       it->second.data->variant()->variant(readSensorVal);
-  /* update value of OPC UA variable node */
-  if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
-    int32_t readSensorVal = p_val->getVal().i32;
-    it->second.data->variant()->variant(readSensorVal);
 
     } else if (p_val->getType() == DeviceDataValue::TYPE_FLOAT) {
       float readSensorVal = p_val->getVal().f;
@@ -288,7 +292,7 @@ void OpcUaLWM2MLib::writeSensorValue (ApplicationWriteContext* applicationWriteC
 /**
  * registerResourceCallback()
  */
-void OpcUaLWM2MLib::callSensorMethod(ApplicationReadContext* applicationReadContext)
+void OpcUaLWM2MLib::execSensorMethod(ApplicationReadContext* applicationReadContext)
 {
 
   /** TODO  */
@@ -311,7 +315,7 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
 
   req->forwardInfoSync()->setReadCallback(readSensorValueCallback_);
   req->forwardInfoSync()->setWriteCallback(writeSensorValueCallback_);
-  req->forwardInfoSync()->setMethodCallback(methodCallback_);
+  req->forwardInfoSync()->setMethodCallback(execSensorMethodCallback_);
   req->nodesToRegister()->resize(1);
   req->nodesToRegister()->set(0, nodeId);
 
@@ -335,9 +339,12 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
 /**
  * UnregisterResourceCallback()
  */
-bool OpcUaLWM2MLib::unregisterCallbacks()
+bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
 {
   Log(Debug, "OpcUaLWM2MLib::unregisterCallbacks");
+
+  OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
+  nodeId->set(id, namespaceIndex_);
 
   ServiceTransactionRegisterForward::SPtr trx = ServiceTransactionRegisterForward::construct();
   RegisterForwardRequest::SPtr req = trx->request();
@@ -345,7 +352,8 @@ bool OpcUaLWM2MLib::unregisterCallbacks()
 
   req->forwardInfoSync()->unsetReadCallback();
   req->forwardInfoSync()->unsetWriteCallback();
-  req->nodesToRegister()->clear();
+  req->nodesToRegister()->resize(1);
+  req->nodesToRegister()->set(0, nodeId);
 
   service().sendSync(trx);
   if (trx->statusCode() != Success) {
@@ -393,7 +401,7 @@ static uint32_t offset()
   return ID++;
 }
 
-/* offset for OPC UA variable nodes */
+/* offset for OPC UA variable and method nodes */
 static uint32_t offset2()
 {
   static uint32_t ID = 60000;
@@ -406,7 +414,6 @@ static uint32_t offset3()
   static uint32_t ID = 20000;
   return ID++;
 }
-
 
 } /* anonymous namespace */
 
@@ -458,7 +465,8 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
 
       /* set OPC UA base object id */
       OpcUaNodeId parentObjectId;
-      parentObjectId.set(deviceId_, namespaceIndex_);
+      objectInfo.second.deviceId = deviceId_;
+      parentObjectId.set(objectInfo.second.deviceId, namespaceIndex_);
 
       /* check existence of parent object */
       OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(parentObjectId);
@@ -530,6 +538,8 @@ bool OpcUaLWM2MLib::deleteObjectNode(const LWM2MDevice* p_dev,
   return true;
 }
 
+/*---------------------------------------------------------------------------*/
+/**
  * createObjectNode()
  */
 bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
@@ -610,6 +620,9 @@ bool OpcUaLWM2MLib::deleteDeviceObjecttNode(uint32_t deviceId)
 
   return true;
 }
+
+/*---------------------------------------------------------------------------*/
+/**
  * createVariableNode()
  */
 bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
@@ -622,84 +635,85 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
     OpcUaStackServer::BaseNodeClass::SPtr variableNode;
     variableNode = OpcUaStackServer::VariableNodeClass::construct();
 
-    /* set OPC UA variable node id */
-    OpcUaNodeId varNodeId;
-    uint32_t resourceId =  offset2();
+    if (varInfo.second.operation == "RW" || varInfo.second.operation == "W" ||
+            varInfo.second.operation == "R") {
 
-    varNodeId.set(resourceId, namespaceIndex_);
-    variableNode->setNodeId(varNodeId);
+      /* set OPC UA variable node id */
+      OpcUaNodeId varNodeId;
+      uint32_t resourceId =  offset2();
 
-    /* set variable node attributes */
-    OpcUaQualifiedName varbrowseName(varInfo.second.name, namespaceIndex_);
-    variableNode->setBrowseName(varbrowseName);
+      varNodeId.set(resourceId, namespaceIndex_);
+      variableNode->setNodeId(varNodeId);
 
-    OpcUaLocalizedText vardescription("de", varInfo.second.desc);
-    variableNode->setDescription(vardescription);
+      /* set variable node attributes */
+      OpcUaQualifiedName varbrowseName(varInfo.second.name, namespaceIndex_);
+      variableNode->setBrowseName(varbrowseName);
 
-    OpcUaLocalizedText  vardisplayName("de", varInfo.second.name);
-    variableNode->setDisplayName(vardisplayName);
+      OpcUaLocalizedText vardescription("de", varInfo.second.desc);
+      variableNode->setDescription(vardescription);
 
-    OpcUaByte accessLevel(0x4F);
-    variableNode->setAccessLevel(accessLevel);
+      OpcUaLocalizedText  vardisplayName("de", varInfo.second.name);
+      variableNode->setDisplayName(vardisplayName);
 
-    OpcUaByte userAccessLevel(0x4F);
-    variableNode->setUserAccessLevel(userAccessLevel);
+      OpcUaByte accessLevel(0x4F);
+      variableNode->setAccessLevel(accessLevel);
 
-    OpcUaDouble minimumSamplingInterval = 1;
-    variableNode->setMinimumSamplingInterval(minimumSamplingInterval);
+      OpcUaByte userAccessLevel(0x4F);
+      variableNode->setUserAccessLevel(userAccessLevel);
 
-    /* Set attribute to allow server to collect historical data */
-    OpcUaBoolean historizing = true;
-    variableNode->setHistorizing(historizing);
+      OpcUaDouble minimumSamplingInterval = 1;
+      variableNode->setMinimumSamplingInterval(minimumSamplingInterval);
 
-    /* set access permissions */
-    OpcUaUInt32  writemask= 0x01;
-    variableNode->setWriteMask(writemask);
-    variableNode->setUserWriteMask(writemask);
+      /* Set attribute to allow server to collect historical data */
+      OpcUaBoolean historizing = true;
+      variableNode->setHistorizing(historizing);
 
-    /* set value attribute to scalar or array */
-    OpcUaInt32 valueRank = -2;
-    variableNode->setValueRank(valueRank);
+      /* set access permissions */
+      OpcUaUInt32  writemask= 0x01;
+      variableNode->setWriteMask(writemask);
+      variableNode->setUserWriteMask(writemask);
 
-    /* set Array Dimensions */
-    OpcUaUInt32Array arrayDimension;
-    arrayDimension.resize(0);
-    variableNode->setArrayDimensions(arrayDimension);
+      /* set value attribute to scalar or array */
+      OpcUaInt32 valueRank = -2;
+      variableNode->setValueRank(valueRank);
 
-    /* set node id of parent object */
-    OpcUaNodeId objectNodeId;
-    uint32_t parentObjectId = varInfo.second.objectId;
-    objectNodeId.set(parentObjectId, namespaceIndex_);
+      /* set Array Dimensions */
+      OpcUaUInt32Array arrayDimension;
+      arrayDimension.resize(0);
+      variableNode->setArrayDimensions(arrayDimension);
 
-    OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
-    if (parentObject.get() != nullptr) {
+      /* set node id of parent object */
+      OpcUaNodeId objectNodeId;
+      uint32_t parentObjectId = varInfo.second.objectId;
+      objectNodeId.set(parentObjectId, namespaceIndex_);
 
-      /* create references to object node */
-      variableNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-            ReferenceType_HasComponent, false, objectNodeId);
+      OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
+      if (parentObject.get() != nullptr) {
 
-      parentObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-            ReferenceType_HasComponent, true, varNodeId);
-    }
+        /* create references to object node */
+        variableNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+              ReferenceType_HasComponent, false, objectNodeId);
 
-      /* create LWM2M device data for OPC UA variables */
-      opcUaNodeContext variableCtx;
-      variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
-
-      /* store variable node info into variableContextMap */
-      variables_.insert(std::make_pair(varNodeId, variableCtx));
-
-      /* add variable node to OPC UA server information model */
-      informationModel()->insert(variableNode);
-
-      /* register callback for OPC UA variable nodes */
-      if (!registerCallbacks(resourceId)) {
-        Log(Error, "Register callback failed");
+        parentObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+              ReferenceType_HasComponent, true, varNodeId);
       }
-  }
 
-  /* clear resource map */
-  resourceMap.clear();
+        /* create LWM2M device data for OPC UA variables */
+        opcUaNodeContext variableCtx;
+        variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
+
+        /* store variable node info into variableContextMap */
+        variables_.insert(std::make_pair(varNodeId, variableCtx));
+
+        /* add variable node to OPC UA server information model */
+        informationModel()->insert(variableNode);
+
+        /* register callback for OPC UA variable nodes */
+        if (!registerCallbacks(resourceId)) {
+          Log(Error, "Register callback failed");
+        }
+    }
+  }
 
   return true;
 }
@@ -709,7 +723,6 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
  * createMethodNode()
  */
 bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
-bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
 {
   Log (Debug, "OpcUaLWM2MLib::createMethodNode");
 
@@ -721,63 +734,69 @@ bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
     OpcUaStackServer::BaseNodeClass::SPtr methodNode;
     methodNode = OpcUaStackServer::MethodNodeClass::construct();
 
-    /* set OPC UA method node id */
-    OpcUaNodeId methodNodeId;
-    uint32_t methodId =  methodInfo.first;
+    if (methodInfo.second.operation == "E") {
 
-    methodNodeId.set(methodId, namespaceIndex_);
-    methodNode->setNodeId(methodNodeId);
+      /* set OPC UA method node id */
+      OpcUaNodeId methodNodeId;
+      uint32_t methodId =  methodInfo.first;
 
-    /* set method node attributes */
-    OpcUaQualifiedName methodBrowseName(methodInfo.second.name, namespaceIndex_);
-    methodNode->setBrowseName(methodBrowseName);
+      methodNodeId.set(methodId, namespaceIndex_);
+      methodNode->setNodeId(methodNodeId);
 
-    OpcUaLocalizedText methodDescription("de", methodInfo.second.desc);
-    methodNode->setDescription(methodDescription);
+      /* set method node attributes */
+      OpcUaQualifiedName methodBrowseName(methodInfo.second.name, namespaceIndex_);
+      methodNode->setBrowseName(methodBrowseName);
 
-    OpcUaLocalizedText  methodDisplayName("de", methodInfo.second.name);
-    methodNode->setDisplayName(methodDisplayName);
+      OpcUaLocalizedText methodDescription("de", methodInfo.second.desc);
+      methodNode->setDescription(methodDescription);
 
-    OpcUaBoolean isExecutable = true;
-    methodNode->setExecutable(isExecutable);
+      OpcUaLocalizedText  methodDisplayName("de", methodInfo.second.name);
+      methodNode->setDisplayName(methodDisplayName);
 
-    OpcUaBoolean userExecutable = true;
-    methodNode->setUserExecutable(userExecutable);
+      OpcUaBoolean isExecutable = true;
+      methodNode->setExecutable(isExecutable);
 
-    /* set access permissions */
-    OpcUaUInt32  writemask= 0x01;
-    methodNode->setWriteMask(writemask);
-    methodNode->setUserWriteMask(writemask);
+      OpcUaBoolean userExecutable = true;
+      methodNode->setUserExecutable(userExecutable);
 
-    /* set node id of parent object */
-    OpcUaNodeId objectNodeId;
-    uint32_t parentObjectId = methodInfo.second.objectId;
-    objectNodeId.set(parentObjectId, namespaceIndex_);
+      /* set access permissions */
+      OpcUaUInt32  writemask= 0x01;
+      methodNode->setWriteMask(writemask);
+      methodNode->setUserWriteMask(writemask);
 
-    OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
-    if (parentObject.get() != nullptr) {
+      /* set node id of parent object */
+      OpcUaNodeId objectNodeId;
+      uint32_t parentObjectId = methodInfo.second.objectId;
+      objectNodeId.set(parentObjectId, namespaceIndex_);
 
-      /* create references to object node */
-      methodNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-            ReferenceType_HasComponent, false, objectNodeId);
+      OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
+      if (parentObject.get() != nullptr) {
 
-      parentObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
-            ReferenceType_HasComponent, true, methodNodeId);
+        /* create references to object node */
+        methodNode->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+              ReferenceType_HasComponent, false, objectNodeId);
+
+        parentObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
+              ReferenceType_HasComponent, true, methodNodeId);
+      }
+
+      /* create LWM2M device data for OPC UA methods */
+       opcUaNodeContext methodCtx;
+       methodCtx = createDeviceDataLWM2M(methodInfo.second, methodNode);
+
+       /* store method node info into methodContextMap */
+       methods_.insert(std::make_pair(methodNodeId, methodCtx));
+
+      /* add the method node to the information model */
+      informationModel()->insert(methodNode);
     }
-
-    /* create LWM2M device data for OPC UA methods */
-     opcUaNodeContext methodCtx;
-     methodCtx = createDeviceDataLWM2M(methodInfo.second, methodNode);
-
-     /* store method node info into methodContextMap */
-     methods_.insert(std::make_pair(methodNodeId, methodCtx));
-
-    /* add the method node to the information model */
-    informationModel()->insert(methodNode);
   }
 
   /* clear the method Map */
-  methodMap.clear();
+  resourceMap.clear();
+}
+
+/*---------------------------------------------------------------------------*/
 /**
  * deleteResourceNodes()
  */
@@ -916,6 +935,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   if (!createDeviceObjectNode(p_dev))
   {
     Log (Error, "Creation of device object failed");
+    return -1;
   }
 
   LWM2MDevice* device = const_cast<LWM2MDevice*>(p_dev);
@@ -939,7 +959,6 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 
   /* create LWM2M resources of LWM2M object instances */
   if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
-  if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_, methodMap_)) {
     Log(Debug, "Creation of resources failed");
     return -1;
   }
@@ -952,7 +971,6 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 
   /* create OPC UA method nodes from method map */
    if (!createMethodNode(resourceMap_)) {
-   if (!createMethodNode(methodMap_)) {
      Log (Debug, "Creation of method node failed");
      return -1;
    }
@@ -968,38 +986,24 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(const LWM2MDevice* p_dev)
 {
   Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister");
 
-  LWM2MDevice* device = const_cast<LWM2MDevice*>(p_dev);
+  std::cout << p_dev->getName()<< " is deregistering from the server"
+              << std::endl;
 
-  std::vector< LWM2MResource* >::iterator resourceIterator;
-  std::vector<LWM2MObject*>::iterator objectIterator;
+  /* delete variable and method nodes from server */
+  if (!deleteResourceNodes(p_dev, resourceMaps_)) {
+    Log(Debug, "deletion of variable and method nodes failed");
+    return -1;
+  }
 
-  /* iterate over the objects of this device */
-  for (objectIterator = device->objectStart();
-      objectIterator != device->objectEnd();
-      ++objectIterator)
-  {
-    /* iterate over the resources of this object */
-    for (resourceIterator = (*objectIterator)->resourceStart();
-        resourceIterator != (*objectIterator)->resourceEnd();
-        ++resourceIterator)
-    {
-      /* unregister all callbacks */
-      unregisterCallbacks();
+  /* delete object and device object nodes from server */
+  if (!deleteObjectNode(p_dev, objectMaps_)) {
+    Log(Debug, "deletion of object nodes failed");
+    return -1;
+  }
 
-      OpcUaNodeId variableNodeId;
-      int16_t resourceId = (*resourceIterator)->getResId();
-      variableNodeId.set(resourceId, namespaceIndex_);
-
-      /* clear variable context */
-      variables_.clear();
-
-      if (variables_.empty()) {
-        OpcUaNodeId objectNodeId;
-        int16_t objectId = (*resourceIterator)->getParent()->getObjId();
-        objectNodeId.set(objectId, namespaceIndex_);
-        informationModel()->remove(objectNodeId);
-      }
-    }
+  if (resourceMaps_.empty() && objectMaps_.empty()) {
+      std::cout << "Server has no objects and resources created"
+                << std::endl;
   }
 
   return 0;
@@ -1046,10 +1050,12 @@ bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dic
 */
 bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
     , objectDictionary_t& dictionary
-    , resourceMap_t& resourceMap
-    , methodMap_t& methodMap)
+    , resourceMap_t& resourceMap)
 {
   Log(Debug, "OpcUaLWM2MLib::createLWM2MResources");
+
+  /* parent device name */
+  std::string deviceName;
 
   for (auto& objectItem : objectMap)
   {
@@ -1067,15 +1073,10 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         resourceInfo.resourceId = resourceItem.resourceId;
         resourceInfo.value = resourceItem.value;
         resourceInfo.operation = resourceItem.operation;
+        resourceInfo.mandatoryType = resourceItem.mandatoryType;
 
         /* copy node id of parent object */
         resourceInfo.objectId = objectItem.first;
-
-        /* create new resource tuple */
-        resourceId_t resourceId(objectItem.second.object->getParent()->getName()
-              , objectItem.second.id
-              , objectItem.second.instanceId
-              , resourceItem.resourceId);
 
       if (objectItem.second.id == dictEntry.second->id) {
         if (resourceItem.operation == "R") {
@@ -1091,6 +1092,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
           resourceInfo.resource = resource;
 
           /* add resource info to resource map */
+          uint32_t resourceId =  offset2();
           resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
 
           } else if (resourceItem.operation == "W") {
@@ -1106,6 +1108,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             resourceInfo.resource = resource;
 
             /* add resource info to map */
+            uint32_t resourceId =  offset2();
             resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
 
           } else if (resourceItem.operation == "E") {
@@ -1123,9 +1126,6 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             /* add executable resource info to resource map */
             uint32_t methodId = offset2();
             resourceMap.insert(resourceMap_t::value_type(methodId, resourceInfo));
-            /* add executable resource info to method map */
-            uint32_t methodId = offset4();
-            methodMap.insert(methodMap_t::value_type(methodId, resourceInfo));
 
           } else if  (resourceItem.operation == "RW") {
 
@@ -1140,12 +1140,18 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             resourceInfo.resource = resource;
 
             /* add resource info to map */
+            uint32_t resourceId =  offset2();
             resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
           }
         }
       }
     }
+    deviceName = objectItem.second.object->getParent()->getName();
   }
+
+  /* store created object map and resource map */
+  resourceMaps_.insert(resourceMaps_t::value_type(deviceName, resourceMap));
+  objectMaps_.insert(objectMaps_t::value_type(deviceName, objectMap));
 
   /* clear object map */
   objectMap.clear();

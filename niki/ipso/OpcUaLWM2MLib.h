@@ -51,6 +51,9 @@ public:
 
     /* device data object */
     boost::shared_ptr<DeviceData> dataObject;
+
+    /* Resource description object */
+    IPSOParser::ipsoResourceDescription resInfo;
   };
 
   /**
@@ -89,7 +92,7 @@ private:
   /* OPC UA nodes Callbacks */
   Callback readSensorValueCallback_;
   Callback writeSensorValueCallback_;
-  Callback methodCallback_;
+  Callback execSensorMethodCallback_;
 
   /* IPSO Parser instance */
   IPSOParser ipsoParser_;
@@ -117,14 +120,17 @@ private:
 
   typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
 
-  typedef std::map<resourceId_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
+  typedef std::map<uint32_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
   resourceMap_t resourceMap_;
-
-  typedef std::map<uint32_t, IPSOParser::ipsoResourceDescription> methodMap_t;
-  methodMap_t methodMap_;
 
   typedef std::map<uint32_t, IPSOParser::ipsoObjectDescription> objectMap_t;
   objectMap_t objectMap_;
+
+  typedef std::map<std::string, resourceMap_t> resourceMaps_t;
+  resourceMaps_t resourceMaps_;
+
+  typedef std::map<std::string, objectMap_t> objectMaps_t;
+  objectMaps_t objectMaps_;
 
   /**
    * \brief   Load IPSO file from OPC UA server configuration file.
@@ -144,7 +150,7 @@ private:
   /**
    * \brief   Call Sensor Method - not implemented.
    */
-  void callSensorMethod(ApplicationReadContext* applicationReadContext);
+  void execSensorMethod(ApplicationReadContext* applicationReadContext);
 
 
   /**
@@ -155,7 +161,7 @@ private:
   /**
    * \brief   Unregisters read and write callbacks of variable node.
    */
-  bool unregisterCallbacks();
+  bool unregisterCallbacks(OpcUaUInt32 id);
 
   /**
    * \brief   Creates object dictionary from parsed IPSO descriptions.
@@ -168,24 +174,39 @@ private:
   bool createDeviceObjectNode(const LWM2MDevice* p_dev);
 
   /**
+   * \brief   Delete device object node from information model.
+   */
+  bool deleteDeviceObjecttNode(uint32_t deviceId);
+
+  /**
    * \brief   Create Object Node to the information model.
    */
   bool createObjectNode(objectMap_t& objectMap);
 
   /**
-    * \brief   Create Variable Node to the information model.
-    */
+   * \brief   Delete object node from information model.
+   */
+   bool deleteObjectNode(const LWM2MDevice* p_dev, objectMaps_t& objectMaps);
+
+  /**
+   * \brief   Create Variable Node to the information model.
+   */
   bool createVariableNode(resourceMap_t& resourceMap);
 
   /**
    * \brief   Create method Node to the information model.
    */
-  bool createMethodNode(methodMap_t& methodMap);
+  bool createMethodNode(resourceMap_t& resourceMap);
 
   /**
-    * \brief   Checks for object ID match between LWM2M Device objects
-    *  and object dictionary objects.
-    */
+   * \brief   Delete variable and method nodes from information model.
+   */
+  bool deleteResourceNodes(const LWM2MDevice* p_dev, resourceMaps_t& resourceMaps);
+
+  /**
+   * \brief   Checks for object ID match between LWM2M Device objects
+   *  and object dictionary objects.
+   */
   bool matchObjectId(LWM2MObject* lwm2mObj
       , objectDictionary_t& dictionary
       , objectMap_t& objectMap);
@@ -195,8 +216,7 @@ private:
    */
   bool createLWM2MResources(objectMap_t& objectMap
       , objectDictionary_t& dictionary
-      , resourceMap_t& resourceMap
-      , methodMap_t& methodMap);
+      , resourceMap_t& resourceMap);
 
   /**
    * \brief   Create LWM2M device data for nodes.

@@ -204,20 +204,34 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
   const DeviceDataValue* p_val = NULL;
   p_val = it->second.dataObject->getVal();
 
+  if (p_val) {
+
+    /* update value of OPC UA variable node */
+    if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
+      int32_t readSensorVal = p_val->getVal().i32;
+      it->second.data->variant()->variant(readSensorVal);
   /* update value of OPC UA variable node */
   if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
     int32_t readSensorVal = p_val->getVal().i32;
     it->second.data->variant()->variant(readSensorVal);
 
-  } else if (p_val->getType() == DeviceDataValue::TYPE_FLOAT) {
-    float readSensorVal = p_val->getVal().f;
-    it->second.data->variant()->variant(readSensorVal);
+    } else if (p_val->getType() == DeviceDataValue::TYPE_FLOAT) {
+      float readSensorVal = p_val->getVal().f;
+      it->second.data->variant()->variant(readSensorVal);
 
-  } else if (p_val->getType() == DeviceDataValue::TYPE_STRING) {
-    std::string readSensorVal(p_val->getVal().cStr);
-    OpcUaString::SPtr str = constructSPtr<OpcUaString>();
-    str->value(readSensorVal);
-    it->second.data->variant()->variant(str);
+    } else if (p_val->getType() == DeviceDataValue::TYPE_STRING) {
+      std::string readSensorVal(p_val->getVal().cStr);
+      OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+      str->value(readSensorVal);
+      it->second.data->variant()->variant(str);
+    }
+  } else if (it->second.resInfo.mandatoryType == "Mandatory") {
+    std::cout << "Read resource failed, Resource is not accessible"
+              << std::endl;
+
+  } else if (it->second.resInfo.mandatoryType == "Optional") {
+    std::cout << "Read resource failed, resource is not available"
+              << std::endl;
   }
 
   /* copy updated value to application read context */

@@ -221,6 +221,12 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
     return false;
   }
 
+  /* read IPSO resource mandatory field */
+  if (!resourceChild.getConfigParameter("Mandatory", ipsoResource.mandatoryType))
+  {
+    Log(Debug, "IPSO resource mandatory type not defined");
+    return false;
+  }
   /* read IPSO resource datatype */
   boost::optional<std::string> type = resourceChild.getValue("Type");
   if (!type)

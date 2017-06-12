@@ -85,6 +85,8 @@ public:
     /* IPSO resource operation */
     std::string operation;
 
+    /* IPSO resource mandatory type */
+    std::string mandatoryType;
     /* IPSO resource instance Type */
     std::string instanceType;
 

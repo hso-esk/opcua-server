@@ -714,13 +714,14 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 /**
  * createMethodNode()
  */
+bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
 {
   Log (Debug, "OpcUaLWM2MLib::createMethodNode");
 
   /* create Method node */
   /* iterate through method map and create OPC UA method nodes */
-  for (auto& methodInfo : methodMap)
+  for (auto& methodInfo : resourceMap)
   {
 
     OpcUaStackServer::BaseNodeClass::SPtr methodNode;
@@ -943,6 +944,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   }
 
   /* create LWM2M resources of LWM2M object instances */
+  if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
   if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_, methodMap_)) {
     Log(Debug, "Creation of resources failed");
     return -1;
@@ -955,6 +957,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
   }
 
   /* create OPC UA method nodes from method map */
+   if (!createMethodNode(resourceMap_)) {
    if (!createMethodNode(methodMap_)) {
      Log (Debug, "Creation of method node failed");
      return -1;
@@ -1123,6 +1126,9 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             /* copy resource attributes */
             resourceInfo.resource = resource;
 
+            /* add executable resource info to resource map */
+            uint32_t methodId = offset2();
+            resourceMap.insert(resourceMap_t::value_type(methodId, resourceInfo));
             /* add executable resource info to method map */
             uint32_t methodId = offset4();
             methodMap.insert(methodMap_t::value_type(methodId, resourceInfo));

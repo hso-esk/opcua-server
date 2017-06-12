@@ -407,12 +407,6 @@ static uint32_t offset3()
   return ID++;
 }
 
-/* offset for OPC UA method nodes */
-static uint32_t offset4()
-{
-  static uint32_t ID = 80000;
-  return ID++;
-}
 
 } /* anonymous namespace */
 

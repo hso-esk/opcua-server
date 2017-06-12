@@ -481,6 +481,47 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
 
 /*---------------------------------------------------------------------------*/
 /**
+ * DeleteObjectNode()
+ */
+bool OpcUaLWM2MLib::deleteObjectNode(const LWM2MDevice* p_dev,
+    objectMaps_t& objectMaps)
+{
+  Log (Debug, "OpcUaLWM2MLib::deleteObjectNode");
+
+  uint32_t deviceId;
+  objectMaps_t::iterator it = objectMaps_.find(p_dev->getName());
+  if (it != objectMaps_.end())
+  {
+    objectMap_t::iterator it2 = it->second.begin();
+    while (it2 != it->second.end())
+    {
+      if ( p_dev->getName() == it2->second.object->getParent()->getName()) {
+
+        /* delete object node */
+        OpcUaNodeId objectNodeId;
+        objectNodeId.set(it2->first, namespaceIndex_);
+        informationModel()->remove(objectNodeId);
+
+        /* store parent id of deleted object node */
+        deviceId = it2->second.deviceId;
+      }
+      it2++;
+    }
+  }
+
+  /* delete objectMap from objectMaps */
+  objectMaps_.erase(it);
+
+  /* delete device object node */
+  deleteDeviceObjecttNode(deviceId);
+
+  std::cout << p_dev->getName()
+            << " object nodes successfully deleted from server"
+            << std::endl;
+
+  return true;
+}
+
  * createObjectNode()
  */
 bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
@@ -549,6 +590,18 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
 
 /*---------------------------------------------------------------------------*/
 /**
+ * deleteDeviceObjecttNode()
+ */
+bool OpcUaLWM2MLib::deleteDeviceObjecttNode(uint32_t deviceId)
+{
+  Log (Debug, "OpcUaLWM2MLib::deleteDeviceObjecttNode");
+
+  OpcUaNodeId deviceIdNode;
+  deviceIdNode.set(deviceId, namespaceIndex_);
+  informationModel()->remove(deviceIdNode);
+
+  return true;
+}
  * createVariableNode()
  */
 bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
@@ -716,6 +769,43 @@ bool OpcUaLWM2MLib::createMethodNode(methodMap_t& methodMap)
 
   /* clear the method Map */
   methodMap.clear();
+/**
+ * deleteResourceNodes()
+ */
+bool OpcUaLWM2MLib::deleteResourceNodes(const LWM2MDevice* p_dev,
+    resourceMaps_t& resourceMaps)
+{
+  Log (Debug, "OpcUaLWM2MLib::deleteResourceNodes");
+
+  resourceMaps_t::iterator it = resourceMaps_.find(p_dev->getName());
+  if (it != resourceMaps_.end())
+  {
+    auto it2 = it->second.begin();
+    while (it2 != it->second.end())
+    {
+      if (p_dev->getName() == it2->second.resource->getParent()
+          ->getParent()->getName()) {
+
+        /* unregister callbacks */
+        unregisterCallbacks(it2->first);
+
+        /* delete resource node */
+        OpcUaNodeId resourceNodeId;
+        resourceNodeId.set(it2->first, namespaceIndex_);
+        informationModel()->remove(resourceNodeId);
+      }
+      it2++;
+    }
+  }
+
+  /* delete resourceMap from resourceMaps */
+  resourceMaps_.erase(it);
+
+  std::cout << p_dev->getName()
+            << " resource nodes successfully deleted from server"
+            << std::endl;
+
+  return true;
 }
 
 /*---------------------------------------------------------------------------*/

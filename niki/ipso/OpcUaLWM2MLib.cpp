@@ -51,6 +51,17 @@ OpcUaLWM2MLib::~OpcUaLWM2MLib(void)
 }
 
 /*---------------------------------------------------------------------------*/
+namespace
+{
+void signalHandler(int signum)
+{
+  std::cout << "Application will close..., received external interrupt"
+            << std::endl;
+
+  exit (signum);
+}
+} /* anonymous namespace */
+
 /**
  * startup()
  */
@@ -58,6 +69,7 @@ bool OpcUaLWM2MLib::startup(void)
 {
   Log(Debug, "OpcUaLWM2MLib::startup");
 
+  signal(SIGINT, signalHandler);
   /* load config file */
   if (!loadConfig()) {
     Log(Error, "Could not load config file");

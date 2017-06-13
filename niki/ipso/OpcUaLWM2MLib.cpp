@@ -267,24 +267,35 @@ void OpcUaLWM2MLib::writeSensorValue (ApplicationWriteContext* applicationWriteC
   /* copy updated value from application write context */
   applicationWriteContext->dataValue_.copyTo(*it->second.data);
 
-  /* check and write updated value to corresponding OPC UA variable node */
-  OpcUaVariant::SPtr value = it->second.data->variant();
-  if (value->variantType() == OpcUaStackCore::OpcUaBuildInType_OpcUaInt32) {
-    DeviceDataValue val(DeviceDataValue::TYPE_INTEGER);
-    val.setVal(value->get<int32_t>());
-    it->second.dataObject->setVal(&val);
+  /* check if resource is available */
+  if (it->second.dataObject->getVal()) {
 
-  } else if (value->variantType() == OpcUaStackCore::OpcUaBuildInType_OpcUaFloat) {
-    DeviceDataValue val(DeviceDataValue::TYPE_FLOAT);
-    val.setVal(value->get<float>());
-    it->second.dataObject->setVal(&val);
+    /* check and write updated value to corresponding OPC UA variable node */
+    OpcUaVariant::SPtr value = it->second.data->variant();
+    if (value->variantType() == OpcUaStackCore::OpcUaBuildInType_OpcUaInt32) {
+      DeviceDataValue val(DeviceDataValue::TYPE_INTEGER);
+      val.setVal(value->get<int32_t>());
+      it->second.dataObject->setVal(&val);
 
-  } else if (value->variantType() == OpcUaStackCore::OpcUaBuildInType_OpcUaString) {
-    DeviceDataValue val(DeviceDataValue::TYPE_STRING);
-    OpcUaVariantSPtr tmp = value->get<OpcUaVariantSPtr>();
-    OpcUaString::SPtr str = boost::dynamic_pointer_cast<OpcUaString>(tmp.objectSPtr_);
-    val.setVal(str->value());
-    it->second.dataObject->setVal(&val);
+    } else if (value->variantType() == OpcUaStackCore::OpcUaBuildInType_OpcUaFloat) {
+      DeviceDataValue val(DeviceDataValue::TYPE_FLOAT);
+      val.setVal(value->get<float>());
+      it->second.dataObject->setVal(&val);
+
+    } else if (value->variantType() == OpcUaStackCore::OpcUaBuildInType_OpcUaString) {
+      DeviceDataValue val(DeviceDataValue::TYPE_STRING);
+      OpcUaVariantSPtr tmp = value->get<OpcUaVariantSPtr>();
+      OpcUaString::SPtr str = boost::dynamic_pointer_cast<OpcUaString>(tmp.objectSPtr_);
+      val.setVal(str->value());
+      it->second.dataObject->setVal(&val);
+    }
+  } else if (it->second.resInfo.mandatoryType == "Mandatory") {
+    std::cout << "Write resource failed, Resource is not accessible"
+              << std::endl;
+
+  } else if (it->second.resInfo.mandatoryType == "Optional") {
+    std::cout << "Write resource failed, resource is not available"
+              << std::endl;
   }
 }
 

@@ -1,7 +1,7 @@
 #! /bin/sh
 
 #create the directory for the log files if not existent
-mkdir -p asneg/build/var/log/OpcUaStack
+#mkdir -p asneg/build/var/log/OpcUaStack
 
 #copy the according configuration files
 cp -rf cfg/etc asneg/build

@@ -147,10 +147,7 @@ bool OpcUaLWM2MLib::loadConfig(void)
   ConfigXml configXml;
 
   /* read configuration file */
-  config.alias("@BIN_DIR@", Environment::binDir());
   config.alias("@CONF_DIR@", Environment::confDir());
-  config.alias("@LOG_DIR@", Environment::logDir());
-  config.alias("@INSTALL_DIR@", Environment::installDir());
 
   Log(Debug, "Loading application config")
     .parameter("ConfigFileName", applicationInfo()->configFileName());
@@ -320,13 +317,13 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
   OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
 
-  ServiceTransactionRegisterForward::SPtr trx = ServiceTransactionRegisterForward::construct();
-  RegisterForwardRequest::SPtr req = trx->request();
-  RegisterForwardResponse::SPtr res = trx->response();
+  ServiceTransactionRegisterForwardNode::SPtr trx
+       = constructSPtr<ServiceTransactionRegisterForwardNode>();
+  RegisterForwardNodeRequest::SPtr  req = trx->request();
+  RegisterForwardNodeResponse::SPtr res = trx->response();
 
-  req->forwardInfoSync()->setReadCallback(readSensorValueCallback_);
-  req->forwardInfoSync()->setWriteCallback(writeSensorValueCallback_);
-  req->forwardInfoSync()->setMethodCallback(execSensorMethodCallback_);
+  req->forwardNodeSync()->readService().setCallback(readSensorValueCallback_);
+  req->forwardNodeSync()->writeService().setCallback(writeSensorValueCallback_);
   req->nodesToRegister()->resize(1);
   req->nodesToRegister()->set(0, nodeId);
 
@@ -357,12 +354,13 @@ bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
   OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
 
-  ServiceTransactionRegisterForward::SPtr trx = ServiceTransactionRegisterForward::construct();
-  RegisterForwardRequest::SPtr req = trx->request();
-  RegisterForwardResponse::SPtr res = trx->response();
+  ServiceTransactionRegisterForwardNode::SPtr trx
+      = constructSPtr<ServiceTransactionRegisterForwardNode>();
+  RegisterForwardNodeRequest::SPtr  req = trx->request();
+  RegisterForwardNodeResponse::SPtr res = trx->response();
 
-  req->forwardInfoSync()->unsetReadCallback();
-  req->forwardInfoSync()->unsetWriteCallback();
+  req->forwardNodeSync()->readService().unsetCallback();
+  req->forwardNodeSync()->writeService().unsetCallback();
   req->nodesToRegister()->resize(1);
   req->nodesToRegister()->set(0, nodeId);
 
@@ -447,7 +445,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
     if (objectNode.get() == nullptr) {
 
       OpcUaStackServer::BaseNodeClass::SPtr objectNode;
-      objectNode = OpcUaStackServer::ObjectNodeClass::construct();
+      objectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
       objectNode->setNodeId(objectNodeId);
 
       /* set object node attributes */
@@ -559,7 +557,7 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
   Log(Debug, "OpcUaLWM2MLib::createDeviceObjectNode");
 
   OpcUaStackServer::BaseNodeClass::SPtr deviceobjectNode;
-  deviceobjectNode = OpcUaStackServer::ObjectNodeClass::construct();
+  deviceobjectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
 
   /* set node id of object */
   OpcUaNodeId deviceObjectNodeId;
@@ -644,7 +642,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
   for (auto& varInfo : resourceMap)
   {
     OpcUaStackServer::BaseNodeClass::SPtr variableNode;
-    variableNode = OpcUaStackServer::VariableNodeClass::construct();
+    variableNode = constructSPtr<OpcUaStackServer::VariableNodeClass>();
 
     if (varInfo.second.operation == "RW" || varInfo.second.operation == "W" ||
             varInfo.second.operation == "R") {
@@ -743,7 +741,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
   {
 
     OpcUaStackServer::BaseNodeClass::SPtr methodNode;
-    methodNode = OpcUaStackServer::MethodNodeClass::construct();
+    methodNode = constructSPtr<OpcUaStackServer::MethodNodeClass>();
 
     if (methodInfo.second.operation == "E") {
 

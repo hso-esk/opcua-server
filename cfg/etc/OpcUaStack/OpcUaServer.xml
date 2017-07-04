@@ -2,7 +2,7 @@
 
   <Logging>
     <FileLogger>
-      <LogFileName>@LOG_DIR@/OpcUaServer.log</LogFileName>
+      <LogFileName>@CONF_DIR@/../../var/log/OpcUaStack/OpcUaServer.log</LogFileName>
     </FileLogger>
 
     <Log4cxxLogger>

@@ -58,10 +58,7 @@ bool OpcUaEddlLib::loadConfig(void)
   ConfigXml configXml;
 
   /* read configuration file */
-  config.alias("@BIN_DIR@", Environment::binDir());
   config.alias("@CONF_DIR@", Environment::confDir());
-  config.alias("@LOG_DIR@", Environment::logDir());
-  config.alias("@INSTALL_DIR@", Environment::installDir());
 
   Log(Debug, "Loading application config")
       .parameter("ConfigFileName", applicationInfo()->configFileName());
@@ -181,7 +178,7 @@ OpcUaEddlLib::processEddl(uint32_t parentNodeId)
 bool OpcUaEddlLib::createObjectNode(objectNodeCreateInfo const& info)
 {
   OpcUaStackServer::BaseNodeClass::SPtr objectNode;
-  objectNode = OpcUaStackServer::ObjectNodeClass::construct();
+  objectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
 
   /* set node id of object */
   OpcUaNodeId objectNodeId;
@@ -228,7 +225,7 @@ bool OpcUaEddlLib::createVariableNode(variableNodeCreateInfo const& info)
 {
   /* add variable node to the information model */
   OpcUaStackServer::BaseNodeClass::SPtr variableNode;
-  variableNode = OpcUaStackServer::VariableNodeClass::construct();
+  variableNode = constructSPtr<OpcUaStackServer::VariableNodeClass>();
 
   OpcUaNodeId varNodeId;
   varNodeId.set(info.variableNodeId, namespaceIndex_);
@@ -360,12 +357,13 @@ bool OpcUaEddlLib::registerCallbacks(void)
 {
   Log(Debug, "OpcUaEddlLib::registerCallbacks");
 
-  ServiceTransactionRegisterForward::SPtr trx = ServiceTransactionRegisterForward::construct();
-  RegisterForwardRequest::SPtr req = trx->request();
-  RegisterForwardResponse::SPtr res = trx->response();
+  ServiceTransactionRegisterForwardNode::SPtr trx
+         = constructSPtr<ServiceTransactionRegisterForwardNode>();
+  RegisterForwardNodeRequest::SPtr  req = trx->request();
+  RegisterForwardNodeResponse::SPtr res = trx->response();
 
-  req->forwardInfoSync()->setReadCallback(readSensorValueCallback_);
-  req->forwardInfoSync()->setWriteCallback(writeSensorValueCallback_);
+  req->forwardNodeSync()->readService().setCallback(readSensorValueCallback_);
+  req->forwardNodeSync()->writeService().setCallback(writeSensorValueCallback_);
   req->nodesToRegister()->resize(variables_.size());
 
   uint32_t pos = 0;

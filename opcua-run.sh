@@ -8,4 +8,5 @@ cp -rf cfg/etc asneg/build
 
 #run the OPC UA server
 cd asneg/build
-./OpcUaServer OpcUaStack etc/OpcUaStack/OpcUaServer.xml
+./OpcUaServer OpcUaStack etc/OpcUaStack/OpcUaServer.xml#./OpcUaServer OpcUaStack etc/OpcUaStack/OpcUaServer.xml
+./OpcUaServer3 etc/OpcUaStack/OpcUaServer.xml

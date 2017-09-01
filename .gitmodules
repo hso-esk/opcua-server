@@ -7,3 +7,6 @@
 [submodule "niki/opcua-lwm2m-server"]
 	path = niki/opcua-lwm2m-server
 	url = https://git.ivesk.hs-offenburg.de/niki4-0/opcua-lwm2m-server.git
+[submodule "asneg-dbserver"]
+	path = asneg-dbserver
+	url = https://git.ivesk.hs-offenburg.de/niki4-0/asneg-dbserver.git

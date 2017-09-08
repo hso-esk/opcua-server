@@ -24,7 +24,7 @@
     <Application>
       <Name>OpcUaIPSO</Name>
       <Library>OpcUaIPSO</Library>
-      <Config>@CONF_DIR@/Nodes/ipsoConfig.xml</Config>
+      <Config>@CONF_DIR@/OpcUaServerConfig.xml</Config>
     </Application> 
   </Applications>
 

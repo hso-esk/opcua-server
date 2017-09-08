@@ -183,19 +183,27 @@ bool OpcUaLWM2MLib::loadServerConfig(void)
 
   return true;
 }
+/**
+ * decodeIPSOConfig()
+ */
+bool OpcUaLWM2MLib::decodeIPSOConfig(const std::string& configFileName)
+{
+  Log(Debug, "OpcUaLWM2MLib::decodeIPSOConfig");
 
-  Log(Debug, "Loading application config")
-    .parameter("ConfigFileName", applicationInfo()->configFileName());
+  Config::SPtr config;
+  ConfigXmlManager configXmlManager;
 
-  boost::filesystem::path configFileName(applicationInfo()->configFileName());
-  if (configXml.parse(configFileName.string(), &config) == false) {
-    Log(Error, "Error loading configuration")
-      .parameter("ConfigFileName", configFileName.string())
-      .parameter("Reason", configXml.errorMessage());
+  /* read configuration file */
+  if (!configXmlManager.registerConfiguration(configFileName, config)) {
+    Log (Debug, "Error reading IPSO config")
+      .parameter("Error message", configXmlManager.errorMessage())
+      .parameter("ConfigFileName",configFileName);
     return false;
   }
+
+  /* process and store IPSO file paths */
   std::vector<Config> ipsoConfigVec;
-  config.getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
+  config->getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
 
   if (ipsoConfigVec.size() == 0) {
     Log(Error, "IPSO XML file does not exist");

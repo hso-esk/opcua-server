@@ -222,6 +222,40 @@ bool OpcUaLWM2MLib::loadServerConfig(void)
 
 /*---------------------------------------------------------------------------*/
 /**
+ * decodeDbConfig()
+ */
+bool OpcUaLWM2MLib::decodeDbConfig(const std::string& configFileName)
+{
+  Log (Debug, "OpcUaLWM2MLib::loadDbConfig");
+
+  Config::SPtr config;
+  ConfigXmlManager configXmlManager;
+
+  /* read database configuration file */
+  if (!configXmlManager.registerConfiguration(configFileName, config)) {
+    Log (Debug, "Error reading Database config")
+        .parameter("Error message", configXmlManager.errorMessage())
+        .parameter("configFilename", configFileName);
+    return false;
+  }
+
+  /* decode Database configuration */
+  boost::optional<Config> child = config->getChild("DBModel");
+  if (!child) {
+    Log (Debug, "Element missing in config file")
+        .parameter("Element", "DBModel")
+        .parameter("configFileName", config->configFileName());
+    return false;
+  }
+
+  if (!dbModelConfig_.decode(*child)) {
+    Log (Error, "Decode database configuration error");
+    return false;
+  }
+
+  return true;
+
+}
  * readSensorValue()
  */
 void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadContext)

@@ -9,6 +9,7 @@
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-sensor-interface)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-lwm2m-server)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/asneg-dbserver)
 
 LIST(APPEND OpcUaIPSO_SRC
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MLib.cpp
@@ -28,6 +29,7 @@ target_link_libraries(
     OpcUaStackClient
     OpcUaSensorInterface
     OpcUalwm2m
+    OpcUaDB
     ${pthread}
     ${Boost_LIBRARIES}
 )

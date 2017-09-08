@@ -40,6 +40,7 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   , resourceMaps_()
   , objectMaps_()
   , readSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::readSensorValue, this, _1))
+  , readHistorySensorValueCb_(boost::bind(&OpcUaLWM2MLib::readHistorySensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
   , execSensorMethodCallback_(boost::bind(&OpcUaLWM2MLib::execSensorMethod, this, _1))
 {
@@ -319,6 +320,40 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
 
 /*---------------------------------------------------------------------------*/
 /**
+ * readSensorHistoryValue()
+ */
+void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* applicationHReadContext)
+{
+  Log (Debug, "OpcUaLWM2MLib::readSensorHistoryValue");
+
+  /* node id of OPC UA node to read history value */
+  variableContextMap::iterator it;
+  it = variables_.find(applicationHReadContext->nodeId_);
+  if (it == variables_.end()) {
+    applicationHReadContext->statusCode_ = BadInternalError;
+  }
+
+  OpcUaDateTime startTime (applicationHReadContext->startTime_);
+  OpcUaDateTime stopTime (applicationHReadContext->stopTime_);
+
+  /* read history sensor data from database */
+  OpcUaDataValue::Vec dataValues;
+  dbServer_.readDataFromDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+      , applicationHReadContext->nodeId_
+      , startTime
+      , stopTime
+      , dataValues);
+
+   /* create result array */
+   applicationHReadContext->dataValueArray_ = constructSPtr<OpcUaDataValueArray>();
+   applicationHReadContext->dataValueArray_->resize(dataValues.size());
+   for (uint32_t idx = 0; idx < dataValues.size(); idx++) {
+     applicationHReadContext->dataValueArray_->set(idx, dataValues[idx]);
+   }
+
+  /* update read context status code */
+  applicationHReadContext->statusCode_ = Success;
+}
  * writeSensorValue()
  */
 void OpcUaLWM2MLib::writeSensorValue (ApplicationWriteContext* applicationWriteContext)
@@ -400,6 +435,7 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
   RegisterForwardNodeResponse::SPtr res = trx->response();
 
   req->forwardNodeSync()->readService().setCallback(readSensorValueCallback_);
+  req->forwardNodeSync()->readHService().setCallback(readHistorySensorValueCb_);
   req->forwardNodeSync()->writeService().setCallback(writeSensorValueCallback_);
   req->nodesToRegister()->resize(1);
   req->nodesToRegister()->set(0, nodeId);
@@ -437,6 +473,7 @@ bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
   RegisterForwardNodeResponse::SPtr res = trx->response();
 
   req->forwardNodeSync()->readService().unsetCallback();
+  req->forwardNodeSync()->readHService().unsetCallback();
   req->forwardNodeSync()->writeService().unsetCallback();
   req->nodesToRegister()->resize(1);
   req->nodesToRegister()->set(0, nodeId);

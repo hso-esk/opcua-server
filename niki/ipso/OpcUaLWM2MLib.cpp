@@ -147,15 +147,42 @@ bool OpcUaLWM2MLib::shutdown()
 /**
  * loadConfig()
  */
-bool OpcUaLWM2MLib::loadConfig(void)
+bool OpcUaLWM2MLib::loadServerConfig(void)
 {
-  Log(Debug, "OpcUaLWM2MLib::loadConfig");
+  Log (Debug, "OpcUaLWM2M::loadServerConfig");
 
-  Config config;
-  ConfigXml configXml;
+  /* load OPC UA server config file */
+  Config::SPtr config;
+  ConfigXmlManager configXmlManager;
+  if (!configXmlManager.registerConfiguration(applicationInfo()->configFileName(), config)) {
+    Log (Debug, "read OPC UA server configuration error");
+    return false;
+  }
 
-  /* read configuration file */
-  config.alias("@CONF_DIR@", Environment::confDir());
+  /*  load and decode IPSO config file */
+  std::string ipsoConfigfile;
+  if (!config->getConfigParameter("OpcUaServerModel.IPSOConfig.IPSOConfigPath", ipsoConfigfile)) {
+    Log (Debug, "read IPSO configuration error");
+    return false;
+  }
+  if (!decodeIPSOConfig(ipsoConfigfile)) {
+    Log (Debug, "decode IPSO configuration error");
+    return false;
+  }
+
+  /*  load and decode database config file */
+  std::string dbConfigfile;
+  if (!config->getConfigParameter("OpcUaServerModel.Database.DatabaseConfig",dbConfigfile)) {
+    Log (Debug, "read database configuration error");
+    return false;
+  }
+  if (!decodeDbConfig(dbConfigfile)) {
+    Log (Debug, "decode database configuration error");
+    return false;
+  }
+
+  return true;
+}
 
   Log(Debug, "Loading application config")
     .parameter("ConfigFileName", applicationInfo()->configFileName());

@@ -8,13 +8,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
 - opcua-build-x86-amd64.sh -- script to build the implementation on x86 platform.
 - opcua-build-arm.sh -- script to build the implementation on arm platform.
 - opcua-run.sh -- script to run the implementation.
-- niki -- contains the EDDL, IPSO, OPC UA LWM2M and OPC UA sensor interface implementations.
-	- asneg-dbserver --> represents NIKI database server implementation.
-	- eddl -- contains NIKI implementations of the EDDL parser and OPC UA library based on EDDL technology.
-	- ipso -- contains NIKI implementations of the IPSO XML parser and OPC UA library based on LWM2M protocol.
-	- opcua-lwm2m-server -- contains NIKI implementation of the Wakaama LWM2M server implementation.
-	- opcua-sensor-interface -- contains NIKI implementation of the interface to sensor devices.
-
+- niki -- contains the NIKI asneg server, EDDL, IPSO, LWM2M and Interface to Sensor device implementations.
 
 ### 1. Tools Required ###
 

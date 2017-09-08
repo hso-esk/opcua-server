@@ -65,6 +65,14 @@ void signalHandler(int signum)
 
   exit (signum);
 }
+static void observeCb(const DeviceDataValue* p_val, void* p_param )
+{
+    if(p_param != NULL)
+    {
+      OpcUaLWM2MLib* instance = static_cast<OpcUaLWM2MLib*>(p_param);
+      instance->processObserveData(p_val);
+    }
+}
 } /* anonymous namespace */
 
 
@@ -1019,6 +1027,22 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(const LWM2MDevice* p_dev)
 }
 
 /*---------------------------------------------------------------------------*/
+/*
+* processObserveData()
+*/
+void OpcUaLWM2MLib::processObserveData (const DeviceDataValue* p_val)
+{
+  Log(Debug, "OpcUaLWM2MLib::processObserveData");
+
+  for (auto& item : variables_)
+  {
+   if (item.second.dataObject->getVal() == p_val) {
+     OpcUaDataValue::SPtr value;
+     item.second.obsDataValue = createDataValue(p_val);
+     isObserved = true;
+   }
+  }
+}
 bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dictionary
     , objectMap_t& objectMap)
 {

@@ -10,6 +10,7 @@
 
 #include "IPSOParser.h"
 #include "OpcUaStackCore/Application/ApplicationReadContext.h"
+#include "OpcUaStackCore/Application/ApplicationHReadContext.h"
 #include "OpcUaStackCore/Application/ApplicationWriteContext.h"
 #include "OpcUaStackServer/Application/ApplicationIf.h"
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
@@ -17,6 +18,8 @@
 #include "DeviceDataLWM2M.h"
 #include "DeviceDataFile.h"
 #include "OpcUaLWM2MObserver.h"
+#include "NikiDatabaseServer.h"
+#include "NikiDbModelConfig.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -30,6 +33,13 @@ class OpcUaLWM2MLib
 {
 
 public:
+
+  typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
+  typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
+  typedef std::map<uint32_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
+  typedef std::map<uint32_t, IPSOParser::ipsoObjectDescription> objectMap_t;
+  typedef std::map<std::string, resourceMap_t> resourceMaps_t;
+  typedef std::map<std::string, objectMap_t> objectMaps_t;
 
   /**
    * \brief   Default Constructor.
@@ -49,12 +59,17 @@ public:
     /* data of OPC UA variable Node */
     OpcUaDataValue::SPtr data;
 
+    /* observed OPC UA datavalue*/
+    OpcUaDataValue::SPtr obsDataValue;
+
     /* device data object */
     boost::shared_ptr<DeviceData> dataObject;
 
     /* Resource description object */
     IPSOParser::ipsoResourceDescription resInfo;
   };
+  typedef std::map<OpcUaNodeId, opcUaNodeContext> variableContextMap;
+  typedef std::map<OpcUaNodeId, opcUaNodeContext> methodContextMap;
 
   /**
    * \brief   Starts up the OpcUaIPSO library.
@@ -76,71 +91,65 @@ public:
     */
    int8_t onDeviceDeregister(const LWM2MDevice* dev);
 
+   /**
+    * \brief   processes observed data.
+    */
+   void processObserveData (const DeviceDataValue* p_val);
 
 private:
 
-  /* string to store loaded ipso file */
   std::string ipsofileName_;
   std::vector<std::string> ipsofileNameVec_;
-
-  /* namespaceIndex of OPC UA nodes */
   OpcUaUInt16 namespaceIndex_;
-
   /* LWM2M device id */
   uint32_t deviceId_;
+  IPSOParser ipsoParser_;
+  IPSOParser::ipsoDescriptionVec data_;
+  boost::shared_ptr<LWM2MServer> lwm2mServer_;
+  OpcUaNikiDB::DbServer dbServer_;
+  OpcUaNikiDB::NikiDBModelConfig dbModelConfig_;
+  OpcUaLWM2MObserver opcUalwm2mObs_;
+  static bool isObserved;
 
-  /* OPC UA nodes Callbacks */
+  /* OPC UA node access callbacks */
   Callback readSensorValueCallback_;
+  Callback readHistorySensorValueCb_;
   Callback writeSensorValueCallback_;
   Callback execSensorMethodCallback_;
 
-  /* IPSO Parser instance */
-  IPSOParser ipsoParser_;
-
-  /* storage for parsed IPSO XML files */
-  IPSOParser::ipsoDescriptionVec data_;
-
-  /* LWM2MServer instance */
-  boost::shared_ptr<LWM2MServer> lwm2mServer_;
-
-  /* OpcUa LWM2M server observer instance */
-  OpcUaLWM2MObserver opcUalwm2mObs_;
-
-  /* OPC UA variable context map */
-  typedef std::map<OpcUaNodeId, opcUaNodeContext> variableContextMap;
+  /* data structure instance */
   variableContextMap variables_;
-
-  /* OPC UA method context map */
-  typedef std::map<OpcUaNodeId, opcUaNodeContext> methodContextMap;
   methodContextMap methods_;
-
-  /* object dictionary map */
-  typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
   objectDictionary_t objectDictionary_;
-
-  typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
-
-  typedef std::map<uint32_t, IPSOParser::ipsoResourceDescription> resourceMap_t;
   resourceMap_t resourceMap_;
-
-  typedef std::map<uint32_t, IPSOParser::ipsoObjectDescription> objectMap_t;
   objectMap_t objectMap_;
-
-  typedef std::map<std::string, resourceMap_t> resourceMaps_t;
   resourceMaps_t resourceMaps_;
-
-  typedef std::map<std::string, objectMap_t> objectMaps_t;
   objectMaps_t objectMaps_;
 
   /**
    * \brief   Load IPSO file from OPC UA server configuration file.
    */
-  bool loadConfig(void);
+  bool loadServerConfig(void);
+
+  /**
+   * \brief   Load IPSO config file.
+   */
+  bool decodeIPSOConfig(const std::string& configFileName);
+
+  /**
+   * \brief   Load Database config file.
+   */
+  bool decodeDbConfig(const std::string& configFile);
 
   /**
    * \brief   Updates the OPC UA application read Context.
    */
   void readSensorValue (ApplicationReadContext* applicationReadContext);
+
+  /**
+   * \brief   reads history data of sensor.
+   */
+  void readHistorySensorValue (ApplicationHReadContext* applicationHReadContext);
 
   /**
    * \brief   Updates the OPC UA application write Context.
@@ -223,6 +232,8 @@ private:
    */
   opcUaNodeContext createDeviceDataLWM2M(IPSOParser::ipsoResourceDescription opcUaNodeInfo
      , OpcUaStackServer::BaseNodeClass::SPtr opcUaNode);
+
+ OpcUaDataValue::SPtr createDataValue(const DeviceDataValue* value);
 };
 
 } /* namespace OpcUalwm2m */

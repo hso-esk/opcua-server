@@ -14,11 +14,13 @@
 #include "OpcUaStackServer/AddressSpaceModel/VariableNodeClass.h"
 #include "OpcUaStackServer/AddressSpaceModel/MethodNodeClass.h"
 #include "OpcUaStackCore/Base/ConfigXml.h"
+#include "OpcUaStackCore/Base/ConfigXmlManager.h"
 #include "LWM2MDevice.h"
 #include "LWM2MResource.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/format.hpp>
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -39,6 +41,7 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   , objectMap_()
   , resourceMaps_()
   , objectMaps_()
+  , dbServer_()
   , readSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::readSensorValue, this, _1))
   , readHistorySensorValueCb_(boost::bind(&OpcUaLWM2MLib::readHistorySensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
@@ -57,6 +60,7 @@ OpcUaLWM2MLib::~OpcUaLWM2MLib(void)
 }
 
 /*---------------------------------------------------------------------------*/
+bool OpcUaLWM2MLib::isObserved = false;
 namespace
 {
 void signalHandler(int signum)
@@ -66,6 +70,33 @@ void signalHandler(int signum)
 
   exit (signum);
 }
+
+/*---------------------------------------------------------------------------*/
+/**
+ * offset used internally to avoid ID conflicts
+ */
+/* offset for OPC UA object nodes */
+static uint32_t offset()
+{
+  static uint32_t ID = 40000;
+  return ID++;
+}
+
+/* offset for OPC UA variable and method nodes */
+static uint32_t offset2()
+{
+  static uint32_t ID = 60000;
+  return ID++;
+}
+
+/* offset for OPC UA device nodes */
+static uint32_t offset3()
+{
+  static uint32_t ID = 20000;
+  return ID++;
+}
+
+/*---------------------------------------------------------------------------*/
 static void observeCb(const DeviceDataValue* p_val, void* p_param )
 {
     if(p_param != NULL)
@@ -74,6 +105,7 @@ static void observeCb(const DeviceDataValue* p_val, void* p_param )
       instance->processObserveData(p_val);
     }
 }
+
 } /* anonymous namespace */
 
 
@@ -88,7 +120,7 @@ bool OpcUaLWM2MLib::startup(void)
   signal(SIGINT, signalHandler);
 
   /* load config file */
-  if (!loadConfig()) {
+  if (!loadServerConfig()) {
     Log(Error, "Could not load config file");
     return false;
   }
@@ -110,16 +142,23 @@ bool OpcUaLWM2MLib::startup(void)
     return false;
   }
 
-  /* create an instance of LWM2M server */
-  lwm2mServer_ = boost::make_shared<LWM2MServer>();
-
   /* start the the LWM2M server */
+  lwm2mServer_ = boost::make_shared<LWM2MServer>();
   lwm2mServer_->startServer();
 
   Log (Debug, "LWM2M server started");
 
   /* register the OPC UA server observer object */
   lwm2mServer_->registerObserver(&opcUalwm2mObs_);
+
+  /* start the database server */
+  dbServer_.DBServer().applicationServiceIf(&service());
+  dbServer_.dbModelConfig(&dbModelConfig_);
+
+  if (!dbServer_.startup()) {
+    Log (Debug, "Database server startup failed");
+    return false;
+  }
 
   /* Wait for LWM2M client connections */
   std::cout << "Waiting for incoming connections" << std::endl;
@@ -141,12 +180,18 @@ bool OpcUaLWM2MLib::shutdown()
   /* stop the LWM2M server */
   lwm2mServer_->stopServer();
 
+  /* shut down database server */
+  if (!dbServer_.shutdown()) {
+    Log (Debug, "Database server shutdown failed");
+    return false;
+  }
+
   return true;
 }
 
 /*---------------------------------------------------------------------------*/
 /**
- * loadConfig()
+ * loadServerConfig()
  */
 bool OpcUaLWM2MLib::loadServerConfig(void)
 {
@@ -184,6 +229,7 @@ bool OpcUaLWM2MLib::loadServerConfig(void)
 
   return true;
 }
+/*---------------------------------------------------------------------------*/
 /**
  * decodeIPSOConfig()
  */
@@ -265,6 +311,9 @@ bool OpcUaLWM2MLib::decodeDbConfig(const std::string& configFileName)
   return true;
 
 }
+
+/*---------------------------------------------------------------------------*/
+/**
  * readSensorValue()
  */
 void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadContext)
@@ -288,6 +337,15 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
   p_val = it->second.dataObject->getVal();
 
   if (p_val) {
+
+    if (isObserved) {
+
+       dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+          , applicationReadContext->nodeId_
+          , *it->second.obsDataValue );
+
+       isObserved = false;
+    }
 
     /* update value of OPC UA variable node */
     if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
@@ -354,6 +412,9 @@ void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* application
   /* update read context status code */
   applicationHReadContext->statusCode_ = Success;
 }
+
+/*---------------------------------------------------------------------------*/
+/**
  * writeSensorValue()
  */
 void OpcUaLWM2MLib::writeSensorValue (ApplicationWriteContext* applicationWriteContext)
@@ -512,6 +573,7 @@ bool OpcUaLWM2MLib::createObjectDictionary(IPSOParser::ipsoDescriptionVec& ipsoD
   return true;
 }
 /*---------------------------------------------------------------------------*/
+#if 0
 namespace
 {
 /**
@@ -539,7 +601,7 @@ static uint32_t offset3()
 }
 
 } /* anonymous namespace */
-
+#endif
 /*---------------------------------------------------------------------------*/
 /**
  * createObjectNode()
@@ -824,6 +886,9 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         /* create LWM2M device data for OPC UA variables */
         opcUaNodeContext variableCtx;
         variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
+
+        /* observe variable nodes */
+        variableCtx.dataObject->observeVal(observeCb, this);
 
         /* store variable node info into variableContextMap */
         variables_.insert(std::make_pair(varNodeId, variableCtx));
@@ -1149,6 +1214,11 @@ void OpcUaLWM2MLib::processObserveData (const DeviceDataValue* p_val)
    }
   }
 }
+
+/*---------------------------------------------------------------------------*/
+/*
+* matchObjectId()
+*/
 bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dictionary
     , objectMap_t& objectMap)
 {
@@ -1297,6 +1367,40 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
 
   return true;
 }
+
+/*---------------------------------------------------------------------------*/
+/**
+ * createDataValue()
+ */
+OpcUaDataValue::SPtr OpcUaLWM2MLib::createDataValue(const DeviceDataValue* val)
+{
+  Log(Debug, "OpcUaLWM2MLib::createObjectNode");
+
+  OpcUaDataValue::SPtr dataValue = constructSPtr<OpcUaDataValue>();
+  OpcUaDateTime dateTime (boost::posix_time::microsec_clock::universal_time());
+  dataValue->sourceTimestamp(dateTime);
+  dataValue->serverTimestamp(dateTime);
+  dataValue->statusCode(Success);
+
+  if (val->getType() == DeviceDataValue::TYPE_INTEGER) {
+    int32_t readSensorVal = val->getVal().i32;
+    dataValue->variant()->variant(readSensorVal);
+
+  } else if (val->getType() == DeviceDataValue::TYPE_FLOAT) {
+    float readSensorVal = val->getVal().f;
+    dataValue->variant()->variant(readSensorVal);
+
+  } else if (val->getType() == DeviceDataValue::TYPE_STRING) {
+    std::string readSensorVal(val->getVal().cStr);
+    OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+    str->value(readSensorVal);
+    dataValue->variant()->variant(str);
+  }
+
+  return dataValue;
+
+}
+
 
 } /* namespace OpcUalwm2m */
 

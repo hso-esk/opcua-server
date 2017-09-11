@@ -2,13 +2,13 @@
 
 This README file describes the steps to build and run the  OPC UA server implementation. It also describes the client applications to connect to the OPC UA server. The [opcua-server repository](https://redmine.ivesk.hs-offenburg.de/projects/niki4-0/repository) is organized as follows:
 
-- asneg -- represents the AsNeG OPC UA implementation.
-- asneg-dbserver -- contains AsNeG database server implementation.
-- cfg -- contains the configuration files to run the server implementation.
-- opcua-build-x86-amd64.sh -- script to build the implementation on x86 platform.
-- opcua-build-arm.sh -- script to build the implementation on arm platform.
-- opcua-run.sh -- script to run the implementation.
-- niki -- contains the NIKI asneg server, EDDL, IPSO, LWM2M and Interface to Sensor device implementations.
+- asneg --> represents the AsNeG OPC UA implementation.
+- asneg-dbserver --> contains AsNeG database server implementation.
+- cfg -> contains the configuration files to run the server implementation.
+- opcua-build-x86-amd64.sh --> script to build the implementation on x86 platform.
+- opcua-build-arm.sh --> script to build the implementation on arm platform.
+- opcua-run.sh --> script to run the implementation.
+- niki --> contains the NIKI asneg server, EDDL, IPSO, LWM2M and Interface to Sensor device implementations.
 
 ### 1. Tools Required ###
 
@@ -22,11 +22,11 @@ This README file describes the steps to build and run the  OPC UA server impleme
 
 ### 2. MySQL database installation and configuration ###
 
- * Install MySQL: `` sudo apt-get install mysql-server mysql-client``.
- * Install unixodbc: ``sudo apt-get install unixodbc-dev``
- * Install MySQL Database ODBC driver: ``sudo apt-get install libmyodbc``
- * Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database user name (UserName) and
-   database user password (nikiPassword) should match the configuration in *cfg/etc/OpcUaStack/Nodes/dbConfig.xml*
+* `` sudo apt-get install mysql-server mysql-client``.
+* ``sudo apt-get install unixodbc-dev``
+* ``sudo apt-get install libmyodbc``
+* Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database user name (UserName) and
+  database user password (nikiPassword) should match the configuration in *cfg/etc/OpcUaStack/Nodes/dbConfig.xml*
 
 		[nikiDataSource]
 		Description = MySQL connection to  database
@@ -39,7 +39,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
 		ReadOnly    = No
 
 
- * Edit */etc/odbcinst.ini* as below. Edit the MySQL odbc driver path (Driver = " ") and unix ODBC Driver (Setup = "") as shown below:
+* Edit */etc/odbcinst.ini* as below. Edit the MySQL odbc driver path (Driver = " ") and unix ODBC Driver (Setup = "").
 
 		[MySQL]
 		Description=ODBC for MySQL
@@ -66,8 +66,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
  * `` git submodule update --init``
  * `` git apply wakaama.patch``
  * Change to the opcua-server directory.
-*  For x86_amd64: ``./opcua-build-x86-amd64.sh``
-*  For arm:       ``./opcua-build-x86-amd64.sh``
+*  ``./opcua-build-x86-amd64.sh`` or  ``./opcua-build-x86-amd64.sh`` (depending on the target platform)
 * ``./opcua-run.sh``
 
 

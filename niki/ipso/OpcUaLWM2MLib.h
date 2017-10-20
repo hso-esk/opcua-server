@@ -95,7 +95,7 @@ public:
     * \brief   processes observed data.
     */
    void processObserveData (const DeviceDataValue* p_val);
-
+  // static bool isObserved;
 private:
 
   std::string ipsofileName_;
@@ -160,7 +160,6 @@ private:
    * \brief   Call Sensor Method - not implemented.
    */
   void execSensorMethod(ApplicationReadContext* applicationReadContext);
-
 
   /**
    * \brief   Registers read and write callbacks of variable node.

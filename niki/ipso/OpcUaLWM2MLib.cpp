@@ -102,6 +102,7 @@ static void observeCb(const DeviceDataValue* p_val, void* p_param )
     if(p_param != NULL)
     {
       OpcUaLWM2MLib* instance = static_cast<OpcUaLWM2MLib*>(p_param);
+      //OpcUaLWM2MLib::isObserved = true;
       instance->processObserveData(p_val);
     }
 }
@@ -336,16 +337,7 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
   const DeviceDataValue* p_val = NULL;
   p_val = it->second.dataObject->getVal();
 
-  if (p_val) {
-
-    if (isObserved) {
-
-       dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
-          , applicationReadContext->nodeId_
-          , *it->second.obsDataValue );
-
-       isObserved = false;
-    }
+  if (p_val && it->second.obsDataValue) {
 
     /* update value of OPC UA variable node */
     if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
@@ -362,6 +354,32 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
       str->value(readSensorVal);
       it->second.data->variant()->variant(str);
     }
+
+    /* store sensor value in database */
+    dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+      , applicationReadContext->nodeId_
+      , *it->second.obsDataValue );
+#if 1
+      // isObserved = false;
+//    }
+#endif
+#if 0
+    /* update value of OPC UA variable node */
+    if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
+      int32_t readSensorVal = p_val->getVal().i32;
+      it->second.data->variant()->variant(readSensorVal);
+
+    } else if (p_val->getType() == DeviceDataValue::TYPE_FLOAT) {
+      float readSensorVal = p_val->getVal().f;
+      it->second.data->variant()->variant(readSensorVal);
+
+    } else if (p_val->getType() == DeviceDataValue::TYPE_STRING) {
+      std::string readSensorVal(p_val->getVal().cStr);
+      OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+      str->value(readSensorVal);
+      it->second.data->variant()->variant(str);
+    }
+#endif
   } else if (it->second.resInfo.mandatoryType == "Mandatory") {
     std::cout << "Read resource failed, Resource is not accessible"
               << std::endl;
@@ -1210,7 +1228,17 @@ void OpcUaLWM2MLib::processObserveData (const DeviceDataValue* p_val)
    if (item.second.dataObject->getVal() == p_val) {
      OpcUaDataValue::SPtr value;
      item.second.obsDataValue = createDataValue(p_val);
-     isObserved = true;
+     OpcUaNodeId nodeId = item.first;
+
+     /* update value of observed node */
+     OpcUaStackServer::BaseNodeClass::SPtr observedNode;
+     observedNode = informationModel()->find(nodeId);
+     observedNode->setValue(*item.second.obsDataValue);
+
+     /* store sensor value in database */
+     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+               , nodeId
+               , *item.second.obsDataValue);
    }
   }
 }

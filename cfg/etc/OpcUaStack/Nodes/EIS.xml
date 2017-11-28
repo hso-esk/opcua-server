@@ -1,85 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
 	<Object ObjectType="MODefinition">
-		<Name>EIS</Name>
-		<Description1>Description: This IPSO object describes the EIS .</Description1>
+		<Name>Flow_X</Name>
+		<Description1>Airflow in X-Direction for EIS</Description1>
 		<ObjectID>3601</ObjectID>
 		<ObjectURN>urn:oma:lwm2m:ext:3601</ObjectURN>
 		<MultipleInstances>Multiple</MultipleInstances>
 		<Mandatory>Optional</Mandatory>
 		<Resources>
 			<Item ID="5700">
-				<Name>Max. Luft X</Name>
+				<Name>Sensor Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Mandatory</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units>1/100 m/s.</Units>
-				<Description>Maximum measured luft X from the sensor</Description>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from the Sensor</Description>
 			</Item>
 			<Item ID="5601">
-				<Name>Max. Luft Y</Name>
+				<Name>Min Measured Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Optional</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units></Units>
-				<Description>Maximum measured luft Y from the sensor</Description>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The minimum value measured by the sensor since power ON or reset</Description>
 			</Item>
 			<Item ID="5602">
-				<Name>Avg. Luft X</Name>
+				<Name>Max Measured Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Optional</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units></Units>
-				<Description>Average measured luft X from the sensor</Description>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The maximum value measured by the sensor since power ON or reset</Description>
 			</Item>
 			<Item ID="5603">
-				<Name>Avg. Luft Y</Name>
+				<Name>Min Range Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Optional</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units></Units>
-				<Description>Average measured luft Y from the sensor</Description>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The minimum value that can be measured by the sensor</Description>
 			</Item>
 			<Item ID="5604">
-				<Name>Flow status</Name>
+				<Name>Max Range Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Optional</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units></Units>
-				<Description>Measured flow status from the sensor</Description>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The maximum value that can be measured by the sensor</Description>
 			</Item>
 			<Item ID="5701">
-				<Name>CO2 in ppm</Name>
+				<Name>Sensor Units</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Optional</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units>PPM</Units>
-				<Description>Measured CO2 in ppm from the sensor.</Description>
-			</Item>
-			<Item ID="5605">
-				<Name>CO2 status</Name>
-				<Operations>R</Operations>
-				<MultipleInstances>Single</MultipleInstances>
-				<Mandatory>Optional</Mandatory>
-				<Type>Integer</Type>
-				<RangeEnumeration></RangeEnumeration>
-				<Units></Units>
-				<Description>Measured CO2 status from the sensor</Description>
+				<Type>String</Type>
+				<RangeEnumeration/>
+				<Units/>
+				<Description>Measurement Units Definition e.g. “m/s” for air flow.</Description>
 			</Item>
 		</Resources>
-		<Description2></Description2>
+	</Object>
+	<Object ObjectType="MODefinition">
+		<Name>Flow_Y</Name>
+		<Description1>Airflow in Y-Direction for EIS</Description1>
+		<ObjectID>3602</ObjectID>
+		<ObjectURN>urn:oma:lwm2m:ext:3602</ObjectURN>
+		<MultipleInstances>Multiple</MultipleInstances>
+		<Mandatory>Optional</Mandatory>
+		<Resources>
+			<Item ID="5700">
+				<Name>Sensor Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from the Sensor</Description>
+			</Item>
+			<Item ID="5601">
+				<Name>Min Measured Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The minimum value measured by the sensor since power ON or reset</Description>
+			</Item>
+			<Item ID="5602">
+				<Name>Max Measured Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The maximum value measured by the sensor since power ON or reset</Description>
+			</Item>
+			<Item ID="5603">
+				<Name>Min Range Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The minimum value that can be measured by the sensor</Description>
+			</Item>
+			<Item ID="5604">
+				<Name>Max Range Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>The maximum value that can be measured by the sensor</Description>
+			</Item>
+			<Item ID="5701">
+				<Name>Sensor Units</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Mandatory>Optional</Mandatory>
+				<Type>String</Type>
+				<RangeEnumeration/>
+				<Units/>
+				<Description>Measurement Units Definition e.g. “m/s” for air flow</Description>
+			</Item>
+		</Resources>
 	</Object>
 </LWM2M>
 

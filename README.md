@@ -25,8 +25,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
 * `` sudo apt-get install mysql-server mysql-client``.
 * ``sudo apt-get install unixodbc-dev``
 * ``sudo apt-get install libmyodbc``
-* Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database user name (UserName) and
-  database user password (nikiPassword) should match the configuration in *cfg/etc/OpcUaStack/Nodes/dbConfig.xml*
+* Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database user name (UserName) and database user password (nikiPassword) should match the configuration in *cfg/etc/OpcUaStack/Nodes/dbConfig.xml*.
 
 		[nikiDataSource]
 		Description = MySQL connection to  database
@@ -39,7 +38,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
 		ReadOnly    = No
 
 
-* Edit */etc/odbcinst.ini* as below. Edit the MySQL odbc driver path (Driver = " ") and unix ODBC Driver (Setup = "").
+* Edit */etc/odbcinst.ini* as below. Edit the MySQL odbc driver path (Driver = " ") and unix ODBC Driver (Setup = ""). For armhf platform, *Driver="/usr/lib/arm-linux-gnueabihf/odbc/libmyodbc.so"* and *Setup="/usr/lib/arm-linux-gnueabihf/odbc/libodbcmyS.so"*
 
 		[MySQL]
 		Description=ODBC for MySQL

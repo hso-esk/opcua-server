@@ -843,7 +843,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
       /* set OPC UA variable node id */
       OpcUaNodeId varNodeId;
-      uint32_t resourceId =  offset2();
+      uint32_t resourceId =  varInfo.first;
 
       varNodeId.set(resourceId, namespaceIndex_);
       variableNode->setNodeId(varNodeId);

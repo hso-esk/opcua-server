@@ -359,27 +359,7 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
       , applicationReadContext->nodeId_
       , *it->second.obsDataValue );
-#if 1
-      // isObserved = false;
-//    }
-#endif
-#if 0
-    /* update value of OPC UA variable node */
-    if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
-      int32_t readSensorVal = p_val->getVal().i32;
-      it->second.data->variant()->variant(readSensorVal);
 
-    } else if (p_val->getType() == DeviceDataValue::TYPE_FLOAT) {
-      float readSensorVal = p_val->getVal().f;
-      it->second.data->variant()->variant(readSensorVal);
-
-    } else if (p_val->getType() == DeviceDataValue::TYPE_STRING) {
-      std::string readSensorVal(p_val->getVal().cStr);
-      OpcUaString::SPtr str = constructSPtr<OpcUaString>();
-      str->value(readSensorVal);
-      it->second.data->variant()->variant(str);
-    }
-#endif
   } else if (it->second.resInfo.mandatoryType == "Mandatory") {
     std::cout << "Read resource failed, Resource is not accessible"
               << std::endl;
@@ -590,36 +570,7 @@ bool OpcUaLWM2MLib::createObjectDictionary(IPSOParser::ipsoDescriptionVec& ipsoD
   }
   return true;
 }
-/*---------------------------------------------------------------------------*/
-#if 0
-namespace
-{
-/**
- * offset used internally to avoid ID conflicts
- */
-/* offset for OPC UA object nodes */
-static uint32_t offset()
-{
-  static uint32_t ID = 40000;
-  return ID++;
-}
 
-/* offset for OPC UA variable and method nodes */
-static uint32_t offset2()
-{
-  static uint32_t ID = 60000;
-  return ID++;
-}
-
-/* offset for OPC UA device nodes */
-static uint32_t offset3()
-{
-  static uint32_t ID = 20000;
-  return ID++;
-}
-
-} /* anonymous namespace */
-#endif
 /*---------------------------------------------------------------------------*/
 /**
  * createObjectNode()

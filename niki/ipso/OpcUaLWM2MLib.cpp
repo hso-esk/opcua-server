@@ -10,8 +10,8 @@
  * Institut für Technologie (www.fzi.de), Hahn-Schickard-Gesellschaft
  * für angewandte Forschung e.V. (www.hahn-schickard.de) and
  * Hochschule Offenburg (www.hs-offenburg.de).
- * This file was developed by [Kofi Atta Nsiah], [Hahn-Schickard-Gesellschaft
- * für angewandte Forschung e.V.]
+ * This file was developed by the Institute of reliable Embedded Systems
+ * and Communication Electronics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

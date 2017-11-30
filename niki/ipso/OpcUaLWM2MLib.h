@@ -81,9 +81,6 @@ public:
     /* data of OPC UA variable Node */
     OpcUaDataValue::SPtr data;
 
-    /* observed OPC UA datavalue*/
-    OpcUaDataValue::SPtr obsDataValue;
-
     /* device data object */
     boost::shared_ptr<DeviceData> dataObject;
 

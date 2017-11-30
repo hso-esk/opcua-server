@@ -359,7 +359,7 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
   const DeviceDataValue* p_val = NULL;
   p_val = it->second.dataObject->getVal();
 
-  if (p_val && it->second.obsDataValue) {
+  if (p_val && it->second.data) {
 
     /* update value of OPC UA variable node */
     if (p_val->getType() == DeviceDataValue::TYPE_INTEGER) {
@@ -380,7 +380,7 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
     /* store sensor value in database */
     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
       , applicationReadContext->nodeId_
-      , *it->second.obsDataValue );
+      , *it->second.data );
 
   } else if (it->second.resInfo.mandatoryType == "Mandatory") {
     std::cout << "Read resource failed, Resource is not accessible"
@@ -1200,18 +1200,18 @@ void OpcUaLWM2MLib::processObserveData (const DeviceDataValue* p_val)
   {
    if (item.second.dataObject->getVal() == p_val) {
      OpcUaDataValue::SPtr value;
-     item.second.obsDataValue = createDataValue(p_val);
+     item.second.data = createDataValue(p_val);
      OpcUaNodeId nodeId = item.first;
 
      /* update value of observed node */
      OpcUaStackServer::BaseNodeClass::SPtr observedNode;
      observedNode = informationModel()->find(nodeId);
-     observedNode->setValue(*item.second.obsDataValue);
+     observedNode->setValue(*item.second.data);
 
      /* store sensor value in database */
      dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
                , nodeId
-               , *item.second.obsDataValue);
+               , *item.second.data);
    }
   }
 }

@@ -52,10 +52,10 @@ This README file describes the steps to build and run the  OPC UA server impleme
 		[MySQL]
 
 * Log in to MySQL with root privileges to create niki database user name and password and the according  privileges by executing the following in the command line.
-		* ``mysql -u root -p``
-		* ``CREATE USER 'nikiUserName'@'localhost' IDENTIFIED BY 'nikiPassword';``
-		* ``GRANT ALL PRIVILEGES ON * . * TO 'nikiUserName'@'localhost';``
-		* ``FLUSH PRIVILEGES;``
+* ``mysql -u root -p``
+* ``CREATE USER 'nikiUserName'@'localhost' IDENTIFIED BY 'nikiPassword';``
+* ``GRANT ALL PRIVILEGES ON * . * TO 'nikiUserName'@'localhost';``
+* ``FLUSH PRIVILEGES;``
 
 ### 3. Build process (Automated) ###
 

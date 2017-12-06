@@ -17,3 +17,10 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # for libraries and headers in the target directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+#exlude system libraries
+SET(NO_CMAKE_SYSTEM_PATH    ON)
+
+#set boost library path
+SET(BOOST_ROOT              "${CMAKE_SOURCE_DIR}/../../../../boost-x86")
+SET(Boost_NO_SYSTEM_PATHS   ON)

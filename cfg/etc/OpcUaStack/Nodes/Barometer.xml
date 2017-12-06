@@ -68,12 +68,12 @@
 				<Units></Units>
 				<Description>If present, the type of sensor defined as the UCUM Unit Definition e.g. “Cel” for Temperature in Celcius.</Description>
 			</Item>
-			<Item ID="5705">
+			<Item ID="5605">
 				<Name>Reset Min and Max Measured Values</Name>
-				<Operations>R</Operations>
+				<Operations>E</Operations>
 				<MultipleInstances>Single</MultipleInstances>
 				<Mandatory>Optional</Mandatory>
-				<Type>Float</Type>
+				<Type>Opaque</Type>
 				<RangeEnumeration></RangeEnumeration>
 				<Units></Units>
 				<Description>Reset the Min and Max Measured Values to Current Value</Description>

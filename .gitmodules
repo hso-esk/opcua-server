@@ -1,12 +1,12 @@
 [submodule "asneg"]
 	path = asneg
-	url = https://git.ivesk.hs-offenburg.de/niki4-0/asneg.git
+	url = https://github.com/hso-esk/asneg.git
 [submodule "niki/opcua-sensor-interface"]
 	path = niki/opcua-sensor-interface
-	url = https://git.ivesk.hs-offenburg.de/niki4-0/opcua-sensor-interface.git
+	url = https://github.com/hso-esk/opcua-sensor-interface.git
 [submodule "niki/opcua-lwm2m-server"]
 	path = niki/opcua-lwm2m-server
-	url = https://git.ivesk.hs-offenburg.de/niki4-0/opcua-lwm2m-server.git
+	url = https://github.com/hso-esk/opcua-lwm2m-server.git
 [submodule "asneg-dbserver"]
 	path = asneg-dbserver
-	url = https://git.ivesk.hs-offenburg.de/niki4-0/asneg-dbserver.git
+	url = https://github.com/hso-esk/asneg-dbserver

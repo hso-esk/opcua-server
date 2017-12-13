@@ -56,9 +56,10 @@ namespace OpcUaLWM2M
  */
 OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   : OpcUaStackServer::ApplicationIf()
+  , threadRun(false)
   , ipsofileName_("")
   , namespaceIndex_(0)
-  , opcUalwm2mObs_(*this)
+  , deviceId_(0)
   , resourceMap_()
   , objectMap_()
   , resourceMaps_()
@@ -134,6 +135,34 @@ static void observeCb(const DeviceDataValue* p_val, void* p_param )
 
 /*---------------------------------------------------------------------------*/
 /**
+ * notify()
+ */
+int8_t OpcUaLWM2MLib::notify(const LWM2MDevice* p_dev, const e_lwm2m_serverobserver_event_t ev)
+{
+  Log(Debug, "OpcUaLWM2MLib::notify");
+
+
+  if( ev == e_lwm2m_serverobserver_event_deregister )
+  {
+      Log(Debug, "Event device deregistration triggered")
+            .parameter("Device name", p_dev->getName());
+
+      /* execute onDeviceRegister function */
+      onDeviceDeregister(p_dev);
+  }
+  else
+  {
+    s_devEvent_t event = {p_dev, ev};
+    evQueue.push( event );
+  }
+
+
+  return 0;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/**
  * startup()
  */
 bool OpcUaLWM2MLib::startup(void)
@@ -165,6 +194,10 @@ bool OpcUaLWM2MLib::startup(void)
     return false;
   }
 
+  /* create thread */
+  threadRun = true;
+  t = new boost::thread( &OpcUaLWM2MLib::thread, this );
+
   /* start the the LWM2M server */
   lwm2mServer_ = boost::make_shared<LWM2MServer>();
   lwm2mServer_->startServer();
@@ -172,7 +205,7 @@ bool OpcUaLWM2MLib::startup(void)
   Log (Debug, "LWM2M server started");
 
   /* register the OPC UA server observer object */
-  lwm2mServer_->registerObserver(&opcUalwm2mObs_);
+  lwm2mServer_->registerObserver( this );
 
   /* start the database server */
   dbServer_.DBServer().applicationServiceIf(&service());
@@ -198,7 +231,12 @@ bool OpcUaLWM2MLib::shutdown()
   Log(Debug, "OpcUaLWM2MLib::shutdown");
 
   /* deregister OpcUa LWM2M server observer */
-  lwm2mServer_->deregisterObserver(&opcUalwm2mObs_);
+  lwm2mServer_->deregisterObserver( this );
+
+  /* stop worker thread */
+  threadRun = false;
+  t->join();
+  delete t;
 
   /* stop the LWM2M server */
   lwm2mServer_->stopServer();
@@ -211,6 +249,56 @@ bool OpcUaLWM2MLib::shutdown()
 
   return true;
 }
+
+
+/*---------------------------------------------------------------------------*/
+/**
+ * thread()
+ */
+void OpcUaLWM2MLib::thread( void )
+{
+  while( threadRun == true )
+  {
+    s_devEvent_t ev;
+    while( evQueue.pop( ev ))
+    {
+      switch (ev.event)
+      {
+        case e_lwm2m_serverobserver_event_register:
+        {
+          Log(Debug, "Event device registration triggered")
+                .parameter("Device name", ev.p_dev->getName());
+
+          /* execute onDeviceRegister function */
+          onDeviceRegister(ev.p_dev);
+        }
+        break;
+
+        case e_lwm2m_serverobserver_event_update:
+        {
+          Log(Debug, "Event device update triggered")
+                .parameter("Device name", ev.p_dev->getName());
+          /** TODO */
+
+          Log(Warning, "Update event not implemented yet");
+        }
+        break;
+
+        case e_lwm2m_serverobserver_event_deregister:
+        {
+          Log(Debug, "Event device deregistration triggered")
+                .parameter("Device name", ev.p_dev->getName());
+
+          /* execute onDeviceRegister function */
+          onDeviceDeregister(ev.p_dev);
+        }
+        break;
+      }
+    }
+  }
+
+}
+
 
 /*---------------------------------------------------------------------------*/
 /**

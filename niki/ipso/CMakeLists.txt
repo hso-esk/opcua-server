@@ -16,8 +16,6 @@ LIST(APPEND OpcUaIPSO_SRC
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MLib.h
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/IPSOParser.cpp
   ${PROJECT_SOURCE_DIR}/../../niki/ipso/IPSOParser.h
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MObserver.cpp
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MObserver.h
 )
 
 add_library(OpcUaIPSO SHARED ${OpcUaIPSO_SRC})

@@ -39,12 +39,13 @@
 #include "DeviceDataValue.h"
 #include "DeviceDataLWM2M.h"
 #include "DeviceDataFile.h"
-#include "OpcUaLWM2MObserver.h"
 #include "NikiDatabaseServer.h"
 #include "NikiDbModelConfig.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
+#include <boost/thread.hpp>
+#include <boost/lockfree/queue.hpp>
 
 
 namespace OpcUaLWM2M
@@ -52,7 +53,21 @@ namespace OpcUaLWM2M
 
 class OpcUaLWM2MLib
   : public OpcUaStackServer::ApplicationIf
+  , public LWM2MServerObserver
 {
+
+private:
+
+  /**
+   * Device event.
+   */
+  struct s_devEvent_t
+  {
+      /* pointer to the device */
+      const LWM2MDevice* p_dev;
+      /* event type */
+      e_lwm2m_serverobserver_event_t event;
+  };
 
 public:
 
@@ -90,6 +105,12 @@ public:
   typedef std::map<OpcUaNodeId, opcUaNodeContext> variableContextMap;
   typedef std::map<OpcUaNodeId, opcUaNodeContext> methodContextMap;
 
+
+  /**
+   * \brief   Get notifications from LWM2M server
+   */
+  int8_t notify(const LWM2MDevice* p_dev, const e_lwm2m_serverobserver_event_t ev);
+
   /**
    * \brief   Starts up the OpcUaIPSO library.
    */
@@ -117,6 +138,11 @@ public:
   // static bool isObserved;
 private:
 
+   /* thread instacmce */
+   boost::thread* t;
+   bool threadRun;
+   boost::lockfree::queue<s_devEvent_t, boost::lockfree::capacity<1024> > evQueue;
+
   std::string ipsofileName_;
   std::vector<std::string> ipsofileNameVec_;
   OpcUaUInt16 namespaceIndex_;
@@ -127,7 +153,6 @@ private:
   boost::shared_ptr<LWM2MServer> lwm2mServer_;
   OpcUaNikiDB::DbServer dbServer_;
   OpcUaNikiDB::NikiDBModelConfig dbModelConfig_;
-  OpcUaLWM2MObserver opcUalwm2mObs_;
   static bool isObserved;
 
   /* OPC UA node access callbacks */
@@ -144,6 +169,11 @@ private:
   objectMap_t objectMap_;
   resourceMaps_t resourceMaps_;
   objectMaps_t objectMaps_;
+
+  /**
+   * \brief   Thread function.
+   */
+  void thread( void );
 
   /**
    * \brief   Load IPSO file from OPC UA server configuration file.

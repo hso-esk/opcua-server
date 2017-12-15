@@ -51,6 +51,9 @@
 namespace OpcUaLWM2M
 {
 
+
+#define OPCUALWM2MLIB_THREAD_TOT_US       2000
+
 /**
  * OpcUaLWM2MLib()
  */
@@ -259,6 +262,7 @@ void OpcUaLWM2MLib::thread( void )
 {
   while( threadRun == true )
   {
+    usleep(OPCUALWM2MLIB_THREAD_TOT_US);
     s_devEvent_t ev;
     while( evQueue.pop( ev ))
     {

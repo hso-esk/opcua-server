@@ -255,6 +255,13 @@ bool DbServer::execSQLDirect(const std::string& sqlQuery)
     return false;
   }
 
+   /* disconnect from database */
+   success = connection.disconnect();
+   if (!success) {
+ 	Log(Error, "Failed to disconnect from sql server");
+     return false;
+   }
+
   return true;
 }
 

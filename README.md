@@ -1,15 +1,3 @@
-# OPC UA Server
-The OPC UA Server as it is published here is based on the Open-Source implementation from ANSNeG [http://asneg.de/]. It usese the core repositories [https://81.169.197.52:8443/repositories/;jsessionid=1nnyhqp3g8p1pyndp1qgy8k3t] with slight modifications. Furthermore additional modules have been created e.g. to enable an abstractsensor interface and an adapter to connect to LWM2M devices. Therefore it uses the following submodules:
- - asneg (the core of the OPC UA Server)
- - asneg-db (database interaction for historical data)
- - wakaama (as the LWM2M server)
- - opcua-sensor-interface (abstract sensor interface)
- - opcua-lwm2m-server (interconnection between the LWM2M server and the OPC UA server)
- This allows LWM2M enabled devices to register at the OPC UA server and to share resources via OPC UA.
-
-This work was originated from the NIKI 4.0 project. NIKI 4.0 was financed by the Baden-Württemberg Stiftung gGmbH (www.bwstiftung.de).  Project partners are FZI Forschungszentrum  Informatik am Karlsruher Institut für Technologie (www.fzi.de), Hahn-Schickard-Gesellschaft für angewandte Forschung e.V. (www.hahn-schickard.de) and Hochschule Offenburg (www.hs-offenburg.de).
-
-
 ## How to build and run the OPC UA server implementation ##
 
 This README file describes the steps to build and run the  OPC UA server implementation. It also describes the client applications to connect to the OPC UA server. The [opcua-server repository](https://redmine.ivesk.hs-offenburg.de/projects/niki4-0/repository) is organized as follows:
@@ -24,15 +12,96 @@ This README file describes the steps to build and run the  OPC UA server impleme
 
 ### 1. Tools Required ###
 
-- boost 1.54
+- boost 1.54 
 - gcc 4.9
-- cmake
-- openssl
+- cmake 
+- openssl 
 - UAExpert
 - MySQL
 
+### 2. boost compilation ### 
 
-### 2. MySQL database installation and configuration ###
+- **Get gcc 4.9 with:** 
+
+ ``sudo apt-get install gcc-4.9 g++4.9 cpp-4.9``
+
+- **Create symbolic links for gcc with:**
+```
+ cd /usr/bin
+ rm gcc g++ cpp
+ ln -s gcc-4.9 gcc
+ ln -s g++-4.9 g++
+ ln -s cpp-4.9 cpp
+```
+
+- **Check if gcc is working with:**
+
+ ``gcc -v``
+
+- **For cross compilation tools install:**
+
+``sudo apt install gcc-4.9-arm-linux-gnueabihf``
+
+**and**
+ 
+``sudo apt install g++-4.9-arm-linux-gnueabihf``
+
+*On ubuntu 16.04 you will have to downlod and install g++ package manualy, you can get it from [xenial](https://packages.ubuntu.com/xenial/amd64/g++-4.9-arm-linux-gnueabihf/download)*
+
+- **For cross compilation to work you will also need to make a symbolic link to opnesslconf.h file with:**
+
+``sudo ln -s /usr/include/x86_64-linux-gnu/openssl/opensslconf.h /usr/include/openssl/``
+
+- **Get boost 1.54 from:**
+
+[sourceforge](https://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.bz2/download) 
+
+- **Untar it in /usr/local/ or in a directory of you choice with:**
+
+ ``tar --bzip2 -xf /path/to/boost_1_61_0.tar.bz2``
+
+- **Downlad and install liboost dev tools from:**
+
+[libboost-all-dev](https://launchpad.net/ubuntu/trusty/amd64/libboost-all-dev/1.54.0.1ubuntu1)
+
+- **Modify BOOST_ROOT/boost/cstdint.hpp from:**
+
+ ``#if defined(BOOST_HAS_STDINT_H) && (!defined(__GLIBC__) || defined(__GLIBC_HAVE_LONG_LONG))``
+
+**to:**
+
+ ``#if defined(BOOST_HAS_STDINT_H)``
+
+- **Go to boost directory and run bootstrap.sh with:**
+
+ ``./bootstrap.sh --prefix=/usr/local/ --toolset=gcc`` 
+
+- **Build and install boost libraries with:**
+
+ ``./b2 install --toolset=ARCHITECHTURE_TOOLSET --target-os=linux``
+
+*ARCHITECHTURE_TOOLSET - your chosen architechture, **gcc** for x86/amd64, **gcc-arm** for arm*
+
+- **When crosscompileing for arm, you have to modify project-config.jam, to do so run:** 
+
+`` sudo gedit BOOST_ROOT/project-config.jam `` 
+
+**and change the line:** 
+
+``using gcc`` 
+
+**to** 
+
+``using gcc : arm : /usr/bin/arm-linux-gnueabihf-g++-4.9 ;`` 
+
+**and then run with:**
+
+``./b2 install toolset=gcc-arm``
+
+- **If boost cross compilation for arm fails due to openssl not being recognized** 
+*If you do not have openssl compiled for arm architechture you will have to cross compile it as well, or else boost compilation will fail. There is a scrip to compile openssl sources, get the source tar ball from [openssl](https://www.openssl.org/source/) and Build_for_arm.sh*
+
+### 3. MySQL database installation and configuration ###
 
 * `` sudo apt-get install mysql-server mysql-client``.
 * ``sudo apt-get install unixodbc-dev``
@@ -69,7 +138,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
 * ``GRANT ALL PRIVILEGES ON * . * TO 'nikiUserName'@'localhost';``
 * ``FLUSH PRIVILEGES;``
 
-### 3. Build process (Automated) ###
+### 4. Build process (Automated) ###
 
  * Clone the *opcua-server repository* and change to the *opcua-server* directory.
  * ``git submodule update --init --recursive``
@@ -77,11 +146,11 @@ This README file describes the steps to build and run the  OPC UA server impleme
  * `` git submodule update --init``
  * `` git apply wakaama.patch``
  * Change to the opcua-server directory.
-*  ``./opcua-build-x86-amd64.sh`` or  ``./opcua-build-x86-amd64.sh`` (depending on the target platform)
-* ``./opcua-run.sh``
+ *  ``./opcua-build-x86-amd64.sh`` or  ``./opcua-build-arm.sh`` (depending on the target platform)
+ * ``./opcua-run.sh``
+ * *Building for arm might require some changes to arm-linux-toolchain.cmake file, when the project set-up differs*
 
-
-### 4. Build process (Manual) ###
+### 5. Build process (Manual) ###
 
  * First 5 steps of Build process (Automated) same for Build process (Manual)
  * Change to *opcua-server/asneg* directory, create a build directory and change to that.
@@ -93,7 +162,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
  * ``./OpcUaServer OpcUaStack etc/OpcUaStack/OpcUaServer.xml`` to run the OPC UA server.
 
 
-### 5. Client applications ###
+### 6. Client applications ###
 
  * [Clone](https://github.com/eclipse/wakaama) the Wakaama implementation, build and run the **Test Client example** to connect to the running OPC UA server.
  * [Download](https://redmine.ivesk.hs-offenburg.de/projects/niki4-0/files) the UaExpert OPC UA client application (Windows application) and install.

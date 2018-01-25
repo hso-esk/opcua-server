@@ -1,3 +1,18 @@
+# OPC UA Server
+The OPC UA Server as it is published here is based on the Open-Source implementation from ANSNeG [http://asneg.de/]. It usese the core repositories [https://81.169.197.52:8443/repositories/;jsessionid=1nnyhqp3g8p1pyndp1qgy8k3t] with slight modifications. Furthermore additional modules have been created e.g. to enable an abstractsensor interface and an adapter to connect to LWM2M devices. Therefore it uses the following submodules:
+ - asneg (the core of the OPC UA Server)
+ - asneg-db (database interaction for historical data)
+ - wakaama (as the LWM2M server)
+ - opcua-sensor-interface (abstract sensor interface)
+ - opcua-lwm2m-server (interconnection between the LWM2M server and the OPC UA server)
+ This allows LWM2M enabled devices to register at the OPC UA server and to share resources via OPC UA.
+
+This work was originated from the NIKI 4.0 project. NIKI 4.0 was financed by the Baden-Württemberg Stiftung gGmbH (www.bwstiftung.de).  Project partners are FZI Forschungszentrum  Informatik am Karlsruher Institut für Technologie (www.fzi.de), Hahn-Schickard-Gesellschaft für angewandte Forschung e.V. (www.hahn-schickard.de) and Hochschule Offenburg (www.hs-offenburg.de).
+
+
+#
+
+
 ## How to build and run the OPC UA server implementation ##
 
 This README file describes the steps to build and run the  OPC UA server implementation. It also describes the client applications to connect to the OPC UA server. The [opcua-server repository](https://redmine.ivesk.hs-offenburg.de/projects/niki4-0/repository) is organized as follows:

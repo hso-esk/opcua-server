@@ -1074,7 +1074,6 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
     auto it2 = it->second.begin();
     while (it2 != it->second.end())
     {
-
         /* unregister callbacks */
         unregisterCallbacks(it2->first);
 

@@ -36,6 +36,7 @@
 #include "OpcUaStackCore/Application/ApplicationWriteContext.h"
 #include "OpcUaStackServer/Application/ApplicationIf.h"
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
+#include "LWM2MServerObserver.h"
 #include "DeviceDataValue.h"
 #include "DeviceDataLWM2M.h"
 #include "DeviceDataFile.h"
@@ -63,11 +64,12 @@ private:
    */
   struct s_devEvent_t
   {
-      /* pointer to the device */
-      const LWM2MDevice* p_dev;
+      /* event parameter */
+      s_lwm2m_serverobserver_event_param_t param;
       /* event type */
       e_lwm2m_serverobserver_event_t event;
   };
+
 
 public:
 
@@ -109,7 +111,7 @@ public:
   /**
    * \brief   Get notifications from LWM2M server
    */
-  int8_t notify(const LWM2MDevice* p_dev, const e_lwm2m_serverobserver_event_t ev);
+  int8_t notify(s_lwm2m_serverobserver_event_param_t param, const e_lwm2m_serverobserver_event_t ev);
 
   /**
    * \brief   Starts up the OpcUaIPSO library.
@@ -129,7 +131,7 @@ public:
    /**
     * \brief   Function triggered when a new device deregisters.
     */
-   int8_t onDeviceDeregister(const LWM2MDevice* dev);
+   int8_t onDeviceDeregister(std::string devName);
 
    /**
     * \brief   processes observed data.
@@ -243,7 +245,7 @@ private:
   /**
    * \brief   Delete object node from information model.
    */
-   bool deleteObjectNode(const LWM2MDevice* p_dev, objectMaps_t& objectMaps);
+   bool deleteObjectNode(std::string devName, objectMaps_t& objectMaps);
 
   /**
    * \brief   Create Variable Node to the information model.
@@ -258,7 +260,7 @@ private:
   /**
    * \brief   Delete variable and method nodes from information model.
    */
-  bool deleteResourceNodes(const LWM2MDevice* p_dev, resourceMaps_t& resourceMaps);
+  bool deleteResourceNodes(std::string devName, resourceMaps_t& resourceMaps);
 
   /**
    * \brief   Checks for object ID match between LWM2M Device objects

@@ -140,25 +140,13 @@ static void observeCb(const DeviceDataValue* p_val, void* p_param )
 /**
  * notify()
  */
-int8_t OpcUaLWM2MLib::notify(const LWM2MDevice* p_dev, const e_lwm2m_serverobserver_event_t ev)
+int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
+    const e_lwm2m_serverobserver_event_t ev)
 {
   Log(Debug, "OpcUaLWM2MLib::notify");
 
-
-  if( ev == e_lwm2m_serverobserver_event_deregister )
-  {
-      Log(Debug, "Event device deregistration triggered")
-            .parameter("Device name", p_dev->getName());
-
-      /* execute onDeviceRegister function */
-      onDeviceDeregister(p_dev);
-  }
-  else
-  {
-    s_devEvent_t event = {p_dev, ev};
-    evQueue.push( event );
-  }
-
+  s_devEvent_t event = {param, ev};
+  evQueue.push( event );
 
   return 0;
 }
@@ -271,17 +259,17 @@ void OpcUaLWM2MLib::thread( void )
         case e_lwm2m_serverobserver_event_register:
         {
           Log(Debug, "Event device registration triggered")
-                .parameter("Device name", ev.p_dev->getName());
+                .parameter("Device name", ev.param.p_dev->getName());
 
           /* execute onDeviceRegister function */
-          onDeviceRegister(ev.p_dev);
+          onDeviceRegister(ev.param.p_dev);
         }
         break;
 
         case e_lwm2m_serverobserver_event_update:
         {
           Log(Debug, "Event device update triggered")
-                .parameter("Device name", ev.p_dev->getName());
+                .parameter("Device name", ev.param.p_dev->getName());
           /** TODO */
 
           Log(Warning, "Update event not implemented yet");
@@ -291,10 +279,10 @@ void OpcUaLWM2MLib::thread( void )
         case e_lwm2m_serverobserver_event_deregister:
         {
           Log(Debug, "Event device deregistration triggered")
-                .parameter("Device name", ev.p_dev->getName());
+                .parameter("Device name", ev.param.devName);
 
           /* execute onDeviceRegister function */
-          onDeviceDeregister(ev.p_dev);
+          onDeviceDeregister(ev.param.devName);
         }
         break;
       }
@@ -767,19 +755,19 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
 /**
  * DeleteObjectNode()
  */
-bool OpcUaLWM2MLib::deleteObjectNode(const LWM2MDevice* p_dev,
+bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
     objectMaps_t& objectMaps)
 {
   Log (Debug, "OpcUaLWM2MLib::deleteObjectNode");
 
   uint32_t deviceId;
-  objectMaps_t::iterator it = objectMaps_.find(p_dev->getName());
+  objectMaps_t::iterator it = objectMaps_.find(devName);
   if (it != objectMaps_.end())
   {
     objectMap_t::iterator it2 = it->second.begin();
     while (it2 != it->second.end())
     {
-      if ( p_dev->getName() == it2->second.object->getParent()->getName()) {
+      if ( devName == it2->second.object->getParent()->getName()) {
 
         /* delete object node */
         OpcUaNodeId objectNodeId;
@@ -799,7 +787,7 @@ bool OpcUaLWM2MLib::deleteObjectNode(const LWM2MDevice* p_dev,
   /* delete device object node */
   deleteDeviceObjecttNode(deviceId);
 
-  std::cout << p_dev->getName()
+  std::cout << devName
             << " object nodes successfully deleted from server"
             << std::endl;
 
@@ -1076,18 +1064,18 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 /**
  * deleteResourceNodes()
  */
-bool OpcUaLWM2MLib::deleteResourceNodes(const LWM2MDevice* p_dev,
+bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
     resourceMaps_t& resourceMaps)
 {
   Log (Debug, "OpcUaLWM2MLib::deleteResourceNodes");
 
-  resourceMaps_t::iterator it = resourceMaps_.find(p_dev->getName());
+  resourceMaps_t::iterator it = resourceMaps_.find(devName);
   if (it != resourceMaps_.end())
   {
     auto it2 = it->second.begin();
     while (it2 != it->second.end())
     {
-      if (p_dev->getName() == it2->second.resource->getParent()
+      if (devName == it2->second.resource->getParent()
           ->getParent()->getName()) {
 
         /* unregister callbacks */
@@ -1105,7 +1093,7 @@ bool OpcUaLWM2MLib::deleteResourceNodes(const LWM2MDevice* p_dev,
   /* delete resourceMap from resourceMaps */
   resourceMaps_.erase(it);
 
-  std::cout << p_dev->getName()
+  std::cout << devName
             << " resource nodes successfully deleted from server"
             << std::endl;
 
@@ -1258,21 +1246,21 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 /*
 * onDeviceUnregister()
 */
-int8_t OpcUaLWM2MLib::onDeviceDeregister(const LWM2MDevice* p_dev)
+int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
 {
   Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister");
 
-  std::cout << p_dev->getName()<< " is deregistering from the server"
+  std::cout << devName<< " is deregistering from the server"
               << std::endl;
 
   /* delete variable and method nodes from server */
-  if (!deleteResourceNodes(p_dev, resourceMaps_)) {
+  if (!deleteResourceNodes(devName, resourceMaps_)) {
     Log(Debug, "deletion of variable and method nodes failed");
     return -1;
   }
 
   /* delete object and device object nodes from server */
-  if (!deleteObjectNode(p_dev, objectMaps_)) {
+  if (!deleteObjectNode(devName, objectMaps_)) {
     Log(Debug, "deletion of object nodes failed");
     return -1;
   }

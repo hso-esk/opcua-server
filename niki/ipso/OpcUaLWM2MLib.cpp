@@ -767,7 +767,6 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
     objectMap_t::iterator it2 = it->second.begin();
     while (it2 != it->second.end())
     {
-      if ( devName == it2->second.object->getParent()->getName()) {
 
         /* delete object node */
         OpcUaNodeId objectNodeId;
@@ -776,7 +775,7 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
 
         /* store parent id of deleted object node */
         deviceId = it2->second.deviceId;
-      }
+
       it2++;
     }
   }
@@ -1075,8 +1074,6 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
     auto it2 = it->second.begin();
     while (it2 != it->second.end())
     {
-      if (devName == it2->second.resource->getParent()
-          ->getParent()->getName()) {
 
         /* unregister callbacks */
         unregisterCallbacks(it2->first);
@@ -1085,7 +1082,7 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
         OpcUaNodeId resourceNodeId;
         resourceNodeId.set(it2->first, namespaceIndex_);
         informationModel()->remove(resourceNodeId);
-      }
+
       it2++;
     }
   }

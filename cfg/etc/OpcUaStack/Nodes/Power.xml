@@ -12,6 +12,7 @@
 				<Name>Instantaneous active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
 				<Mandatory>Mandatory</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -22,6 +23,7 @@
 				<Name>Min Measured active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -32,6 +34,7 @@
 				<Name>Max Measured  active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -42,6 +45,7 @@
 				<Name>Min Range active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -52,6 +56,7 @@
 				<Name>Max Range active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -62,6 +67,7 @@
 				<Name>Cumulative active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -72,6 +78,7 @@
 				<Name>Active Power Calibration</Name>
 				<Operations>W</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -82,6 +89,7 @@
 				<Name>Instantaneous reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -92,6 +100,7 @@
 				<Name>Min Measured reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -102,6 +111,7 @@
 				<Name>Max Measured reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>				
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -112,6 +122,7 @@
 				<Name>Min Range reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -122,6 +133,7 @@
 				<Name>Max Range reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -132,6 +144,7 @@
 				<Name>Cumulative reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -142,6 +155,7 @@
 				<Name>Reactive Power Calibration</Name>
 				<Operations>W</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -152,6 +166,7 @@
 				<Name>Power Factor</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -162,6 +177,7 @@
 				<Name>Current Calibration</Name>
 				<Operations>RW</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -172,6 +188,7 @@
 				<Name>Reset Cumulative energy</Name>
 				<Operations>E</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Opaque</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -182,6 +199,7 @@
 				<Name>Reset Min and Max Measured Values</Name>
 				<Operations>E</Operations>
 				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Opaque</Type>
 				<RangeEnumeration></RangeEnumeration>

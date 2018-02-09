@@ -13,6 +13,7 @@
                 <Name>Sensor Value</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Mandatory</Mandatory>
                 <Type>Float</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -23,6 +24,7 @@
                 <Name>Sensor Units</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -33,6 +35,7 @@
                 <Name>Min Measured Value</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Float</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -43,6 +46,7 @@
                 <Name>Max Measured Value</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Float</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -53,7 +57,8 @@
                 <Name>Min Range Value</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
-                <Mandatory>Optional</Mandatory>
+		<Dynamic>Static</Dynamic> 
+               	<Mandatory>Optional</Mandatory>
                 <Type>Float</Type>
                 <RangeEnumeration></RangeEnumeration>
                 <Units>Defined by “Units” resource.</Units>
@@ -63,6 +68,7 @@
                 <Name>Max Range Value</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Float</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -73,6 +79,7 @@
                 <Name>Reset Min and Max Measured Values</Name>
                 <Operations>E</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Opaque</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -83,6 +90,7 @@
                 <Name>Current Calibration</Name>
                 <Operations>RW</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -93,6 +101,7 @@
                 <Name>Application Type</Name>
                 <Operations>RW</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration></RangeEnumeration>

@@ -12,6 +12,7 @@
                 <Name>Device Address</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Mandatory</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -22,6 +23,7 @@
                 <Name>Module ID</Name>
                 <Operations>E</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type></Type>
                 <RangeEnumeration></RangeEnumeration>
@@ -32,6 +34,7 @@
                 <Name>Module Data</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Float</Type>
                 <RangeEnumeration></RangeEnumeration>

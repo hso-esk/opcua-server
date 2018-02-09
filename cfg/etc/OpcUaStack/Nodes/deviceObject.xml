@@ -14,6 +14,7 @@
                 <Name>Manufacturer</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -26,6 +27,7 @@
                 <Name>Model Number</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -38,6 +40,7 @@
                 <Name>Serial Number</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -50,6 +53,7 @@
                 <Name>Firmware Version</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -62,6 +66,7 @@
                 <Name>Reboot</Name>
                 <Operations>E</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Mandatory</Mandatory>
                 <Type/>
                 <RangeEnumeration/>
@@ -74,6 +79,7 @@
                 <Name>Factory Reset</Name>
                 <Operations>E</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type/>
                 <RangeEnumeration/>
@@ -87,6 +93,7 @@
                 <Name>Available Power Sources</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-7</RangeEnumeration>
@@ -100,6 +107,7 @@
                 <Name>Power Source Voltage</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -112,6 +120,7 @@
                 <Name>Power Source Current</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -124,6 +133,7 @@
                 <Name>Battery Level</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-100</RangeEnumeration>
@@ -137,6 +147,7 @@
                 <Name>Memory Free</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -149,6 +160,7 @@
                 <Name>Error Code</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Mandatory</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-8</RangeEnumeration>
@@ -165,6 +177,7 @@
                 <Name>Reset Error Code</Name>
                 <Operations>E</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type/>
                 <RangeEnumeration/>
@@ -177,6 +190,7 @@
                 <Name>Current Time</Name>
                 <Operations>RW</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Time</Type>
                 <RangeEnumeration/>
@@ -190,6 +204,7 @@
                 <Name>UTC Offset</Name>
                 <Operations>RW</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -202,6 +217,7 @@
                 <Name>Timezone</Name>
                 <Operations>RW</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -214,6 +230,7 @@
                 <Name>Supported Binding and Modes</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Mandatory</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -226,6 +243,7 @@
                 <Name>Device Type</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -238,6 +256,7 @@
                 <Name>Hardware Version</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -250,6 +269,7 @@
                 <Name>Software Version</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>String</Type>
                 <RangeEnumeration/>
@@ -263,6 +283,7 @@
                 <Name>Battery Status</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-6</RangeEnumeration>
@@ -277,6 +298,7 @@
                 <Name>Memory Total</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -289,6 +311,7 @@
                 <Name>ExtDevInfo</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Objlnk</Type>
                 <RangeEnumeration/>

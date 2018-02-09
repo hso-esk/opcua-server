@@ -125,6 +125,9 @@ public:
     /* IPSO resource range enumeration */
     boost::optional<std::string> rangeEnum;
 
+    /* IPSO resource dynamic data value? */
+    std::string dynamicType;
+
     /* IPSO resource units */
     std::string unit;
 

@@ -958,23 +958,21 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
 
         /* observe variable nodes */
-        if( variableCtx.dataObject->observeVal(observeCb, this) == 0 ) {
-
-          /* store variable node info into variableContextMap */
-          variables_.insert(std::make_pair(varNodeId, variableCtx));
-
-          /* add variable node to OPC UA server information model */
-          informationModel()->insert(variableNode);
-
-          /* register callback for OPC UA variable nodes */
-          if (!registerCallbacks(resourceId)) {
-            Log(Error, "Register callback failed");
-          }
+        if(varInfo.second.dynamicType == "Dynamic"){
+        	if( variableCtx.dataObject->observeVal(observeCb, this) != 0 )
+        		Log(Error, "Registering an observer has failed.");
         }
-        else
-        {
-          /* TODO .. delete already created objects*/
-        }
+
+         /* store variable node info into variableContextMap */
+         variables_.insert(std::make_pair(varNodeId, variableCtx));
+
+         /* add variable node to OPC UA server information model */
+         informationModel()->insert(variableNode);
+
+         /* register callback for OPC UA variable nodes */
+         if (!registerCallbacks(resourceId)) {
+           Log(Error, "Register callback failed");
+         }
     }
   }
 

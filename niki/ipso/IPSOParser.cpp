@@ -243,6 +243,13 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
     return false;
   }
 
+  /* read IPSO resource dynamic data value? */
+  if (!resourceChild.getConfigParameter("Dynamic", ipsoResource.dynamicType))
+  {
+    Log(Debug, "IPSO resource dynamic type not defined");
+    return false;
+  }
+
   /* read IPSO resource mandatory field */
   if (!resourceChild.getConfigParameter("Mandatory", ipsoResource.mandatoryType))
   {

@@ -959,9 +959,10 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
         /* observe variable nodes */
         if(varInfo.second.dynamicType == "Dynamic"){
-        	if( variableCtx.dataObject->observeVal(observeCb, this) != 0 )
+        	if( variableCtx.dataObject->observeVal(observeCb, this) == 0 )
+        		Log(Debug, "Registered a dynamic value observer.");
+        	else
         		Log(Error, "Registering an observer has failed.");
-        	Log(Debug, "Registered a dynamic value observer.");
         }
 
          /* store variable node info into variableContextMap */

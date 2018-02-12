@@ -961,6 +961,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         if(varInfo.second.dynamicType == "Dynamic"){
         	if( variableCtx.dataObject->observeVal(observeCb, this) != 0 )
         		Log(Error, "Registering an observer has failed.");
+        	Log(Debug, "Registered a dynamic value observer.");
         }
 
          /* store variable node info into variableContextMap */
@@ -1363,8 +1364,9 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         resourceInfo.value = resourceItem.value;
         resourceInfo.operation = resourceItem.operation;
         resourceInfo.mandatoryType = resourceItem.mandatoryType;
+        resourceInfo.dynamicType = resourceItem.dynamicType;
 
-        /* copy node id of parent object */
+		/* copy node id of parent object */
         resourceInfo.objectId = objectItem.first;
 
       if (objectItem.second.id == dictEntry.second->id) {

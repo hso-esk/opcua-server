@@ -64,8 +64,7 @@ IPSOParser::~IPSOParser()
  */
 bool IPSOParser::parseIPSOfile(const std::string& IPSOfile, ipsoDescriptionVec& data)
 {
-  Log(Debug, "IPSOParser::parseIPSOfile")
-		  .paramater("parsing file: ", IPSOfile);
+  Log(Debug, "IPSOParser::parseIPSOfile");
 
   /* check if IPSO file exist */
   if (!boost::filesystem::exists(IPSOfile))
@@ -174,8 +173,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   ipsoDescription.objectDesc.urn = ipsoObject.urn;
   ipsoDescription.objectDesc.instanceType = ipsoObject.instanceType;
 
-  Log(Debug, "Got an IPSO object").parameter(" with name ", ipsoObject.name)
-		  .parameter("and with id ", ipsoObject.id);
+  Log(Debug, "Got an IPSO object").parameter(" with name ", ipsoObject.name);
 
   Log(Debug, "Start parsing of the resources");
 

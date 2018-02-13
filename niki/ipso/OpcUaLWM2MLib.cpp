@@ -43,6 +43,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -957,13 +958,16 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         opcUaNodeContext variableCtx;
         variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
 
-        /* observe variable nodes */
-        if(varInfo.second.dynamicType == "Dynamic"){
+      /* observe variable nodes */
+        if(boost::iequals(varInfo.second.dynamicType == "Dynamic")){
         	if( variableCtx.dataObject->observeVal(observeCb, this) == 0 )
-        		Log(Debug, "Registered a dynamic value observer.");
+        		Log(Debug, "Registered a dynamic value observer ")
+					.parameter("for field: ", varInfo.second.name);
         	else
-        		Log(Error, "Registering an observer has failed.");
+        		Log(Error, "Registering an observer has failed ")
+					.parameter("for field: ", varInfo.second.name);
         }
+
 
          /* store variable node info into variableContextMap */
          variables_.insert(std::make_pair(varNodeId, variableCtx));
@@ -973,12 +977,13 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
          /* register callback for OPC UA variable nodes */
          if (!registerCallbacks(resourceId)) {
-           Log(Error, "Register callback failed");
+           Log(Error, "Register callback failed ")
+        		   .parameter("for field: ", varInfo.second.name);
          }
     }
   }
 
-  return true;
+    return true;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1057,6 +1062,8 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 
   /* clear the method Map */
   resourceMap.clear();
+
+  return true;
 }
 
 /*---------------------------------------------------------------------------*/

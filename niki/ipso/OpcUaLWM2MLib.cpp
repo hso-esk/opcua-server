@@ -115,9 +115,6 @@ static void observeCb(const DeviceDataValue* p_val, void* p_param) {
 }
 
 } /* anonymous namespace */
-static void observeCb2(const DeviceDataValue* p_val, void* p_param) {
-	std::cout << "Just leave it" << std::endl;
-}
 
 /*---------------------------------------------------------------------------*/
 /**
@@ -935,37 +932,33 @@ bool OpcUaLWM2MLib::createVariableNode(resourceMap_t& resourceMap) {
 			opcUaNodeContext variableCtx;
 			variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
 
-			/* observe variable nodes */
+			/* check for dynamic and static resources */
 			if (boost::iequals(varInfo.second.dynamicType, "Dynamic")) {
+
+				/* enable observe for dynamic resource */
 				if (variableCtx.dataObject->observeVal(observeCb, this) == 0) {
+					Log(Debug, "Observe for dynamic resource is enabled");
 
 					/* store variable node info into variableContextMap */
 					variables_.insert(std::make_pair(varNodeId, variableCtx));
-
-					/* add variable node to OPC UA server information model */
-					informationModel()->insert(variableNode);
-
-					/* register callback for OPC UA variable nodes */
-					if (!registerCallbacks(resourceId)) {
-						Log(Error, "Register callback failed ").parameter(
-								"for field: ", varInfo.second.name);
-					}
 				}
-			} else {
-				if (variableCtx.dataObject->observeVal(observeCb2, this) == 0) {
+
+			} else if (boost::iequals(varInfo.second.dynamicType, "Static")) {
+
+				if (variableCtx.dataObject->observeVal(NULL, NULL) == 0) {
+					Log(Debug, "Observe for Static resource is disabled");
 
 					/* store variable node info into variableContextMap */
 					variables_.insert(std::make_pair(varNodeId, variableCtx));
-
-					/* add variable node to OPC UA server information model */
-					informationModel()->insert(variableNode);
-
-					/* register callback for OPC UA variable nodes */
-					if (!registerCallbacks(resourceId)) {
-						Log(Error, "Register callback failed ").parameter(
-								"for field: ", varInfo.second.name);
-					}
 				}
+			}
+
+			/* add variable node to OPC UA server information model */
+			informationModel()->insert(variableNode);
+
+			// /* register callback for OPC UA variable nodes */
+			if (!registerCallbacks(resourceId)) {
+				Log(Error, "Register callback failed");
 			}
 		}
 	}
@@ -1051,8 +1044,6 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap) {
 
 	/* clear the method Map */
 	resourceMap.clear();
-
-	return true;
 }
 
 /*---------------------------------------------------------------------------*/

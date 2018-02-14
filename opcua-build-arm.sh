@@ -13,4 +13,4 @@ cd asneg/build
 
 #build
 cmake -DCMAKE_TOOLCHAIN_FILE=../../arm-linux-toolchain.cmake -DCMAKE_BUILD_TYPE=$BUILDTYPE ../src
-make --jobs=3
+make --jobs=5

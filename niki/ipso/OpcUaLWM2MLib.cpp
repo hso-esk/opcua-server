@@ -121,18 +121,6 @@ static uint32_t offset3()
   static uint32_t ID = 20000;
   return ID++;
 }
-
-/*---------------------------------------------------------------------------*/
-static void observeCb(const DeviceDataValue* p_val, void* p_param )
-{
-    if(p_param != NULL)
-    {
-      OpcUaLWM2MLib* instance = static_cast<OpcUaLWM2MLib*>(p_param);
-      //OpcUaLWM2MLib::isObserved = true;
-      instance->processObserveData(p_val);
-    }
-}
-
 } /* anonymous namespace */
 
 
@@ -143,11 +131,45 @@ static void observeCb(const DeviceDataValue* p_val, void* p_param )
 int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
     const e_lwm2m_serverobserver_event_t ev)
 {
-  Log(Debug, "OpcUaLWM2MLib::notify");
+  Log(Debug, "OpcUaLWM2MLib::notify frm server");
 
   s_devEvent_t event = {param, ev};
   evQueue.push( event );
 
+  return 0;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/**
+ * notify()
+ */
+int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
+    const DeviceData* p_data, void* p_param )
+{
+  Log(Debug, "OpcUaLWM2MLib::notify from data");
+
+  const DeviceDataLWM2M* p_lwm2mData = static_cast<const DeviceDataLWM2M*>(p_data);
+  LWM2MResource* p_res = p_lwm2mData->getResource();
+
+  for (auto& item : variables_)
+  {
+    if( item.second.resInfo.resource == p_res )
+    {
+      OpcUaDataValue::SPtr value;
+     item.second.data = createDataValue(p_val);
+     OpcUaNodeId nodeId = item.first;
+
+     /* update value of observed node */
+     OpcUaStackServer::BaseNodeClass::SPtr observedNode;
+     observedNode = informationModel()->find(nodeId);
+     observedNode->setValue(*item.second.data);
+
+     /* store sensor value in database */
+     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+               , nodeId, *item.second.data);
+    }
+  }
   return 0;
 }
 
@@ -959,10 +981,10 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
         /* observe variable nodes */
         if(varInfo.second.dynamicType == "Dynamic"){
-        	if( variableCtx.dataObject->observeVal(observeCb, this) == 0 )
-        		Log(Debug, "Registered a dynamic value observer.");
-        	else
-        		Log(Error, "Registering an observer has failed.");
+          if( variableCtx.dataObject->observeVal( this, NULL ) == 0 )
+            Log(Debug, "Registered a dynamic value observer.");
+          else
+            Log(Error, "Registering an observer has failed.");
         }
 
          /* store variable node info into variableContextMap */
@@ -1269,33 +1291,6 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
   return 0;
 }
 
-/*---------------------------------------------------------------------------*/
-/*
-* processObserveData()
-*/
-void OpcUaLWM2MLib::processObserveData (const DeviceDataValue* p_val)
-{
-  Log(Debug, "OpcUaLWM2MLib::processObserveData");
-
-  for (auto& item : variables_)
-  {
-   if (item.second.dataObject->getVal() == p_val) {
-     OpcUaDataValue::SPtr value;
-     item.second.data = createDataValue(p_val);
-     OpcUaNodeId nodeId = item.first;
-
-     /* update value of observed node */
-     OpcUaStackServer::BaseNodeClass::SPtr observedNode;
-     observedNode = informationModel()->find(nodeId);
-     observedNode->setValue(*item.second.data);
-
-     /* store sensor value in database */
-     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
-               , nodeId
-               , *item.second.data);
-   }
-  }
-}
 
 /*---------------------------------------------------------------------------*/
 /*

@@ -40,6 +40,7 @@
 #include "DeviceDataValue.h"
 #include "DeviceDataLWM2M.h"
 #include "DeviceDataFile.h"
+#include "DeviceDataObserver.h"
 #include "NikiDatabaseServer.h"
 #include "NikiDbModelConfig.h"
 #include <boost/shared_ptr.hpp>
@@ -55,6 +56,7 @@ namespace OpcUaLWM2M
 class OpcUaLWM2MLib
   : public OpcUaStackServer::ApplicationIf
   , public LWM2MServerObserver
+  , DeviceDataObserver
 {
 
 private:
@@ -114,6 +116,12 @@ public:
   int8_t notify(s_lwm2m_serverobserver_event_param_t param, const e_lwm2m_serverobserver_event_t ev);
 
   /**
+   * \brief   Get notifications from DeviceData
+   */
+  int8_t notify( const DeviceDataValue* p_val,
+      const DeviceData* p_data, void* p_param );
+
+  /**
    * \brief   Starts up the OpcUaIPSO library.
    */
   virtual bool startup(void);
@@ -133,11 +141,6 @@ public:
     */
    int8_t onDeviceDeregister(std::string devName);
 
-   /**
-    * \brief   processes observed data.
-    */
-   void processObserveData (const DeviceDataValue* p_val);
-  // static bool isObserved;
 private:
 
    /* thread instacmce */

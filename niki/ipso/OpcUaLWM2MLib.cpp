@@ -1170,6 +1170,9 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
         , opcUaNodeInfo.resource);
   }
 
+  /* set the resource pointer */
+  ctx.resInfo.resource = opcUaNodeInfo.resource;
+
   OpcUaNodeId dataTypeNodeId;
   if (ctx.dataObject) {
 

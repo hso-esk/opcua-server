@@ -1081,6 +1081,8 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 
   /* clear the method Map */
   resourceMap.clear();
+
+  return true;
 }
 
 /*---------------------------------------------------------------------------*/

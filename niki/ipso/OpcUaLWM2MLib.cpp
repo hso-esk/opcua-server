@@ -1128,6 +1128,10 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   Log (Debug, "OpcUaLWM2MLib::createDeviceDataLWM2M");
 
   opcUaNodeContext ctx;
+
+  /* set resource information */
+  ctx.resInfo = opcUaNodeInfo;
+
   ctx.data = constructSPtr<OpcUaDataValue>();
   ctx.data->statusCode(Success);
   ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
@@ -1169,9 +1173,6 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
         , opcUaNodeInfo.resource);
   }
-
-  /* set the resource pointer */
-  ctx.resInfo.resource = opcUaNodeInfo.resource;
 
   OpcUaNodeId dataTypeNodeId;
   if (ctx.dataObject) {

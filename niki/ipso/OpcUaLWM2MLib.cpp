@@ -284,7 +284,7 @@ void OpcUaLWM2MLib::thread( void )
                 .parameter("Device name", ev.param.p_dev->getName());
 
           /* execute onDeviceRegister function */
-          onDeviceRegister(ev.param.p_dev);
+          onDeviceRegister(ev.param.p_dev->getName());
         }
         break;
 
@@ -1225,18 +1225,21 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
 /*
 * onDeviceRegister()
 */
-int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
+int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 {
   Log(Debug, "OpcUaLWM2MLib::onDeviceRegister");
 
+
+  LWM2MDevice* device;
+  device = const_cast<LWM2MDevice*>(
+      lwm2mServer_->getLWM2MDevice(devName.c_str()));
+
   /* create device object */
-  if (!createDeviceObjectNode(p_dev))
+  if (!createDeviceObjectNode(device))
   {
     Log (Error, "Creation of device object failed");
     return -1;
   }
-
-  LWM2MDevice* device = const_cast<LWM2MDevice*>(p_dev);
 
   std::vector<LWM2MObject*>::iterator objectIterator;
   for (objectIterator = device->objectStart();

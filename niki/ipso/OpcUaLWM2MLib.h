@@ -134,7 +134,7 @@ public:
   /**
    * \brief   Function triggered when a new device registers.
    */
-   int8_t onDeviceRegister(const LWM2MDevice* dev);
+   int8_t onDeviceRegister(std::string devName);
 
    /**
     * \brief   Function triggered when a new device deregisters.

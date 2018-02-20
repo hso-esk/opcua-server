@@ -101,8 +101,14 @@ public:
     /* IPSO resource id */
     uint32_t resourceId;
 
-    /* parent id of resource */
+    /* IPSO instance id */
+    uint32_t instanceId;
+
+    /* IPSO instance id */
     uint32_t objectId;
+
+    /* OPC UA parent id of resource */
+    uint32_t opcuaObjectId;
 
     /* IPSO resource name */
     std::string name;

@@ -163,11 +163,13 @@ int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
      /* update value of observed node */
      OpcUaStackServer::BaseNodeClass::SPtr observedNode;
      observedNode = informationModel()->find(nodeId);
-     observedNode->setValue(*item.second.data);
-
-     /* store sensor value in database */
-     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
-               , nodeId, *item.second.data);
+     if( observedNode != NULL )
+     {
+       observedNode->setValue(*item.second.data);
+       /* store sensor value in database */
+       dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+                 , nodeId, *item.second.data);
+     }
     }
   }
   return 0;
@@ -284,7 +286,7 @@ void OpcUaLWM2MLib::thread( void )
                 .parameter("Device name", ev.param.p_dev->getName());
 
           /* execute onDeviceRegister function */
-          onDeviceRegister(ev.param.p_dev);
+          onDeviceRegister(ev.param.p_dev->getName());
         }
         break;
 
@@ -961,7 +963,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
       /* set node id of parent object */
       OpcUaNodeId objectNodeId;
-      uint32_t parentObjectId = varInfo.second.objectId;
+      uint32_t parentObjectId = varInfo.second.opcuaObjectId;
       objectNodeId.set(parentObjectId, namespaceIndex_);
 
       OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
@@ -981,10 +983,22 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
         /* observe variable nodes */
         if(varInfo.second.dynamicType == "Dynamic"){
+          Log(Debug, "Started LWM2M observation.")
+            .parameter("ObjId", variableCtx.resInfo.objectId)
+            .parameter("InstId", variableCtx.resInfo.instanceId)
+            .parameter("RseId", variableCtx.resInfo.resourceId);
+
           if( variableCtx.dataObject->observeVal( this, NULL ) == 0 )
+          {
+            Log(Debug, "LWM2M Observation has succeeded.");
             Log(Debug, "Registered a dynamic value observer.");
+          }
           else
+          {
+            Log(Error, "LWM2M observation has failed.");
             Log(Error, "Registering an observer has failed.");
+            continue;
+          }
         }
 
          /* store variable node info into variableContextMap */
@@ -1051,7 +1065,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 
       /* set node id of parent object */
       OpcUaNodeId objectNodeId;
-      uint32_t parentObjectId = methodInfo.second.objectId;
+      uint32_t parentObjectId = methodInfo.second.opcuaObjectId;
       objectNodeId.set(parentObjectId, namespaceIndex_);
 
       OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
@@ -1079,6 +1093,8 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 
   /* clear the method Map */
   resourceMap.clear();
+
+  return true;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1104,6 +1120,18 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
         resourceNodeId.set(it2->first, namespaceIndex_);
         informationModel()->remove(resourceNodeId);
 
+        /* remove item from variable map */
+        variableContextMap::iterator it3 = variables_.find(it2->first);
+        if (it3 != variables_.end()) {
+          variables_.erase(it3);
+        }
+
+        /* remove from method map */
+        methodContextMap::iterator it4 = methods_.find(it2->first);
+        if (it4 != methods_.end()) {
+          methods_.erase(it4);
+        }
+
       it2++;
     }
   }
@@ -1128,6 +1156,10 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   Log (Debug, "OpcUaLWM2MLib::createDeviceDataLWM2M");
 
   opcUaNodeContext ctx;
+
+  /* set resource information */
+  ctx.resInfo = opcUaNodeInfo;
+
   ctx.data = constructSPtr<OpcUaDataValue>();
   ctx.data->statusCode(Success);
   ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
@@ -1170,9 +1202,6 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
         , opcUaNodeInfo.resource);
   }
 
-  /* set the resource pointer */
-  ctx.resInfo.resource = opcUaNodeInfo.resource;
-
   OpcUaNodeId dataTypeNodeId;
   if (ctx.dataObject) {
 
@@ -1212,18 +1241,21 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
 /*
 * onDeviceRegister()
 */
-int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
+int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 {
-  Log(Debug, "OpcUaLWM2MLib::onDeviceRegister");
+  Log(Debug, "OpcUaLWM2MLib::onDeviceRegister")
+    .parameter("DeviceName", devName);
+
+  LWM2MDevice* device;
+  device = const_cast<LWM2MDevice*>(
+      lwm2mServer_->getLWM2MDevice(devName.c_str()));
 
   /* create device object */
-  if (!createDeviceObjectNode(p_dev))
+  if (!createDeviceObjectNode(device))
   {
     Log (Error, "Creation of device object failed");
     return -1;
   }
-
-  LWM2MDevice* device = const_cast<LWM2MDevice*>(p_dev);
 
   std::vector<LWM2MObject*>::iterator objectIterator;
   for (objectIterator = device->objectStart();
@@ -1269,7 +1301,8 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(const LWM2MDevice* p_dev)
 */
 int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
 {
-  Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister");
+  Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister")
+  .parameter("DeviceName", devName);
 
   std::cout << devName<< " is deregistering from the server"
               << std::endl;
@@ -1365,8 +1398,10 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         resourceInfo.mandatoryType = resourceItem.mandatoryType;
         resourceInfo.dynamicType = resourceItem.dynamicType;
 
-		/* copy node id of parent object */
-        resourceInfo.objectId = objectItem.first;
+        /* copy node id of parent object and instance ID */
+        resourceInfo.opcuaObjectId = objectItem.first;
+        resourceInfo.objectId = objectItem.second.id;
+        resourceInfo.instanceId = objectItem.second.instanceId;
 
       if (objectItem.second.id == dictEntry.second->id) {
         if (resourceItem.operation == "R") {

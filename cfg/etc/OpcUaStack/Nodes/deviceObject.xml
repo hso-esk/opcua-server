@@ -107,7 +107,7 @@
                 <Name>Power Source Voltage</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -120,7 +120,7 @@
                 <Name>Power Source Current</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -133,7 +133,7 @@
                 <Name>Battery Level</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-100</RangeEnumeration>
@@ -147,7 +147,7 @@
                 <Name>Memory Free</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration/>
@@ -160,7 +160,7 @@
                 <Name>Error Code</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Multiple</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Mandatory</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-8</RangeEnumeration>
@@ -190,7 +190,7 @@
                 <Name>Current Time</Name>
                 <Operations>RW</Operations>
                 <MultipleInstances>Single</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Time</Type>
                 <RangeEnumeration/>
@@ -283,7 +283,7 @@
                 <Name>Battery Status</Name>
                 <Operations>R</Operations>
                 <MultipleInstances>Single</MultipleInstances>
-		<Dynamic>Dynamic</Dynamic>
+		<Dynamic>Static</Dynamic>
                 <Mandatory>Optional</Mandatory>
                 <Type>Integer</Type>
                 <RangeEnumeration>0-6</RangeEnumeration>

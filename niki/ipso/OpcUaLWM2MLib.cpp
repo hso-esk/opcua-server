@@ -1104,6 +1104,18 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
         resourceNodeId.set(it2->first, namespaceIndex_);
         informationModel()->remove(resourceNodeId);
 
+        /* remove item from variable map */
+        variableContextMap::iterator it3 = variables_.find(it2->first);
+        if (it3 != variables_.end()) {
+          variables_.erase(it3);
+        }
+
+        /* remove from method map */
+        methodContextMap::iterator it4 = methods_.find(it2->first);
+        if (it4 != methods_.end()) {
+          methods_.erase(it4);
+        }
+
       it2++;
     }
   }

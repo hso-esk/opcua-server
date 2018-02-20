@@ -961,7 +961,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
       /* set node id of parent object */
       OpcUaNodeId objectNodeId;
-      uint32_t parentObjectId = varInfo.second.objectId;
+      uint32_t parentObjectId = varInfo.second.opcuaObjectId;
       objectNodeId.set(parentObjectId, namespaceIndex_);
 
       OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
@@ -1051,7 +1051,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 
       /* set node id of parent object */
       OpcUaNodeId objectNodeId;
-      uint32_t parentObjectId = methodInfo.second.objectId;
+      uint32_t parentObjectId = methodInfo.second.opcuaObjectId;
       objectNodeId.set(parentObjectId, namespaceIndex_);
 
       OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
@@ -1378,7 +1378,10 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         resourceInfo.mandatoryType = resourceItem.mandatoryType;
         resourceInfo.dynamicType = resourceItem.dynamicType;
 
-        resourceInfo.objectId = objectItem.first;
+        /* copy node id of parent object and instance ID */
+        resourceInfo.opcuaObjectId = objectItem.first;
+        resourceInfo.objectId = objectItem.second.id;
+        resourceInfo.instanceId = objectItem.second.instanceId;
 
       if (objectItem.second.id == dictEntry.second->id) {
         if (resourceItem.operation == "R") {

@@ -101,6 +101,9 @@ public:
     /* IPSO resource id */
     uint32_t resourceId;
 
+    /* IPSO instance id */
+    uint32_t instanceId;
+
     /* parent id of resource */
     uint32_t objectId;
 

@@ -39,7 +39,6 @@
 #include "LWM2MServerObserver.h"
 #include "DeviceDataValue.h"
 #include "DeviceDataLWM2M.h"
-#include "DeviceDataFile.h"
 #include "DeviceDataObserver.h"
 #include "NikiDatabaseServer.h"
 #include "NikiDbModelConfig.h"
@@ -113,7 +112,8 @@ public:
   /**
    * \brief   Get notifications from LWM2M server
    */
-  int8_t notify(s_lwm2m_serverobserver_event_param_t param, const e_lwm2m_serverobserver_event_t ev);
+  int8_t notify(s_lwm2m_serverobserver_event_param_t param,
+      const e_lwm2m_serverobserver_event_t ev);
 
   /**
    * \brief   Get notifications from DeviceData

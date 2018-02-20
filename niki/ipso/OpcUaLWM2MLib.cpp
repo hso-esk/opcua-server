@@ -1378,7 +1378,6 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         resourceInfo.mandatoryType = resourceItem.mandatoryType;
         resourceInfo.dynamicType = resourceItem.dynamicType;
 
-		/* copy node id of parent object */
         resourceInfo.objectId = objectItem.first;
 
       if (objectItem.second.id == dictEntry.second->id) {

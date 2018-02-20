@@ -983,9 +983,19 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
         /* observe variable nodes */
         if(varInfo.second.dynamicType == "Dynamic"){
+          Log(Debug, "Started LWM2M observation.")
+            .parameter("ObjId", variableCtx.resInfo.objectId)
+            .parameter("InstId", variableCtx.resInfo.instanceId)
+            .parameter("RseId", variableCtx.resInfo.resourceId);
+
           if( variableCtx.dataObject->observeVal( this, NULL ) == 0 )
+          {
+            Log(Debug, "LWM2M Observation has succeeded.");
             Log(Debug, "Registered a dynamic value observer.");
+          }
           else
+          {
+            Log(Error, "LWM2M observation has failed.");
             Log(Error, "Registering an observer has failed.");
             continue;
           }
@@ -1233,8 +1243,8 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
 */
 int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 {
-  Log(Debug, "OpcUaLWM2MLib::onDeviceRegister");
-
+  Log(Debug, "OpcUaLWM2MLib::onDeviceRegister")
+    .parameter("DeviceName", devName);
 
   LWM2MDevice* device;
   device = const_cast<LWM2MDevice*>(
@@ -1291,7 +1301,8 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 */
 int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
 {
-  Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister");
+  Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister")
+  .parameter("DeviceName", devName);
 
   std::cout << devName<< " is deregistering from the server"
               << std::endl;

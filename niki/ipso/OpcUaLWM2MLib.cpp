@@ -163,11 +163,13 @@ int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
      /* update value of observed node */
      OpcUaStackServer::BaseNodeClass::SPtr observedNode;
      observedNode = informationModel()->find(nodeId);
-     observedNode->setValue(*item.second.data);
-
-     /* store sensor value in database */
-     dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
-               , nodeId, *item.second.data);
+     if( observedNode != NULL )
+     {
+       observedNode->setValue(*item.second.data);
+       /* store sensor value in database */
+       dbServer_.writeDataToDatabase(dbModelConfig_.databaseConfig().databaseTableName()
+                 , nodeId, *item.second.data);
+     }
     }
   }
   return 0;

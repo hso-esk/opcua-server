@@ -1168,7 +1168,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   if (opcUaNodeInfo.operation == "R") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_OBSERVE)
@@ -1177,7 +1177,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   } else if (opcUaNodeInfo.operation == "W") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE)
@@ -1186,7 +1186,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   } else if (opcUaNodeInfo.operation == "E") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , DeviceData::ACCESS_NONE
@@ -1195,7 +1195,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   } else if  (opcUaNodeInfo.operation == "RW") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
@@ -1471,7 +1471,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         }
       }
     }
-    deviceName = objectItem.second.object->getParent()->getName();
+    deviceName = objectItem.second.object->getDevice()->getName();
   }
 
   /* store created object map and resource map */

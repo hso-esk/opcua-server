@@ -51,8 +51,8 @@
 namespace OpcUaLWM2M
 {
 
-
-#define OPCUALWM2MLIB_THREAD_TOT_US       2000
+/** Sleeptime in us within the Thread */
+#define OPCUALWM2MLIB_THREAD_TOT_US       5000
 
 /**
  * OpcUaLWM2MLib()
@@ -218,18 +218,18 @@ bool OpcUaLWM2MLib::startup(void)
     return false;
   }
 
+
+
+  /* start the the LWM2M server */
+  LWM2MServer::instance()->startServer();
+  Log (Debug, "LWM2M server started");
+
   /* create thread */
   threadRun = true;
   t = new boost::thread( &OpcUaLWM2MLib::thread, this );
 
-  /* start the the LWM2M server */
-  lwm2mServer_ = boost::make_shared<LWM2MServer>();
-  lwm2mServer_->startServer();
-
-  Log (Debug, "LWM2M server started");
-
   /* register the OPC UA server observer object */
-  lwm2mServer_->registerObserver( this );
+  LWM2MServer::instance()->registerObserver( this );
 
   /* start the database server */
   dbServer_.DBServer().applicationServiceIf(&service());
@@ -255,7 +255,7 @@ bool OpcUaLWM2MLib::shutdown()
   Log(Debug, "OpcUaLWM2MLib::shutdown");
 
   /* deregister OpcUa LWM2M server observer */
-  lwm2mServer_->deregisterObserver( this );
+  LWM2MServer::instance()->deregisterObserver( this );
 
   /* stop worker thread */
   threadRun = false;
@@ -263,7 +263,7 @@ bool OpcUaLWM2MLib::shutdown()
   delete t;
 
   /* stop the LWM2M server */
-  lwm2mServer_->stopServer();
+  LWM2MServer::instance()->stopServer();
 
   /* shut down database server */
   if (!dbServer_.shutdown()) {
@@ -286,6 +286,7 @@ void OpcUaLWM2MLib::thread( void )
     usleep(OPCUALWM2MLIB_THREAD_TOT_US);
 
     pthread_mutex_lock(&m_mutex);
+    LWM2MServer::instance()->runServer();
 
     /* Ceck for events */
     s_devEvent_t ev;
@@ -296,17 +297,17 @@ void OpcUaLWM2MLib::thread( void )
         case e_lwm2m_serverobserver_event_register:
         {
           Log(Debug, "Event device registration triggered")
-                .parameter("Device name", ev.param.p_dev->getName());
+                .parameter("Device name", ev.param.devName);
 
           /* execute onDeviceRegister function */
-          onDeviceRegister(ev.param.p_dev->getName());
+          onDeviceRegister(ev.param.devName);
         }
         break;
 
         case e_lwm2m_serverobserver_event_update:
         {
           Log(Debug, "Event device update triggered")
-                .parameter("Device name", ev.param.p_dev->getName());
+                .parameter("Device name", ev.param.devName);
           /** TODO */
 
           Log(Warning, "Update event not implemented yet");
@@ -1317,19 +1318,28 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
 */
 int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 {
+  int8_t ret = 0;
+
   Log(Debug, "OpcUaLWM2MLib::onDeviceRegister")
     .parameter("DeviceName", devName);
 
   LWM2MDevice* device;
   device = const_cast<LWM2MDevice*>(
-      lwm2mServer_->getLWM2MDevice(devName.c_str()));
+      LWM2MServer::instance()->getLWM2MDevice(devName.c_str()));
 
-  /* create device object */
-  if (!createDeviceObjectNode(device))
+  if( device == NULL )
+    ret = -1;
+
+  if( ret == 0 )
   {
-    Log (Error, "Creation of device object failed");
-    return -1;
+    /* create device object */
+    if (!createDeviceObjectNode(device))
+    {
+      Log (Error, "Creation of device object failed");
+      ret = -1;
+    }
   }
+
 
   std::vector<LWM2MObject*>::iterator objectIterator;
   for (objectIterator = device->objectStart();
@@ -1342,31 +1352,43 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     }
   }
 
-  /* create OPC UA object nodes from object map */
-  if (!createObjectNode(objectMap_)) {
-    Log(Debug, "Object node creation failed");
-    return -1;
+  if( ret == 0 )
+  {
+    /* create OPC UA object nodes from object map */
+    if (!createObjectNode(objectMap_)) {
+      Log(Debug, "Object node creation failed");
+      ret = -1;
+    }
   }
 
-  /* create LWM2M resources of LWM2M object instances */
-  if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
-    Log(Debug, "Creation of resources failed");
-    return -1;
+  if( ret == 0 )
+  {
+    /* create LWM2M resources of LWM2M object instances */
+    if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
+      Log(Debug, "Creation of resources failed");
+      ret = -1;
+    }
   }
 
-  /* create OPC UA variable nodes from resource map */
-  if (!createVariableNode(resourceMap_)) {
-    Log(Debug, "Creation of variable node failed");
-    return -1;
+  if( ret == 0 )
+  {
+    /* create OPC UA variable nodes from resource map */
+    if (!createVariableNode(resourceMap_)) {
+      Log(Debug, "Creation of variable node failed");
+      ret = -1;
+    }
   }
 
-  /* create OPC UA method nodes from method map */
-   if (!createMethodNode(resourceMap_)) {
-     Log (Debug, "Creation of method node failed");
-     return -1;
-   }
+  if( ret == 0 )
+  {
+    /* create OPC UA method nodes from method map */
+    if (!createMethodNode(resourceMap_)) {
+      Log (Debug, "Creation of method node failed");
+      ret = -1;
+    }
+  }
 
-  return 0;
+  return ret;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1396,6 +1418,17 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
   if (resourceMaps_.empty() && objectMaps_.empty()) {
       std::cout << "Server has no objects and resources created"
                 << std::endl;
+  }
+
+  LWM2MDevice* p_dev = LWM2MServer::instance()->getLWM2MDevice( devName );
+  if( p_dev != NULL )
+  {
+      std::vector< LWM2MObject* >::iterator objIt = p_dev->objectStart();
+      while( objIt != p_dev->objectEnd() )
+      {
+        (*objIt)->clearResources();
+        objIt++;
+      }
   }
 
   return 0;

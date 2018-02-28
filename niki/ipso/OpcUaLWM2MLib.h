@@ -235,16 +235,6 @@ public:
    */
   virtual bool shutdown(void);
 
-  /**
-   * \brief   Function triggered when a new device registers.
-   */
-   int8_t onDeviceRegister(std::string devName);
-
-   /**
-    * \brief   Function triggered when a new device deregisters.
-    */
-   int8_t onDeviceDeregister(std::string devName);
-
 private:
 
    /* thread instacmce */
@@ -259,7 +249,6 @@ private:
   uint32_t deviceId_;
   IPSOParser ipsoParser_;
   IPSOParser::ipsoDescriptionVec data_;
-  boost::shared_ptr<LWM2MServer> lwm2mServer_;
   OpcUaNikiDB::DbServer dbServer_;
   OpcUaNikiDB::NikiDBModelConfig dbModelConfig_;
   static bool isObserved;
@@ -284,6 +273,17 @@ private:
 
   /** Mutex for Thread safe execution */
   pthread_mutex_t m_mutex;
+
+
+  /**
+   * \brief   Function triggered when a new device registers.
+   */
+   int8_t onDeviceRegister(std::string devName);
+
+   /**
+    * \brief   Function triggered when a new device deregisters.
+    */
+   int8_t onDeviceDeregister(std::string devName);
 
   /**
    * \brief   Thread function.

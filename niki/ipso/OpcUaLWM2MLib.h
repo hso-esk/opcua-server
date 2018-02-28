@@ -60,6 +60,98 @@ class OpcUaLWM2MLib
 
 private:
 
+  class OpcUaOp
+  {
+  public:
+
+    /**
+     * \brief Possible operation types for access from OPC UA.
+     *
+     *        Whenever an operation from the OPC UA server was called this
+     *        will be converted to an operation object.
+     */
+    enum opType
+    {
+        /** Read operation */
+        opTypeRead,
+    };
+
+
+    /**
+     * \brief Possible states of the operation for access from OPC UA.
+     *
+     *        This can be used to observe the status of
+     *        the operation..
+     */
+    enum opState
+    {
+        /** Operation is idle */
+        opStateIdle,
+        /** Operation is in process */
+        opStateProc,
+        /** Operation has finshed */
+        opStateFin,
+        /** An error occurred */
+        opStateError,
+    };
+
+
+    /**
+     * \brief   Constructor
+     *
+     * \param   type  Type of the operation
+     * \param   param Parameter pointer of the event.
+     */
+    OpcUaOp( opType type, void* param )
+    : m_type( type )
+    , m_param( param )
+    , m_state( opStateIdle ) {}
+
+
+    /**
+     * \brief   Get the operation type.
+     *
+     * \return  The type of the operation.
+     */
+    opType getType( void ) {return m_type;}
+
+
+    /**
+     * \brief   Get parameter.
+     *
+     * \return  Parameter of the operation.
+     */
+    void* getParam( void ) {return m_param;}
+
+
+    /**
+     * \brief   Get state.
+     *
+     * \return  State of the operation.
+     */
+    opState getState( void ) {return m_state;}
+
+
+    /**
+     * \brief   Set State.
+     *
+     * \param   state   State to set.
+     */
+    void setState( opState state ) {m_state = state;}
+
+
+  private:
+
+    /** The type of the operation */
+    opType m_type;
+    /** State of the operation */
+    opState m_state;
+    /** Parameter pointer of the event */
+    void* m_param;
+
+  };
+
+
   /**
    * Device event.
    */
@@ -72,7 +164,17 @@ private:
   };
 
 
-public:
+  /**
+   * OPC UA event.
+   */
+  struct s_opcuaEvent_t
+  {
+      /* event parameter */
+      s_lwm2m_serverobserver_event_param_t param;
+      /* event type */
+      e_lwm2m_serverobserver_event_t event;
+  };
+
 
   typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
   typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
@@ -80,6 +182,8 @@ public:
   typedef std::map<uint32_t, IPSOParser::ipsoObjectDescription> objectMap_t;
   typedef std::map<std::string, resourceMap_t> resourceMaps_t;
   typedef std::map<std::string, objectMap_t> objectMaps_t;
+
+public:
 
   /**
    * \brief   Default Constructor.
@@ -175,6 +279,12 @@ private:
   resourceMaps_t resourceMaps_;
   objectMaps_t objectMaps_;
 
+  /* OPC UA Operation */
+  OpcUaOp* mp_op;
+
+  /** Mutex for Thread safe execution */
+  pthread_mutex_t m_mutex;
+
   /**
    * \brief   Thread function.
    */
@@ -199,6 +309,11 @@ private:
    * \brief   Updates the OPC UA application read Context.
    */
   void readSensorValue (ApplicationReadContext* applicationReadContext);
+
+    /**
+   * \brief   Updates the OPC UA application read Context.
+   */
+  void readSensorValueLocal (ApplicationReadContext* applicationReadContext);
 
   /**
    * \brief   reads history data of sensor.

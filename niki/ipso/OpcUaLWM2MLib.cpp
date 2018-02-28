@@ -72,7 +72,16 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   , readHistorySensorValueCb_(boost::bind(&OpcUaLWM2MLib::readHistorySensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
   , execSensorMethodCallback_(boost::bind(&OpcUaLWM2MLib::execSensorMethod, this, _1))
+  , mp_op( NULL )
 {
+
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init( &attr );
+  pthread_mutexattr_settype( &attr, PTHREAD_MUTEX_RECURSIVE );
+
+  /* initialize the mutex */
+  pthread_mutex_init( &m_mutex, &attr );
+
   Log(Debug, "OpcUaLWM2MLib::OpcUaLWM2MLib");
 }
 
@@ -275,6 +284,10 @@ void OpcUaLWM2MLib::thread( void )
   while( threadRun == true )
   {
     usleep(OPCUALWM2MLIB_THREAD_TOT_US);
+
+    pthread_mutex_lock(&m_mutex);
+
+    /* Ceck for events */
     s_devEvent_t ev;
     while( evQueue.pop( ev ))
     {
@@ -311,8 +324,32 @@ void OpcUaLWM2MLib::thread( void )
         break;
       }
     }
-  }
+    pthread_mutex_unlock(&m_mutex);
 
+    pthread_mutex_lock(&m_mutex);
+    /* Check for operations */
+    if( mp_op != NULL )
+    {
+      if( mp_op->getState() == OpcUaOp::opState::opStateIdle )
+      {
+        /* Start the operation depending on its type */
+        switch(mp_op->getType() )
+        {
+          case  OpcUaOp::opType::opTypeRead:
+            mp_op->setState( OpcUaOp::opState::opStateProc );
+            /* call the according read function */
+            readSensorValueLocal( (OpcUaStackCore::ApplicationReadContext *)mp_op->getParam() );
+            mp_op->setState( OpcUaOp::opState::opStateFin );
+            break;
+
+          default:
+            /* invalid */
+            mp_op->setState( OpcUaOp::opState::opStateError );
+        }
+      }
+    }
+    pthread_mutex_unlock(&m_mutex);
+  }
 }
 
 
@@ -441,9 +478,44 @@ bool OpcUaLWM2MLib::decodeDbConfig(const std::string& configFileName)
 
 /*---------------------------------------------------------------------------*/
 /**
- * readSensorValue()
+ * readSensorValuereadSensorValue()
  */
 void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadContext)
+{
+  OpcUaOp::opState state;
+  pthread_mutex_lock( &m_mutex );
+
+  if( mp_op != NULL )
+    delete( mp_op );
+
+  /* create a new operation */
+  mp_op = new OpcUaOp( OpcUaOp::opType::opTypeRead,
+      applicationReadContext );
+  state = mp_op->getState();
+
+  pthread_mutex_unlock( &m_mutex );
+
+  /* wait until the operation was finished */
+  while( (state == OpcUaOp::opState::opStateIdle) ||
+      (state == OpcUaOp::opState::opStateProc) )
+  {
+    pthread_mutex_lock( &m_mutex );
+    state = mp_op->getState();
+
+    if( state == OpcUaOp::opState::opStateError )
+    {
+      /* An error occurred set the according return value*/
+      applicationReadContext->statusCode_ = BadInternalError;
+    }
+    pthread_mutex_unlock( &m_mutex );
+  }
+}
+
+/*---------------------------------------------------------------------------*/
+/**
+ * readSensorValuereadSensorValueLocal()
+ */
+void OpcUaLWM2MLib::readSensorValueLocal (ApplicationReadContext* applicationReadContext)
 {
   Log(Debug, "OpcUaLWM2MLib::readSensorValue")
     .parameter("id", applicationReadContext->nodeId_);
@@ -486,18 +558,20 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
       , applicationReadContext->nodeId_
       , *it->second.data );
 
+    /* copy updated value to application read context */
+    applicationReadContext->statusCode_ = Success;
+    it->second.data->copyTo(applicationReadContext->dataValue_);
+
   } else if (it->second.resInfo.mandatoryType == "Mandatory") {
     std::cout << "Read resource failed, Resource is not accessible"
               << std::endl;
+    applicationReadContext->statusCode_ = BadCommunicationError;
 
   } else if (it->second.resInfo.mandatoryType == "Optional") {
     std::cout << "Read resource failed, resource is not available"
               << std::endl;
+    applicationReadContext->statusCode_ = BadCommunicationError;
   }
-
-  /* copy updated value to application read context */
-  applicationReadContext->statusCode_ = Success;
-  it->second.data->copyTo(applicationReadContext->dataValue_);
 }
 
 /*---------------------------------------------------------------------------*/

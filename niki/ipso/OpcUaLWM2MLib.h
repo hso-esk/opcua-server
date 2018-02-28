@@ -286,7 +286,7 @@ private:
   opcUaNodeContext createDeviceDataLWM2M(IPSOParser::ipsoResourceDescription opcUaNodeInfo
      , OpcUaStackServer::BaseNodeClass::SPtr opcUaNode);
 
- OpcUaDataValue::SPtr createDataValue(const DeviceDataValue* value);
+  OpcUaDataValue::SPtr createDataValue(const DeviceDataValue* value);
 };
 
 } /* namespace OpcUalwm2m */

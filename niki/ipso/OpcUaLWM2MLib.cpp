@@ -1342,51 +1342,53 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     }
   }
 
-
-  std::vector<LWM2MObject*>::iterator objectIterator;
-  for (objectIterator = device->objectStart();
-      objectIterator != device->objectEnd();
-      ++objectIterator)
+  if(ret == 0)
   {
-    /* check id match between LWM2M device and object dictionary objects  */
-    if (!matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
-      Log(Debug, "LWM2M Object ID exist in dictionary");
+    std::vector<LWM2MObject*>::iterator objectIterator;
+    for (objectIterator = device->objectStart();
+        objectIterator != device->objectEnd();
+        ++objectIterator)
+    {
+      /* check id match between LWM2M device and object dictionary objects  */
+      if (!matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
+        Log(Debug, "LWM2M Object ID exist in dictionary");
+      }
     }
-  }
 
-  if( ret == 0 )
-  {
-    /* create OPC UA object nodes from object map */
-    if (!createObjectNode(objectMap_)) {
-      Log(Debug, "Object node creation failed");
-      ret = -1;
+    if( ret == 0 )
+    {
+      /* create OPC UA object nodes from object map */
+      if (!createObjectNode(objectMap_)) {
+        Log(Debug, "Object node creation failed");
+        ret = -1;
+      }
     }
-  }
 
-  if( ret == 0 )
-  {
-    /* create LWM2M resources of LWM2M object instances */
-    if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
-      Log(Debug, "Creation of resources failed");
-      ret = -1;
+    if( ret == 0 )
+    {
+      /* create LWM2M resources of LWM2M object instances */
+      if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
+        Log(Debug, "Creation of resources failed");
+        ret = -1;
+      }
     }
-  }
 
-  if( ret == 0 )
-  {
-    /* create OPC UA variable nodes from resource map */
-    if (!createVariableNode(resourceMap_)) {
-      Log(Debug, "Creation of variable node failed");
-      ret = -1;
+    if( ret == 0 )
+    {
+      /* create OPC UA variable nodes from resource map */
+      if (!createVariableNode(resourceMap_)) {
+        Log(Debug, "Creation of variable node failed");
+        ret = -1;
+      }
     }
-  }
 
-  if( ret == 0 )
-  {
-    /* create OPC UA method nodes from method map */
-    if (!createMethodNode(resourceMap_)) {
-      Log (Debug, "Creation of method node failed");
-      ret = -1;
+    if( ret == 0 )
+    {
+      /* create OPC UA method nodes from method map */
+      if (!createMethodNode(resourceMap_)) {
+        Log (Debug, "Creation of method node failed");
+        ret = -1;
+      }
     }
   }
 

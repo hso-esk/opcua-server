@@ -140,10 +140,23 @@ static uint32_t offset3()
 int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
     const e_lwm2m_serverobserver_event_t ev)
 {
-  Log(Debug, "OpcUaLWM2MLib::notify frm server");
+  Log(Debug, "OpcUaLWM2MLib::notify from server");
 
   s_devEvent_t event = {param, ev};
-  evQueue.push( event );
+  pthread_mutex_lock(&m_mutex);
+
+  std::deque<s_devEvent_t>::iterator it = evQueue.begin();
+  while(it != evQueue.end())
+  {
+    if( (it->event == ev) &&
+        (strcmp(it->param.devName, param.devName) == 0) )
+      break;
+    it++;
+  }
+
+  if( it == evQueue.end() )
+    evQueue.push_back( event );
+  pthread_mutex_unlock(&m_mutex);
 
   return 0;
 }
@@ -290,8 +303,11 @@ void OpcUaLWM2MLib::thread( void )
 
     /* Ceck for events */
     s_devEvent_t ev;
-    while( evQueue.pop( ev ))
+    while( !evQueue.empty())
     {
+      ev = evQueue.front();
+      evQueue.pop_front();
+
       switch (ev.event)
       {
         case e_lwm2m_serverobserver_event_register:

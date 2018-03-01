@@ -46,7 +46,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/thread.hpp>
-#include <boost/lockfree/queue.hpp>
+#include <deque>
 
 
 namespace OpcUaLWM2M
@@ -237,10 +237,10 @@ public:
 
 private:
 
-   /* thread instacmce */
-   boost::thread* t;
-   bool threadRun;
-   boost::lockfree::queue<s_devEvent_t, boost::lockfree::capacity<1024> > evQueue;
+  /* thread instacmce */
+  boost::thread* t;
+  bool threadRun;
+  std::deque<s_devEvent_t> evQueue;
 
   std::string ipsofileName_;
   std::vector<std::string> ipsofileNameVec_;

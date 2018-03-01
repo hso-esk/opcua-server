@@ -877,10 +877,10 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
 
       it2++;
     }
-  }
 
-  /* delete objectMap from objectMaps */
-  objectMaps_.erase(it);
+    /* delete objectMap from objectMaps */
+    objectMaps_.erase(it);
+  }
 
   /* delete device object node */
   deleteDeviceObjecttNode(deviceId);
@@ -1209,10 +1209,12 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
 
       it2++;
     }
+
+    /* delete resourceMap from resourceMaps */
+    resourceMaps_.erase(it);
   }
 
-  /* delete resourceMap from resourceMaps */
-  resourceMaps_.erase(it);
+
 
   std::cout << devName
             << " resource nodes successfully deleted from server"

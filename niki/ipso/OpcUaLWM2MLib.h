@@ -55,7 +55,7 @@ namespace OpcUaLWM2M
 class OpcUaLWM2MLib
   : public OpcUaStackServer::ApplicationIf
   , public LWM2MServerObserver
-  , DeviceDataObserver
+  , public DeviceDataObserver
 {
 
 private:

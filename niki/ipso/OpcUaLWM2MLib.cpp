@@ -51,8 +51,8 @@
 namespace OpcUaLWM2M
 {
 
-
-#define OPCUALWM2MLIB_THREAD_TOT_US       2000
+/** Sleeptime in us within the Thread */
+#define OPCUALWM2MLIB_THREAD_TOT_US       5000
 
 /**
  * OpcUaLWM2MLib()
@@ -72,7 +72,16 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   , readHistorySensorValueCb_(boost::bind(&OpcUaLWM2MLib::readHistorySensorValue, this, _1))
   , writeSensorValueCallback_(boost::bind(&OpcUaLWM2MLib::writeSensorValue, this, _1))
   , execSensorMethodCallback_(boost::bind(&OpcUaLWM2MLib::execSensorMethod, this, _1))
+  , mp_op( NULL )
 {
+
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init( &attr );
+  pthread_mutexattr_settype( &attr, PTHREAD_MUTEX_RECURSIVE );
+
+  /* initialize the mutex */
+  pthread_mutex_init( &m_mutex, &attr );
+
   Log(Debug, "OpcUaLWM2MLib::OpcUaLWM2MLib");
 }
 
@@ -131,10 +140,23 @@ static uint32_t offset3()
 int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
     const e_lwm2m_serverobserver_event_t ev)
 {
-  Log(Debug, "OpcUaLWM2MLib::notify frm server");
+  Log(Debug, "OpcUaLWM2MLib::notify from server");
 
   s_devEvent_t event = {param, ev};
-  evQueue.push( event );
+  pthread_mutex_lock(&m_mutex);
+
+  std::deque<s_devEvent_t>::iterator it = evQueue.begin();
+  while(it != evQueue.end())
+  {
+    if( (it->event == ev) &&
+        (strcmp(it->param.devName, param.devName) == 0) )
+      break;
+    it++;
+  }
+
+  if( it == evQueue.end() )
+    evQueue.push_back( event );
+  pthread_mutex_unlock(&m_mutex);
 
   return 0;
 }
@@ -209,18 +231,18 @@ bool OpcUaLWM2MLib::startup(void)
     return false;
   }
 
+
+
+  /* start the the LWM2M server */
+  LWM2MServer::instance()->startServer();
+  Log (Debug, "LWM2M server started");
+
   /* create thread */
   threadRun = true;
   t = new boost::thread( &OpcUaLWM2MLib::thread, this );
 
-  /* start the the LWM2M server */
-  lwm2mServer_ = boost::make_shared<LWM2MServer>();
-  lwm2mServer_->startServer();
-
-  Log (Debug, "LWM2M server started");
-
   /* register the OPC UA server observer object */
-  lwm2mServer_->registerObserver( this );
+  LWM2MServer::instance()->registerObserver( this );
 
   /* start the database server */
   dbServer_.DBServer().applicationServiceIf(&service());
@@ -246,7 +268,7 @@ bool OpcUaLWM2MLib::shutdown()
   Log(Debug, "OpcUaLWM2MLib::shutdown");
 
   /* deregister OpcUa LWM2M server observer */
-  lwm2mServer_->deregisterObserver( this );
+  LWM2MServer::instance()->deregisterObserver( this );
 
   /* stop worker thread */
   threadRun = false;
@@ -254,7 +276,7 @@ bool OpcUaLWM2MLib::shutdown()
   delete t;
 
   /* stop the LWM2M server */
-  lwm2mServer_->stopServer();
+  LWM2MServer::instance()->stopServer();
 
   /* shut down database server */
   if (!dbServer_.shutdown()) {
@@ -275,25 +297,33 @@ void OpcUaLWM2MLib::thread( void )
   while( threadRun == true )
   {
     usleep(OPCUALWM2MLIB_THREAD_TOT_US);
+
+    pthread_mutex_lock(&m_mutex);
+    LWM2MServer::instance()->runServer();
+
+    /* Ceck for events */
     s_devEvent_t ev;
-    while( evQueue.pop( ev ))
+    while( !evQueue.empty())
     {
+      ev = evQueue.front();
+      evQueue.pop_front();
+
       switch (ev.event)
       {
         case e_lwm2m_serverobserver_event_register:
         {
           Log(Debug, "Event device registration triggered")
-                .parameter("Device name", ev.param.p_dev->getName());
+                .parameter("Device name", ev.param.devName);
 
           /* execute onDeviceRegister function */
-          onDeviceRegister(ev.param.p_dev->getName());
+          onDeviceRegister(ev.param.devName);
         }
         break;
 
         case e_lwm2m_serverobserver_event_update:
         {
           Log(Debug, "Event device update triggered")
-                .parameter("Device name", ev.param.p_dev->getName());
+                .parameter("Device name", ev.param.devName);
           /** TODO */
 
           Log(Warning, "Update event not implemented yet");
@@ -311,8 +341,32 @@ void OpcUaLWM2MLib::thread( void )
         break;
       }
     }
-  }
+    pthread_mutex_unlock(&m_mutex);
 
+    pthread_mutex_lock(&m_mutex);
+    /* Check for operations */
+    if( mp_op != NULL )
+    {
+      if( mp_op->getState() == OpcUaOp::opState::opStateIdle )
+      {
+        /* Start the operation depending on its type */
+        switch(mp_op->getType() )
+        {
+          case  OpcUaOp::opType::opTypeRead:
+            mp_op->setState( OpcUaOp::opState::opStateProc );
+            /* call the according read function */
+            readSensorValueLocal( (OpcUaStackCore::ApplicationReadContext *)mp_op->getParam() );
+            mp_op->setState( OpcUaOp::opState::opStateFin );
+            break;
+
+          default:
+            /* invalid */
+            mp_op->setState( OpcUaOp::opState::opStateError );
+        }
+      }
+    }
+    pthread_mutex_unlock(&m_mutex);
+  }
 }
 
 
@@ -441,9 +495,44 @@ bool OpcUaLWM2MLib::decodeDbConfig(const std::string& configFileName)
 
 /*---------------------------------------------------------------------------*/
 /**
- * readSensorValue()
+ * readSensorValuereadSensorValue()
  */
 void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadContext)
+{
+  OpcUaOp::opState state;
+  pthread_mutex_lock( &m_mutex );
+
+  if( mp_op != NULL )
+    delete( mp_op );
+
+  /* create a new operation */
+  mp_op = new OpcUaOp( OpcUaOp::opType::opTypeRead,
+      applicationReadContext );
+  state = mp_op->getState();
+
+  pthread_mutex_unlock( &m_mutex );
+
+  /* wait until the operation was finished */
+  while( (state == OpcUaOp::opState::opStateIdle) ||
+      (state == OpcUaOp::opState::opStateProc) )
+  {
+    pthread_mutex_lock( &m_mutex );
+    state = mp_op->getState();
+
+    if( state == OpcUaOp::opState::opStateError )
+    {
+      /* An error occurred set the according return value*/
+      applicationReadContext->statusCode_ = BadInternalError;
+    }
+    pthread_mutex_unlock( &m_mutex );
+  }
+}
+
+/*---------------------------------------------------------------------------*/
+/**
+ * readSensorValuereadSensorValueLocal()
+ */
+void OpcUaLWM2MLib::readSensorValueLocal (ApplicationReadContext* applicationReadContext)
 {
   Log(Debug, "OpcUaLWM2MLib::readSensorValue")
     .parameter("id", applicationReadContext->nodeId_);
@@ -486,18 +575,20 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
       , applicationReadContext->nodeId_
       , *it->second.data );
 
+    /* copy updated value to application read context */
+    applicationReadContext->statusCode_ = Success;
+    it->second.data->copyTo(applicationReadContext->dataValue_);
+
   } else if (it->second.resInfo.mandatoryType == "Mandatory") {
     std::cout << "Read resource failed, Resource is not accessible"
               << std::endl;
+    applicationReadContext->statusCode_ = BadCommunicationError;
 
   } else if (it->second.resInfo.mandatoryType == "Optional") {
     std::cout << "Read resource failed, resource is not available"
               << std::endl;
+    applicationReadContext->statusCode_ = BadCommunicationError;
   }
-
-  /* copy updated value to application read context */
-  applicationReadContext->statusCode_ = Success;
-  it->second.data->copyTo(applicationReadContext->dataValue_);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -802,10 +893,10 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
 
       it2++;
     }
-  }
 
-  /* delete objectMap from objectMaps */
-  objectMaps_.erase(it);
+    /* delete objectMap from objectMaps */
+    objectMaps_.erase(it);
+  }
 
   /* delete device object node */
   deleteDeviceObjecttNode(deviceId);
@@ -1134,10 +1225,12 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
 
       it2++;
     }
+
+    /* delete resourceMap from resourceMaps */
+    resourceMaps_.erase(it);
   }
 
-  /* delete resourceMap from resourceMaps */
-  resourceMaps_.erase(it);
+
 
   std::cout << devName
             << " resource nodes successfully deleted from server"
@@ -1168,7 +1261,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   if (opcUaNodeInfo.operation == "R") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_OBSERVE)
@@ -1177,7 +1270,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   } else if (opcUaNodeInfo.operation == "W") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE)
@@ -1186,7 +1279,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   } else if (opcUaNodeInfo.operation == "E") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , DeviceData::ACCESS_NONE
@@ -1195,7 +1288,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   } else if  (opcUaNodeInfo.operation == "RW") {
 
     ctx.dataObject = boost::make_shared<DeviceDataLWM2M>(
-          opcUaNodeInfo.resource->getParent()->getParent()->getName()
+          opcUaNodeInfo.resource->getDevice()->getName()
         , opcUaNodeInfo.desc
         , opcUaNodeInfo.type
         , (DeviceData::ACCESS_READ | DeviceData::ACCESS_WRITE | DeviceData::ACCESS_OBSERVE)
@@ -1243,56 +1336,79 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
 */
 int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 {
+  int8_t ret = 0;
+
   Log(Debug, "OpcUaLWM2MLib::onDeviceRegister")
     .parameter("DeviceName", devName);
 
   LWM2MDevice* device;
   device = const_cast<LWM2MDevice*>(
-      lwm2mServer_->getLWM2MDevice(devName.c_str()));
+      LWM2MServer::instance()->getLWM2MDevice(devName.c_str()));
 
-  /* create device object */
-  if (!createDeviceObjectNode(device))
-  {
-    Log (Error, "Creation of device object failed");
-    return -1;
-  }
+  if( device == NULL )
+    ret = -1;
 
-  std::vector<LWM2MObject*>::iterator objectIterator;
-  for (objectIterator = device->objectStart();
-      objectIterator != device->objectEnd();
-      ++objectIterator)
+  if( ret == 0 )
   {
-    /* check id match between LWM2M device and object dictionary objects  */
-    if (!matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
-      Log(Debug, "LWM2M Object ID exist in dictionary");
+    /* create device object */
+    if (!createDeviceObjectNode(device))
+    {
+      Log (Error, "Creation of device object failed");
+      ret = -1;
     }
   }
 
-  /* create OPC UA object nodes from object map */
-  if (!createObjectNode(objectMap_)) {
-    Log(Debug, "Object node creation failed");
-    return -1;
+  if(ret == 0)
+  {
+    std::vector<LWM2MObject*>::iterator objectIterator;
+    for (objectIterator = device->objectStart();
+        objectIterator != device->objectEnd();
+        ++objectIterator)
+    {
+      /* check id match between LWM2M device and object dictionary objects  */
+      if (!matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
+        Log(Debug, "LWM2M Object ID exist in dictionary");
+      }
+    }
+
+    if( ret == 0 )
+    {
+      /* create OPC UA object nodes from object map */
+      if (!createObjectNode(objectMap_)) {
+        Log(Debug, "Object node creation failed");
+        ret = -1;
+      }
+    }
+
+    if( ret == 0 )
+    {
+      /* create LWM2M resources of LWM2M object instances */
+      if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
+        Log(Debug, "Creation of resources failed");
+        ret = -1;
+      }
+    }
+
+    if( ret == 0 )
+    {
+      /* create OPC UA variable nodes from resource map */
+      if (!createVariableNode(resourceMap_)) {
+        Log(Debug, "Creation of variable node failed");
+        ret = -1;
+      }
+    }
+
+    if( ret == 0 )
+    {
+      /* create OPC UA method nodes from method map */
+      if (!createMethodNode(resourceMap_)) {
+        Log (Debug, "Creation of method node failed");
+        ret = -1;
+      }
+    }
   }
 
-  /* create LWM2M resources of LWM2M object instances */
-  if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
-    Log(Debug, "Creation of resources failed");
-    return -1;
-  }
-
-  /* create OPC UA variable nodes from resource map */
-  if (!createVariableNode(resourceMap_)) {
-    Log(Debug, "Creation of variable node failed");
-    return -1;
-  }
-
-  /* create OPC UA method nodes from method map */
-   if (!createMethodNode(resourceMap_)) {
-     Log (Debug, "Creation of method node failed");
-     return -1;
-   }
-
-  return 0;
+  return ret;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1322,6 +1438,17 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
   if (resourceMaps_.empty() && objectMaps_.empty()) {
       std::cout << "Server has no objects and resources created"
                 << std::endl;
+  }
+
+  LWM2MDevice* p_dev = LWM2MServer::instance()->getLWM2MDevice( devName );
+  if( p_dev != NULL )
+  {
+      std::vector< LWM2MObject* >::iterator objIt = p_dev->objectStart();
+      while( objIt != p_dev->objectEnd() )
+      {
+        (*objIt)->clearResources();
+        objIt++;
+      }
   }
 
   return 0;
@@ -1471,7 +1598,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         }
       }
     }
-    deviceName = objectItem.second.object->getParent()->getName();
+    deviceName = objectItem.second.object->getDevice()->getName();
   }
 
   /* store created object map and resource map */

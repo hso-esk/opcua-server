@@ -90,6 +90,9 @@ public:
     /* IPSO object instance type */
     std::string instanceType;
 
+    /* IPSO resource dynamic data value? */
+    std::string dynamicType;
+
     LWM2MObject* object;
   };
 

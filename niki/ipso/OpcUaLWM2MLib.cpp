@@ -48,6 +48,39 @@
 #include <string>
 #include <csignal>
 
+void signalHandler(int signum)
+{
+  std::cout << "Application will close..., received external interrupt"
+            << std::endl;
+
+  exit (signum);
+}
+
+/*---------------------------------------------------------------------------*/
+/**
+ * offset used internally to avoid ID conflicts
+ */
+/* offset for OPC UA object nodes */
+static uint32_t offset()
+{
+  static uint32_t ID = 40000;
+  return ID++;
+}
+
+/* offset for OPC UA variable and method nodes */
+static uint32_t offset2()
+{
+  static uint32_t ID = 60000;
+  return ID++;
+}
+
+/* offset for OPC UA device nodes */
+static uint32_t offset3()
+{
+  static uint32_t ID = 20000;
+  return ID++;
+}
+
 namespace OpcUaLWM2M
 {
 
@@ -96,42 +129,6 @@ OpcUaLWM2MLib::~OpcUaLWM2MLib(void)
 
 /*---------------------------------------------------------------------------*/
 bool OpcUaLWM2MLib::isObserved = false;
-namespace
-{
-void signalHandler(int signum)
-{
-  std::cout << "Application will close..., received external interrupt"
-            << std::endl;
-
-  exit (signum);
-}
-
-/*---------------------------------------------------------------------------*/
-/**
- * offset used internally to avoid ID conflicts
- */
-/* offset for OPC UA object nodes */
-static uint32_t offset()
-{
-  static uint32_t ID = 40000;
-  return ID++;
-}
-
-/* offset for OPC UA variable and method nodes */
-static uint32_t offset2()
-{
-  static uint32_t ID = 60000;
-  return ID++;
-}
-
-/* offset for OPC UA device nodes */
-static uint32_t offset3()
-{
-  static uint32_t ID = 20000;
-  return ID++;
-}
-} /* anonymous namespace */
-
 
 /*---------------------------------------------------------------------------*/
 /**

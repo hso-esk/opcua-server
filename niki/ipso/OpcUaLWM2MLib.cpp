@@ -1533,19 +1533,19 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
       if (objectItem.second.id == dictEntry.second->id) {
         if (resourceItem.operation == "R") {
 
-          /* create resource for READ access */
-          LWM2MResource* resource =
-                new  LWM2MResource(resourceItem.resourceId, true, false, false);
+            /* create resource for READ access */
+            LWM2MResource* resource =
+                  new  LWM2MResource(resourceItem.resourceId, true, false, false);
 
-          /* add resource to parent object */
-          objectItem.second.object->addResource(resource);
+            /* add resource to parent object */
+            objectItem.second.object->addResource(resource);
 
-          /* copy created resource */
-          resourceInfo.resource = resource;
+            /* copy created resource */
+            resourceInfo.resource = resource;
 
-          /* add resource info to resource map */
-          uint32_t resourceId =  offset2();
-          resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
+            /* add resource info to resource map */
+            uint32_t resourceId =  offset2();
+            resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
 
           } else if (resourceItem.operation == "W") {
 

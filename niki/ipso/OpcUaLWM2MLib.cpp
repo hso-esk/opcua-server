@@ -43,6 +43,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/format.hpp>
+#include <boost/functional/hash.hpp>
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -56,36 +57,12 @@ void signalHandler(int signum)
   exit (signum);
 }
 
-/*---------------------------------------------------------------------------*/
-/**
- * offset used internally to avoid ID conflicts
- */
-/* offset for OPC UA object nodes */
-static uint32_t offset()
-{
-  static uint32_t ID = 40000;
-  return ID++;
-}
-
-/* offset for OPC UA variable and method nodes */
-static uint32_t offset2()
-{
-  static uint32_t ID = 60000;
-  return ID++;
-}
-
-/* offset for OPC UA device nodes */
-static uint32_t offset3()
-{
-  static uint32_t ID = 20000;
-  return ID++;
-}
-
 namespace OpcUaLWM2M
 {
 
 /** Sleeptime in us within the Thread */
 #define OPCUALWM2MLIB_THREAD_TOT_US       5000
+#define ID_MODULO_DIVISOR            100000000
 
 /**
  * OpcUaLWM2MLib()
@@ -919,7 +896,8 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
 
   /* set node id of object */
   OpcUaNodeId deviceObjectNodeId;
-  deviceId_ = offset3();
+  uint32_t hash = boost::hash_value(device->getName());
+  deviceId_ = hash % ID_MODULO_DIVISOR;
   deviceObjectNodeId.set(deviceId_, namespaceIndex_);
   deviceobjectNode->setNodeId(deviceObjectNodeId);
 
@@ -1476,8 +1454,12 @@ bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dic
       objectInfo.desc = dict.second->objectDesc.desc;
       objectInfo.type = dict.second->objectDesc.type;
 
-      /* unique id for object instances  */
-      uint32_t id = offset();
+      /* generate unique object id */
+      std::string instIdStr = boost::lexical_cast<std::string>(objectInfo.instanceId);
+      std::string hashname
+        = objectInfo.object->getDevice()->getName() + objectInfo.name + instIdStr;
+      uint32_t hash = boost::hash_value(hashname);
+      uint32_t id = hash % ID_MODULO_DIVISOR;
 
       /* store info of matching Object in map */
       objectMap.insert(objectMap_t::value_type(id, objectInfo));
@@ -1520,12 +1502,22 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         resourceInfo.value = resourceItem.value;
         resourceInfo.operation = resourceItem.operation;
         resourceInfo.mandatoryType = resourceItem.mandatoryType;
-        resourceInfo.dynamicType = resourceItem.dynamicType;
+        if( objectItem.second.dynamicType != "Dynamic")
+          resourceInfo.dynamicType = resourceItem.dynamicType;
+        else
+          resourceInfo.dynamicType = "";
 
         /* copy node id of parent object and instance ID */
         resourceInfo.opcuaObjectId = objectItem.first;
         resourceInfo.objectId = objectItem.second.id;
         resourceInfo.instanceId = objectItem.second.instanceId;
+
+        /* generate unique resource id */
+        std::string objIdStr = boost::lexical_cast<std::string>(resourceInfo.opcuaObjectId);
+        std::string hashname
+          = objectItem.second.object->getDevice()->getName() + resourceInfo.name + objIdStr;
+        uint32_t hash = boost::hash_value(hashname);
+        uint32_t hashid = hash % ID_MODULO_DIVISOR;
 
       if (objectItem.second.id == dictEntry.second->id) {
         if (resourceItem.operation == "R") {
@@ -1541,7 +1533,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             resourceInfo.resource = resource;
 
             /* add resource info to resource map */
-            uint32_t resourceId =  offset2();
+            uint32_t resourceId =  hashid;
             resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
 
           } else if (resourceItem.operation == "W") {
@@ -1557,7 +1549,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             resourceInfo.resource = resource;
 
             /* add resource info to map */
-            uint32_t resourceId =  offset2();
+            uint32_t resourceId =  hashid;
             resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
 
           } else if (resourceItem.operation == "E") {
@@ -1573,7 +1565,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             resourceInfo.resource = resource;
 
             /* add executable resource info to resource map */
-            uint32_t methodId = offset2();
+            uint32_t methodId = hashid;
             resourceMap.insert(resourceMap_t::value_type(methodId, resourceInfo));
 
           } else if  (resourceItem.operation == "RW") {
@@ -1589,7 +1581,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
             resourceInfo.resource = resource;
 
             /* add resource info to map */
-            uint32_t resourceId =  offset2();
+            uint32_t resourceId =  hashid;
             resourceMap.insert(resourceMap_t::value_type(resourceId, resourceInfo));
           }
         }

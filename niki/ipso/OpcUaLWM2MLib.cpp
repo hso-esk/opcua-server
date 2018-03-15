@@ -1048,13 +1048,20 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         variableCtx = createDeviceDataLWM2M(varInfo.second, variableNode);
 
         /* observe variable nodes */
-        if(varInfo.second.dynamicType == "Dynamic"){
-          Log(Debug, "Started LWM2M observation.")
+        if((varInfo.second.dynamicType == "Dynamic") ||
+            varInfo.second.dynamicType == "Object"){
+          Log(Debug, "Started LWM2M resource observation.")
             .parameter("ObjId", variableCtx.resInfo.objectId)
             .parameter("InstId", variableCtx.resInfo.instanceId)
             .parameter("RseId", variableCtx.resInfo.resourceId);
 
-          if( variableCtx.dataObject->observeVal( this, NULL ) == 0 )
+          bool obsDirect = false;
+
+          if( varInfo.second.dynamicType == "Object" )
+            obsDirect = false;
+          else
+            obsDirect = true;
+          if( variableCtx.dataObject->observeVal( this, NULL, obsDirect ) == 0 )
           {
             Log(Debug, "LWM2M Observation has succeeded.");
             Log(Debug, "Registered a dynamic value observer.");
@@ -1379,6 +1386,35 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
       if (!createMethodNode(resourceMap_)) {
         Log (Debug, "Creation of method node failed");
         ret = -1;
+      }
+    }
+
+    if( ret == 0 )
+    {
+      objectMaps_t::iterator it = objectMaps_.find( devName );
+      if( it != objectMaps_.end() )
+      {
+        for (auto& objectInfo : it->second )
+        {
+          if(objectInfo.second.dynamicType == "Dynamic"){
+            Log(Debug, "Started LWM2M object observation.")
+              .parameter("ObjId", objectInfo.second.id)
+              .parameter("InstId", objectInfo.second.instanceId);
+              /* Add the Observer to all the Resources */
+
+            if( LWM2MServer::instance()->observe(objectInfo.second.object, true) == 0 )
+            {
+              Log(Debug, "LWM2M Observation has succeeded.");
+              Log(Debug, "Registered a dynamic value observer.");
+            }
+            else
+            {
+              Log(Error, "LWM2M observation has failed.");
+              Log(Error, "Registering an observer has failed.");
+              continue;
+            }
+          }
+        }
       }
     }
   }

@@ -179,6 +179,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   ipsoDescription.id = ipsoObject.id;
   ipsoDescription.objectDesc.urn = ipsoObject.urn;
   ipsoDescription.objectDesc.instanceType = ipsoObject.instanceType;
+  ipsoDescription.objectDesc.dynamicType = ipsoObject.dynamicType;
 
   Log(Debug, "Start parsing resources");
 

@@ -1453,6 +1453,7 @@ bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dic
       objectInfo.name = dict.second->objectDesc.name;
       objectInfo.desc = dict.second->objectDesc.desc;
       objectInfo.type = dict.second->objectDesc.type;
+      objectInfo.dynamicType = dict.second->objectDesc.dynamicType;
 
       /* generate unique object id */
       std::string instIdStr = boost::lexical_cast<std::string>(objectInfo.instanceId);

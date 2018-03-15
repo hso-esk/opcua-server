@@ -1506,7 +1506,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
         if( objectItem.second.dynamicType != "Dynamic")
           resourceInfo.dynamicType = resourceItem.dynamicType;
         else
-          resourceInfo.dynamicType = "";
+          resourceInfo.dynamicType = "Object";
 
         /* copy node id of parent object and instance ID */
         resourceInfo.opcuaObjectId = objectItem.first;

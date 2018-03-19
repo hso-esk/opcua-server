@@ -7,29 +7,20 @@
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-sensor-interface)
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-lwm2m-server)
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/asneg-dbserver)
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/logger)
+#INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-sensor-interface)
+#INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-lwm2m-server)
+#INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/asneg-dbserver)
 
-LIST(APPEND OpcUaIPSO_SRC
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MLib.cpp
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/OpcUaLWM2MLib.h
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/IPSOParser.cpp
-  ${PROJECT_SOURCE_DIR}/../../niki/ipso/IPSOParser.h
+LIST(APPEND OpcUaNikiLoger_SRC
+  ${PROJECT_SOURCE_DIR}/../../niki/logger/NikiLogger.cpp
+  ${PROJECT_SOURCE_DIR}/../../niki/logger/NikiLogger.h
 )
 
-add_library(OpcUaIPSO SHARED ${OpcUaIPSO_SRC})
+add_library(OpcUaNikiLoger SHARED ${OpcUaNikiLoger_SRC})
 
 target_link_libraries(
-    OpcUaIPSO
-    OpcUaStackCore
-    OpcUaStackServer
-    OpcUaStackClient
-    OpcUaSensorInterface
-    OpcUalwm2m
-    OpcUaDB
     OpcUaNikiLoger
+    OpcUaStackCore
     ${pthread}
     ${Boost_LIBRARIES}
 )

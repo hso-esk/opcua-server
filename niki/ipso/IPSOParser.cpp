@@ -64,7 +64,7 @@ IPSOParser::~IPSOParser()
  */
 bool IPSOParser::parseIPSOfile(const std::string& IPSOfile, ipsoDescriptionVec& data)
 {
-  Log(Debug, "IPSOParser::parseIPSOfile");
+  Log(Debug, "IPSOParser::parseIPSOfile").parameter(" for file: ", IPSOfile);
 
   /* check if IPSO file exist */
   if (!boost::filesystem::exists(IPSOfile))
@@ -181,7 +181,9 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   ipsoDescription.objectDesc.instanceType = ipsoObject.instanceType;
   ipsoDescription.objectDesc.dynamicType = ipsoObject.dynamicType;
 
-  Log(Debug, "Start parsing resources");
+  Log(Debug, "Got an IPSO object").parameter(" with name ", ipsoObject.name).parameter(" and ID ", ipsoObject.id);
+
+  Log(Debug, "Start parsing of the resources");
 
   /* Parse IPSO resources */
   std::vector<Config> resourceVec;
@@ -228,6 +230,8 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   {
     Log(Debug, "IPSO resource Id not defined");
     return false;
+  }else {
+	  Log(Debug, "Found an IPSO resource ").parameter("ID ", ipsoResource.resourceId);
   }
 
   /* read IPSO resource name */
@@ -235,6 +239,8 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   {
     Log(Debug, "IPSO resource name not defined");
     return false;
+  }else {
+	  Log(Debug, "Found an IPSO resource ").parameter("name ", ipsoResource.name);
   }
 
   /* read IPSO resource operation */
@@ -242,6 +248,8 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   {
     Log(Debug, "IPSO resource operation not defined");
     return false;
+  }else {
+	  Log(Debug, "Found an IPSO resource ").parameter("operation ", ipsoResource.operation);
   }
 
   /* read IPSO resource instance type */
@@ -249,13 +257,21 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   {
     Log(Debug, "IPSO resource instance type not defined");
     return false;
+  } else {
+	  Log(Debug, "Found an IPSO resource ").parameter("instanceType ", ipsoResource.instanceType);
   }
 
   /* read IPSO resource dynamic data value? */
   if (!resourceChild.getConfigParameter("Dynamic", ipsoResource.dynamicType))
   {
     Log(Debug, "IPSO resource dynamic type not defined");
+<<<<<<< HEAD
     ipsoResource.dynamicType = "";
+=======
+    return false;
+  }else {
+	  Log(Debug, "Found an IPSO resource ").parameter("dynamicType ", ipsoResource.dynamicType);
+>>>>>>> 8947e2f169c669265875becf0f9326597365c485
   }
 
   /* read IPSO resource mandatory field */
@@ -263,6 +279,8 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   {
     Log(Debug, "IPSO resource mandatory type not defined");
     return false;
+  }else {
+	  Log(Debug, "Found an IPSO resource ").parameter("mandatoryType ", ipsoResource.mandatoryType);
   }
 
   /* read IPSO resource datatype */
@@ -284,6 +302,8 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   } else if (*type == "String") {
     ipsoResource.type = DeviceDataValue::TYPE_STRING;
     memset(ipsoResource.value.cStr, 0, DEVICEDATAVALUE_STRMAX);
+  } else {
+	  Log(Debug, "Found an IPSO resource ").parameter("dataType ", ipsoResource.type);
   }
 
   /* read IPSO range enumeration */
@@ -292,23 +312,28 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   {
     Log(Debug, "IPSO resource range Enumeration not defined");
     return false;
+  } else {
+	  ipsoResource.rangeEnum = *rangeEnumeration;
+	  Log(Debug, "Found an IPSO resource ").parameter("rangeEnumeration ", ipsoResource.rangeEnum);
   }
-  ipsoResource.rangeEnum = *rangeEnumeration;
-
   /* read IPSO resource unit */
   boost::optional<std::string> unit = resourceChild.getValue("Units");
   if (!unit)
   {
     Log(Debug, "IPSO resource unit not defined");
     return false;
+  } else {
+	  ipsoResource.unit = *unit;
+	  Log(Debug, "Found an IPSO resource ").parameter("Units ", ipsoResource.unit);
   }
-  ipsoResource.unit = *unit;
 
   /* read IPSO resource description */
   if (!resourceChild.getConfigParameter("Description", ipsoResource.desc))
   {
     Log(Debug, "IPSO resource description not defined");
     return false;
+  } else {
+	  Log(Debug, "Found an IPSO resource ").parameter("Description ", ipsoResource.desc);
   }
 
   return true;

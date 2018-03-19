@@ -12,7 +12,7 @@
  * All rights reserved
  */
 
-#include "NikiLogger.h"
+#include "Logger.h"
 
 #include <boost/regex.hpp>
 #include <sstream>
@@ -21,7 +21,7 @@ namespace OpcUaLWM2M {
 
 using namespace OpcUaStackCore;
 
-std::map<std::string, LogLevel> NikiLogger::logLevels = {
+std::map<std::string, LogLevel> Logger::logLevels = {
 		{ "error", Error },
 		{ "warning", Warning },
 		{ "info", Info },
@@ -31,22 +31,22 @@ std::map<std::string, LogLevel> NikiLogger::logLevels = {
 
 // Getting the default logLevel
 // NOT SAFE; NO WAY OF KNOWING IF FileLogger HAS BEEN INSTANCED!
-LogLevel NikiLogger::displayLevel_ = FileLogger::logLevel();
+LogLevel Logger::displayLevel_ = FileLogger::logLevel();
 
-NikiLogger::NikiLogger() :
-		NikiLogger(Error) {
+Logger::Logger() :
+		Logger(Error) {
 }
 
-NikiLogger::NikiLogger(LogLevel displayLevel) {
-	NikiLogger::displayLevel_ = displayLevel;
+Logger::Logger(LogLevel displayLevel) {
+	Logger::displayLevel_ = displayLevel;
 }
 
 // Empty destructor
-NikiLogger::~NikiLogger(){
+Logger::~Logger(){
 	// Nothing to destroy!
 }
 
-void NikiLogger::replaceWithParameters(std::string &message,
+void Logger::replaceWithParameters(std::string &message,
 		std::queue<std::string> params) {
 	const boost:: regex expression("<>");
 	std::string parameter;
@@ -58,7 +58,7 @@ void NikiLogger::replaceWithParameters(std::string &message,
 	}
 }
 
-LogLevel NikiLogger::getLogLevel(std::string key) {
+LogLevel Logger::getLogLevel(std::string key) {
 
 	// find the appropriate level to the argument
 	auto it = logLevels.find(key);
@@ -71,8 +71,8 @@ LogLevel NikiLogger::getLogLevel(std::string key) {
 }
 
 
-bool NikiLogger::setLoggerDisplayLevel(LogLevel loggingLevel) {
-	NikiLogger::displayLevel_ = loggingLevel;
+bool Logger::setLoggerDisplayLevel(LogLevel loggingLevel) {
+	Logger::displayLevel_ = loggingLevel;
 	return true;
 }
 

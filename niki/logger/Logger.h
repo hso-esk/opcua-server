@@ -12,8 +12,8 @@
  * All rights reserved
  */
 
-#ifndef NIKI_NIKILOGGER_NIKILOGGER_H_
-#define NIKI_NIKILOGGER_NIKILOGGER_H_
+#ifndef NIKI_Logger_Logger_H_
+#define NIKI_Logger_Logger_H_
 
 #include "OpcUaStackCore/Core/FileLogger.h"
 #include "OpcUaStackCore/Base/Log.h"
@@ -27,7 +27,7 @@ namespace OpcUaLWM2M {
 
 using namespace OpcUaStackCore;
 
-class NikiLogger {
+class Logger {
 
 	static LogLevel displayLevel_;
 	static std::map<std::string, LogLevel> logLevels;
@@ -39,9 +39,9 @@ class NikiLogger {
 
 public:
 
-	NikiLogger();
-	NikiLogger(LogLevel displayLevel);
-	~NikiLogger();
+	Logger();
+	Logger(LogLevel displayLevel);
+	~Logger();
 	static LogLevel getLoggerDisplayLevel();
 	static void log() {}
 	static bool setLoggerDisplayLevel(LogLevel loggingLevel);
@@ -54,13 +54,13 @@ private:
 	template<typename P>
 	static void getParameters(std::queue<std::string>& parameterQueue,
 			P parameter) {
-		parameterQueue.push(NikiLogger::to_string(parameter));
+		parameterQueue.push(Logger::to_string(parameter));
 	}
 
 	template<typename H, typename ... P>
 	static void getParameters(std::queue<std::string>& parameterQueue,
 			H paramaterHead, P ... parameterTail) {
-		parameterQueue.push(NikiLogger::to_string(paramaterHead));
+		parameterQueue.push(Logger::to_string(paramaterHead));
 		getParameters(parameterQueue, parameterTail...);
 	}
 
@@ -86,11 +86,11 @@ public:
 		if (!parameters.empty())
 			replaceWithParameters(message, parameters);
 
-		if (NikiLogger::displayLevel_ >= level)
+		if (Logger::displayLevel_ >= level)
 			Log::logout(level, message);
 	}
 };
 
 }
 
-#endif /* NIKI_NIKILOGGER_NIKILOGGER_H_ */
+#endif /* NIKI_Logger_Logger_H_ */

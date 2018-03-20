@@ -12,8 +12,8 @@
  * All rights reserved
  */
 
-#ifndef NIKI_Logger_Logger_H_
-#define NIKI_Logger_Logger_H_
+#ifndef _LOGGER_H
+#define _LOGGER_H
 
 #include "OpcUaStackCore/Core/FileLogger.h"
 #include "OpcUaStackCore/Base/Log.h"
@@ -93,4 +93,4 @@ public:
 
 }
 
-#endif /* NIKI_Logger_Logger_H_ */
+#endif /* _LOGGER_H */

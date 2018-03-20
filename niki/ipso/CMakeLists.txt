@@ -29,7 +29,7 @@ target_link_libraries(
     OpcUaSensorInterface
     OpcUalwm2m
     OpcUaDB
-    OpcUaLoger
+    OpcUaLogger
     ${pthread}
     ${Boost_LIBRARIES}
 )

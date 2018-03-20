@@ -11,15 +11,15 @@
 #INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/opcua-lwm2m-server)
 #INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../niki/asneg-dbserver)
 
-LIST(APPEND OpcUaLoger_SRC
+LIST(APPEND OpcUaLogger_SRC
   ${PROJECT_SOURCE_DIR}/../../niki/logger/Logger.cpp
   ${PROJECT_SOURCE_DIR}/../../niki/logger/Logger.h
 )
 
-add_library(OpcUaLoger SHARED ${OpcUaLoger_SRC})
+add_library(OpcUaLogger SHARED ${OpcUaLogger_SRC})
 
 target_link_libraries(
-    OpcUaLoger
+    OpcUaLogger
     OpcUaStackCore
     ${pthread}
     ${Boost_LIBRARIES}

@@ -34,7 +34,7 @@
 #include <algorithm>
 #include <cstring>
 
-#include "../logger/Logger.h"
+#include "Logger.h"
 
 
 namespace OpcUaLWM2M

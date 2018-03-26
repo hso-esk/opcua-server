@@ -180,6 +180,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   ipsoDescription.id = ipsoObject.id;
   ipsoDescription.objectDesc.urn = ipsoObject.urn;
   ipsoDescription.objectDesc.instanceType = ipsoObject.instanceType;
+  ipsoDescription.objectDesc.dynamicType = ipsoObject.dynamicType;
 
   Logger::log(Trace, "Start parsing resources for <> with id: <>",ipsoDescription.objectDesc.name,ipsoDescription.objectDesc.id);
 
@@ -253,7 +254,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   /* read IPSO resource dynamic data value? */
   if (!resourceChild.getConfigParameter("Dynamic", ipsoResource.dynamicType))
   {
-    Logger::Log(Debug, "IPSO resource dynamic type not defined");
+    Logger::log(Debug, "IPSO resource dynamic type not defined");
     ipsoResource.dynamicType = "";
   }
 

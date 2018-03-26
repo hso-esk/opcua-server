@@ -166,6 +166,13 @@ bool IPSOParser::processIpsoObject(Config& objectChild
 	return false;
   }
 
+  /* read IPSO resource dynamic data value? */
+  if (!objectChild.getConfigParameter("Dynamic", ipsoObject.dynamicType))
+  {
+    Logger::log(Debug, "IPSO object dynamic type not defined");
+    ipsoObject.dynamicType = "";
+  }
+
   /* store IPSO objects info */
   ipsoDescription.objectDesc.name = ipsoObject.name;
   ipsoDescription.objectDesc.desc = ipsoObject.desc;

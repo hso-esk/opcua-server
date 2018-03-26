@@ -246,8 +246,8 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   /* read IPSO resource dynamic data value? */
   if (!resourceChild.getConfigParameter("Dynamic", ipsoResource.dynamicType))
   {
-	Logger::log(Error, "IPSO resource dynamic type not defined");
-    return false;
+    Logger::Log(Debug, "IPSO resource dynamic type not defined");
+    ipsoResource.dynamicType = "";
   }
 
   /* read IPSO resource mandatory field */

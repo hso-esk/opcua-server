@@ -57,7 +57,7 @@ IPSOParser::IPSOParser(void)
  */
 IPSOParser::~IPSOParser()
 {
-	Logger::log(Trace, "IPSOParser::~IPSOParser");
+    Logger::log(Trace, "IPSOParser::~IPSOParser");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ bool IPSOParser::parseIPSOfile(const std::string& IPSOfile, ipsoDescriptionVec& 
   /* check if IPSO file exist */
   if (!boost::filesystem::exists(IPSOfile))
   {
-	  Logger::log(Error, "Error, IPSO file: <> not found", IPSOfile);
+      Logger::log(Error, "Error, IPSO file: <> not found", IPSOfile);
     return false;
   }
 
@@ -90,7 +90,7 @@ bool IPSOParser::parseIPSOfile(const std::string& IPSOfile, ipsoDescriptionVec& 
 
   if (objectVec.size() == 0)
   {
-	Logger::log(Error, "IPSO object descriptions not defined");
+    Logger::log(Error, "IPSO object descriptions not defined");
     return false;
   }
 
@@ -116,7 +116,7 @@ bool IPSOParser::parseIPSOfile(const std::string& IPSOfile, ipsoDescriptionVec& 
  * processIpsoObject()
  */
 bool IPSOParser::processIpsoObject(Config& objectChild
-		, IPSOParser::ipsoDescriptions& ipsoDescription)
+        , IPSOParser::ipsoDescriptions& ipsoDescription)
 {
   Logger::log(Trace, "IPSOParser::processIpsoObject");
 
@@ -126,7 +126,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
 
   if (!objectType)
   {
-	Logger::log(Error, "IPSO Object type not defined");
+    Logger::log(Error, "IPSO Object type not defined");
     return false;
   }
   ipsoObject.type = *objectType;
@@ -134,36 +134,36 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   /* read IPSO object name */
   if (!objectChild.getConfigParameter("Name", ipsoObject.name))
   {
-	Logger::log(Error, "IPSO object name not defined");
+    Logger::log(Error, "IPSO object name not defined");
     return false;
   }
 
   /* read IPSO object description */
   if (!objectChild.getConfigParameter("Description1", ipsoObject.desc))
   {
-	Logger::log(Error, "IPSO object description not defined");
+    Logger::log(Error, "IPSO object description not defined");
     return false;
   }
 
   /* read IPSO object id */
   if (!objectChild.getConfigParameter("ObjectID", ipsoObject.id))
   {
-	Logger::log(Error, "IPSO object Id not defined");
+    Logger::log(Error, "IPSO object Id not defined");
     return false;
   }
 
   /* read IPSO object URN */
   if (!objectChild.getConfigParameter("ObjectURN", ipsoObject.urn))
   {
-	Logger::log(Error, "IPSO object URN not defined");
+    Logger::log(Error, "IPSO object URN not defined");
     return false;
   }
 
   /* read IPSO instance type */
   if (!objectChild.getConfigParameter("MultipleInstances", ipsoObject.instanceType))
   {
-	Logger::log(Error, "IPSO object instance type not defined");
-	return false;
+    Logger::log(Error, "IPSO object instance type not defined");
+    return false;
   }
 
   /* read IPSO resource dynamic data value? */
@@ -190,7 +190,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
 
   if (resourceVec.size() == 0)
   {
-	  Logger::log(Error, "IPSO resource descriptions does not exist");
+      Logger::log(Error, "IPSO resource descriptions does not exist");
     return false;
   }
 
@@ -219,35 +219,35 @@ bool IPSOParser::processIpsoObject(Config& objectChild
  * processIpsoResource()
  */
 bool IPSOParser::processIpsoResource(Config& resourceChild
-		, IPSOParser::ipsoResourceDescription& ipsoResource)
+        , IPSOParser::ipsoResourceDescription& ipsoResource)
 {
   Logger::log(Trace, "IPSOParser::processIpsoResource");
 
   /* read IPSO resource ID */
   if (!resourceChild.getConfigParameter("<xmlattr>.ID", ipsoResource.resourceId))
   {
-	Logger::log(Error, "IPSO resource Id not defined");
+    Logger::log(Error, "IPSO resource Id not defined");
     return false;
   }
 
   /* read IPSO resource name */
   if (!resourceChild.getConfigParameter("Name", ipsoResource.name))
   {
-	Logger::log(Error, "IPSO resource name not defined");
+    Logger::log(Error, "IPSO resource name not defined");
     return false;
   }
 
   /* read IPSO resource operation */
   if (!resourceChild.getConfigParameter("Operations", ipsoResource.operation))
   {
-	Logger::log(Error, "IPSO resource operation not defined");
+    Logger::log(Error, "IPSO resource operation not defined");
     return false;
   }
 
   /* read IPSO resource instance type */
   if (!resourceChild.getConfigParameter("MultipleInstances", ipsoResource.instanceType))
   {
-	Logger::log(Error, "IPSO resource instance type not defined");
+    Logger::log(Error, "IPSO resource instance type not defined");
     return false;
   }
 
@@ -261,7 +261,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   /* read IPSO resource mandatory field */
   if (!resourceChild.getConfigParameter("Mandatory", ipsoResource.mandatoryType))
   {
-	Logger::log(Error, "IPSO resource mandatory type not defined");
+    Logger::log(Error, "IPSO resource mandatory type not defined");
     return false;
   }
 
@@ -269,12 +269,12 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   boost::optional<std::string> type = resourceChild.getValue("Type");
   if (!type)
   {
-	Logger::log(Error, "IPSO resource data type not defined");
+    Logger::log(Error, "IPSO resource data type not defined");
     return false;
   }
 
   if (*type == "Integer") {
-	ipsoResource.type = DeviceDataValue::TYPE_INTEGER;
+    ipsoResource.type = DeviceDataValue::TYPE_INTEGER;
     ipsoResource.value.i32  = 0;
 
   } else if (*type == "Float") {
@@ -290,7 +290,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   boost::optional<std::string> rangeEnumeration = resourceChild.getValue("RangeEnumeration");
   if (!rangeEnumeration)
   {
-	Logger::log(Error, "IPSO resource range Enumeration not defined");
+    Logger::log(Error, "IPSO resource range Enumeration not defined");
     return false;
   }
   ipsoResource.rangeEnum = *rangeEnumeration;
@@ -299,7 +299,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   boost::optional<std::string> unit = resourceChild.getValue("Units");
   if (!unit)
   {
-	Logger::log(Error, "IPSO resource unit not defined");
+    Logger::log(Error, "IPSO resource unit not defined");
     return false;
   }
   ipsoResource.unit = *unit;
@@ -307,7 +307,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   /* read IPSO resource description */
   if (!resourceChild.getConfigParameter("Description", ipsoResource.desc))
   {
-	Logger::log(Error, "IPSO resource description not defined");
+    Logger::log(Error, "IPSO resource description not defined");
     return false;
   }
 

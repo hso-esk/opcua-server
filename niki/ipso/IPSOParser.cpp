@@ -182,7 +182,12 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   ipsoDescription.objectDesc.instanceType = ipsoObject.instanceType;
   ipsoDescription.objectDesc.dynamicType = ipsoObject.dynamicType;
 
-  Logger::log(Trace, "Start parsing resources for <> with id: <>",ipsoDescription.objectDesc.name,ipsoDescription.objectDesc.id);
+  Logger::log(Trace, "Got IPSO object: <>, with id: <>, urn: <>, instance type: <>, dynamic type: <> and description: <>",
+		  ipsoObject.name, ipsoObject.id, ipsoObject.urn, ipsoObject.instanceType, ipsoObject.dynamicType, ipsoObject.desc);
+
+
+  Logger::log(Trace, "Start parsing resources for <> with id: <>",
+		  ipsoDescription.objectDesc.name,ipsoDescription.objectDesc.id);
 
   /* Parse IPSO resources */
   std::vector<Config> resourceVec;

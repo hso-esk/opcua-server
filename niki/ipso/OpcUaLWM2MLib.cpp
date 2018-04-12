@@ -573,13 +573,6 @@ void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* application
 {
   Log (Debug, "OpcUaLWM2MLib::readSensorHistoryValue");
 
-  /* node id of OPC UA node to read history value */
-  variableContextMap::iterator it;
-  it = variables_.find(applicationHReadContext->nodeId_);
-  if (it == variables_.end()) {
-    applicationHReadContext->statusCode_ = BadInternalError;
-  }
-
   OpcUaDateTime startTime (applicationHReadContext->startTime_);
   OpcUaDateTime stopTime (applicationHReadContext->stopTime_);
 

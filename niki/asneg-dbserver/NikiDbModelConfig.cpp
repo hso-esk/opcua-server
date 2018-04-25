@@ -41,7 +41,6 @@ namespace OpcUaNikiDB
 NikiDBModelConfig::NikiDBModelConfig(void)
   : dbConfig_()
 {
-  Log(Debug, "NikiDBModelConfig::NikiDBModelConfig");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -50,7 +49,6 @@ NikiDBModelConfig::NikiDBModelConfig(void)
  */
 NikiDBModelConfig::~NikiDBModelConfig(void)
 {
-  Log(Debug, "NikiDBModelConfig::~NikiDBModelConfig");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -60,8 +58,6 @@ NikiDBModelConfig::~NikiDBModelConfig(void)
 NikiDatabaseConfig&
 NikiDBModelConfig::databaseConfig(void)
 {
-  Log(Debug, "NikiDBModelConfig::databaseConfig");
-
   return dbConfig_;
 }
 
@@ -71,8 +67,6 @@ NikiDBModelConfig::databaseConfig(void)
  */
 bool NikiDBModelConfig::decode(Config& config)
 {
-  Log(Debug, "NikiDBModelConfig::decode");
-
   /* get database configuration */
   boost::optional<Config> child = config.getChild("Database");
   if (!child) {

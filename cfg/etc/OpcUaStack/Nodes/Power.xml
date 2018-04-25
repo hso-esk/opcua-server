@@ -12,7 +12,7 @@
 				<Name>Instantaneous active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Mandatory</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -67,7 +67,7 @@
 				<Name>Cumulative active power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -144,7 +144,7 @@
 				<Name>Cumulative reactive power</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -166,7 +166,7 @@
 				<Name>Power Factor</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>
@@ -177,7 +177,7 @@
 				<Name>Current Calibration</Name>
 				<Operations>RW</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Optional</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>

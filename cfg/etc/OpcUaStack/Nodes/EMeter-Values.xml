@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
+	<Object ObjectType="MODefinition">
+		<Name>EMeter-Values</Name>
+		<Description1>Actual Values of all E-Meter sensors</Description1>
+		<ObjectID>3667</ObjectID>
+		<ObjectURN>urn:oma:lwm2m:ext:3666</ObjectURN>
+		<MultipleInstances>Multiple</MultipleInstances>
+		<Mandatory>Optional</Mandatory>
+		<Dynamic>Dynamic</Dynamic>
+		<Resources>
+			<Item ID="33050">
+				<Name>Power-P0</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P0 Power</Description>
+			</Item>
+			<Item ID="33051">
+				<Name>Power-P1</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P1 Power</Description>
+			</Item>
+			<Item ID="33052">
+				<Name>Power-P2</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P2 Power</Description>
+			</Item>	
+			<Item ID="33160">
+				<Name>Voltage-P0</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P0 Voltage</Description>
+			</Item>
+			<Item ID="33161">
+				<Name>Voltage-P1</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P1 Voltage</Description>
+			</Item>
+			<Item ID="33162">
+				<Name>Voltage-P2</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P2 Voltage</Description>
+			</Item>	
+			<Item ID="33170">
+				<Name>Current-P0</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P0 Current</Description>
+			</Item>
+			<Item ID="33171">
+				<Name>Current-P1</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P1 Current</Description>
+			</Item>
+			<Item ID="33172">
+				<Name>Current-P2</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>P2 Current</Description>
+			</Item>			
+		</Resources>
+	</Object>	
+</LWM2M>
+
+

@@ -12,7 +12,7 @@
 				<Name>Sensor Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Mandatory</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration/>
@@ -88,7 +88,7 @@
 				<Name>Sensor Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Dynamic</Dynamic>
+				<Dynamic>Static</Dynamic>
 				<Mandatory>Mandatory</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration/>

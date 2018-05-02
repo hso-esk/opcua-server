@@ -175,6 +175,16 @@ private:
       e_lwm2m_serverobserver_event_t event;
   };
 
+  struct pendObjDesc
+  {
+      /* name of the device of the pending object */
+      std::string devname;
+      /* ID of the pending object */
+      uint32_t id;
+      /* errors */
+      uint8_t error;
+  };
+
 
   typedef std::map<uint32_t, IPSOParser::ipsoDescriptions*> objectDictionary_t;
   typedef boost::tuple<std::string, int32_t, int32_t, int32_t> resourceId_t;
@@ -267,6 +277,8 @@ private:
   objectMap_t objectMap_;
   resourceMaps_t resourceMaps_;
   objectMaps_t objectMaps_;
+
+  std::list<pendObjDesc> objPendQue;
 
   /* OPC UA Operation */
   OpcUaOp* mp_op;
@@ -402,6 +414,8 @@ private:
      , OpcUaStackServer::BaseNodeClass::SPtr opcUaNode);
 
   OpcUaDataValue::SPtr createDataValue(const DeviceDataValue* value);
+
+  void checkObservedObjects( void );
 };
 
 } /* namespace OpcUalwm2m */

@@ -273,6 +273,8 @@ void OpcUaLWM2MLib::thread( void )
   {
     usleep(OPCUALWM2MLIB_THREAD_TOT_US);
 
+    checkObservedObjects();
+
     pthread_mutex_lock(&m_mutex);
     LWM2MServer::instance()->runServer();
 
@@ -1405,6 +1407,9 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
             {
               Log(Error, "LWM2M observation has failed.");
               Log(Error, "Registering an observer has failed.");
+
+              /* insert the ID into the pending map */
+              objPendQue.push_back( { devName, objectInfo.first, 0} );
               continue;
             }
           }
@@ -1659,6 +1664,53 @@ OpcUaDataValue::SPtr OpcUaLWM2MLib::createDataValue(const DeviceDataValue* val)
   }
 
   return dataValue;
+
+}
+
+
+void OpcUaLWM2MLib::checkObservedObjects( void )
+{
+  std::list<pendObjDesc>::iterator it1 = objPendQue.begin();
+  while(it1 != objPendQue.end())
+  {
+    objectMaps_t::iterator it2 = objectMaps_.find( it1->devname );
+    if( it2 != objectMaps_.end() )
+    {
+      objectMap_t::iterator it3 = it2->second.find( it1->id );
+      if( it3 != it2->second.end() )
+      {
+        if(it3->second.dynamicType == "Dynamic"){
+          Log(Debug, "Started LWM2M object observation.")
+            .parameter("ObjId", it3->second.id)
+            .parameter("InstId", it3->second.instanceId);
+            /* Add the Observer to all the Resources */
+
+          if( LWM2MServer::instance()->observe(it3->second.object, true) == 0 )
+          {
+            Log(Debug, "LWM2M Observation has succeeded.");
+            Log(Debug, "Registered a dynamic value observer.");
+
+            objPendQue.erase( it1 );
+            break;
+          }
+          else
+          {
+            Log(Error, "LWM2M observation has failed.");
+            Log(Error, "Registering an observer has failed.");
+            it1->error++;
+
+            if( it1->error > 5 )
+            {
+              objPendQue.erase( it1 );
+              break;
+            }
+            continue;
+          }
+        }
+      }
+    }
+    it1++;
+  }
 
 }
 

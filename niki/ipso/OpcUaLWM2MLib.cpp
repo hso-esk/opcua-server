@@ -7,7 +7,7 @@
  *
  * NIKI 4.0 was financed by the Baden-Württemberg Stiftung gGmbH (www.bwstiftung.de).
  * Project partners are FZI Forschungszentrum Informatik am Karlsruher
- * Institut für Technologie (www.fzi.de), Hahn-Schickard-Gesellschaft
+ * Institut für TechnoLoger::logie (www.fzi.de), Hahn-Schickard-Gesellschaft
  * für angewandte Forschung e.V. (www.hahn-schickard.de) and
  * Hochschule Offenburg (www.hs-offenburg.de).
  * This file was developed by the Institute of reliable Embedded Systems
@@ -28,7 +28,7 @@
 
 
 #include "OpcUaLWM2MLib.h"
-#include "OpcUaStackCore/Base/Log.h"
+#include "Logger.h"
 #include "OpcUaStackCore/Utility/Environment.h"
 #include "OpcUaStackServer/ServiceSetApplication/ApplicationService.h"
 #include "OpcUaStackServer/AddressSpaceModel/BaseNodeClass.h"
@@ -92,7 +92,7 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
   /* initialize the mutex */
   pthread_mutex_init( &m_mutex, &attr );
 
-  Log(Debug, "OpcUaLWM2MLib::OpcUaLWM2MLib");
+  Logger::log(Debug, "OpcUaLWM2MLib::OpcUaLWM2MLib");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ OpcUaLWM2MLib::OpcUaLWM2MLib(void)
  */
 OpcUaLWM2MLib::~OpcUaLWM2MLib(void)
 {
-  Log(Debug, "OpcUaLWM2MLib::~OpcUaLWM2MLib");
+  Logger::log(Debug, "OpcUaLWM2MLib::~OpcUaLWM2MLib");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -114,8 +114,7 @@ bool OpcUaLWM2MLib::isObserved = false;
 int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
     const e_lwm2m_serverobserver_event_t ev)
 {
-  Log(Debug, "OpcUaLWM2MLib::Received LWM2M Server event")
-    .parameter("Event Type", ev );
+  Logger::log(Debug, "OpcUaLWM2MLib::Received LWM2M Server event, with type: <>" ,ev);
 
   s_devEvent_t event = {param, ev};
   pthread_mutex_lock(&m_mutex);
@@ -125,6 +124,7 @@ int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
   {
     if( (it->event == ev) &&
         (strcmp(it->param.devName, param.devName) == 0) )
+    	Loger::log(Trace, "Device <>, <>", param.devName, ev);
       break;
     it++;
   }
@@ -144,7 +144,7 @@ int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
 int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
     const DeviceData* p_data, void* p_param )
 {
-  Log(Debug, "OpcUaLWM2MLib::Received data notification");
+  Logger::log(Debug, "OpcUaLWM2MLib::Received data notification");
 
   const DeviceDataLWM2M* p_lwm2mData = static_cast<const DeviceDataLWM2M*>(p_data);
   LWM2MResource* p_res = p_lwm2mData->getResource();
@@ -179,13 +179,13 @@ int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
  */
 bool OpcUaLWM2MLib::startup(void)
 {
-  Log(Debug, "OpcUaLWM2MLib::startup");
+  Logger::log(Debug, "OpcUaLWM2MLib::startup");
 
   signal(SIGINT, signalHandler);
 
   /* load config file */
   if (!loadServerConfig()) {
-    Log(Error, "Could not load config file");
+    Logger::log(Error, "Could not load config file");
     return false;
   }
 
@@ -194,7 +194,7 @@ bool OpcUaLWM2MLib::startup(void)
   {
     if (!ipsoParser_.parseIPSOfile(ipsofileName, data_))
     {
-	    Log(Error, "Parsing of IPSO file failed");
+	    Logger::log(Error, "Parsing of IPSO file failed");
 	    return false;
     }
   }
@@ -202,7 +202,7 @@ bool OpcUaLWM2MLib::startup(void)
   /* create object dictionary */
   if (!createObjectDictionary(data_))
   {
-    Log(Error, "Creation of Object dictionary failed");
+    Logger::log(Error, "Creation of Object dictionary failed");
     return false;
   }
 
@@ -210,7 +210,7 @@ bool OpcUaLWM2MLib::startup(void)
 
   /* start the the LWM2M server */
   LWM2MServer::instance()->startServer();
-  Log (Debug, "LWM2M server started");
+  Logger::log (Debug, "LWM2M server started");
 
   /* create thread */
   threadRun = true;
@@ -224,7 +224,7 @@ bool OpcUaLWM2MLib::startup(void)
   dbServer_.dbModelConfig(&dbModelConfig_);
 
   if (!dbServer_.startup()) {
-    Log (Debug, "Database server startup failed");
+    Logger::log (Error, "Database server startup failed");
     return false;
   }
 
@@ -240,7 +240,7 @@ bool OpcUaLWM2MLib::startup(void)
  */
 bool OpcUaLWM2MLib::shutdown()
 {
-  Log(Debug, "OpcUaLWM2MLib::shutdown");
+  Logger::log(Debug, "OpcUaLWM2MLib::shutdown");
 
   /* deregister OpcUa LWM2M server observer */
   LWM2MServer::instance()->deregisterObserver( this );
@@ -255,7 +255,7 @@ bool OpcUaLWM2MLib::shutdown()
 
   /* shut down database server */
   if (!dbServer_.shutdown()) {
-    Log (Debug, "Database server shutdown failed");
+    Logger::log (Error, "Database server shutdown failed");
     return false;
   }
 
@@ -287,8 +287,7 @@ void OpcUaLWM2MLib::thread( void )
       {
         case e_lwm2m_serverobserver_event_register:
         {
-          Log(Debug, "Event device registration triggered")
-                .parameter("Device name", ev.param.devName);
+          Logger::log(Trace, "Device <> triggered a registration event.", ev.param.devName);
 
           /* execute onDeviceRegister function */
           onDeviceRegister(ev.param.devName);
@@ -297,18 +296,16 @@ void OpcUaLWM2MLib::thread( void )
 
         case e_lwm2m_serverobserver_event_update:
         {
-          Log(Debug, "Event device update triggered")
-                .parameter("Device name", ev.param.devName);
+          Logger::log(Trace, "Device <> triggered an update event.", ev.param.devName);
           /** TODO */
 
-          Log(Warning, "Update event not implemented yet");
+          Logger::log(Warning, "Update event not implemented yet");
         }
         break;
 
         case e_lwm2m_serverobserver_event_deregister:
         {
-          Log(Debug, "Event device deregistration triggered")
-                .parameter("Device name", ev.param.devName);
+          Logger::log(Trace, "Device <> triggered a deregistration event.", ev.param.devName);
 
           /* execute onDeviceRegister function */
           onDeviceDeregister(ev.param.devName);
@@ -351,35 +348,35 @@ void OpcUaLWM2MLib::thread( void )
  */
 bool OpcUaLWM2MLib::loadServerConfig(void)
 {
-  Log (Debug, "OpcUaLWM2M::loadServerConfig");
+  Logger::log (Debug, "OpcUaLWM2M::loadServerConfig");
 
   /* load OPC UA server config file */
   Config::SPtr config;
   ConfigXmlManager configXmlManager;
   if (!configXmlManager.registerConfiguration(applicationInfo()->configFileName(), config)) {
-    Log (Debug, "read OPC UA server configuration error");
+    Logger::log (Error, "read OPC UA server configuration error");
     return false;
   }
 
   /*  load and decode IPSO config file */
   std::string ipsoConfigfile;
   if (!config->getConfigParameter("OpcUaServerModel.IPSOConfig.IPSOConfigPath", ipsoConfigfile)) {
-    Log (Debug, "read IPSO configuration error");
+    Logger::log (Error, "read IPSO configuration error");
     return false;
   }
   if (!decodeIPSOConfig(ipsoConfigfile)) {
-    Log (Debug, "decode IPSO configuration error");
+    Logger::log (Error, "decode IPSO configuration error");
     return false;
   }
 
   /*  load and decode database config file */
   std::string dbConfigfile;
   if (!config->getConfigParameter("OpcUaServerModel.Database.DatabaseConfig",dbConfigfile)) {
-    Log (Debug, "read database configuration error");
+    Logger::log (Error, "read database configuration error");
     return false;
   }
   if (!decodeDbConfig(dbConfigfile)) {
-    Log (Debug, "decode database configuration error");
+    Logger::log (Error, "decode database configuration error");
     return false;
   }
 
@@ -391,16 +388,14 @@ bool OpcUaLWM2MLib::loadServerConfig(void)
  */
 bool OpcUaLWM2MLib::decodeIPSOConfig(const std::string& configFileName)
 {
-  Log(Debug, "OpcUaLWM2MLib::decodeIPSOConfig");
+  Logger::log(Debug, "OpcUaLWM2MLib::decodeIPSOConfig");
 
   Config::SPtr config;
   ConfigXmlManager configXmlManager;
 
   /* read configuration file */
   if (!configXmlManager.registerConfiguration(configFileName, config)) {
-    Log (Debug, "Error reading IPSO config")
-      .parameter("Error message", configXmlManager.errorMessage())
-      .parameter("ConfigFileName",configFileName);
+    Logger::log (Error, "Error reading IPSO configuration file <>. <>", configFileName, configXmlManager.errorMessage());
     return false;
   }
 
@@ -409,7 +404,7 @@ bool OpcUaLWM2MLib::decodeIPSOConfig(const std::string& configFileName)
   config->getChilds("IPSOModel.IPSOPath", ipsoConfigVec);
 
   if (ipsoConfigVec.size() == 0) {
-    Log(Error, "IPSO XML file does not exist");
+    Logger::log(Error, "IPSO XML file does not exist");
     return false;
   }
 
@@ -418,9 +413,7 @@ bool OpcUaLWM2MLib::decodeIPSOConfig(const std::string& configFileName)
     /* read configuration parameter */
     boost::optional<std::string> ipsoFileName = ipsoConfig.getValue("<xmlattr>.File");
     if (!ipsoFileName) {
-      Log(Error, "eddl path do not exist in configuration file")
-        .parameter("Variable", "IPSOModel.IPSOPath.<xmlattr>.File")
-        .parameter("ConfigFileName", applicationInfo()->configFileName());
+      Logger::log(Error, "EDDL path does not exist in configuration file <>.", applicationInfo()->configFileName());
       return false;
     } else {
       ipsofileName_ = *ipsoFileName;
@@ -437,30 +430,26 @@ bool OpcUaLWM2MLib::decodeIPSOConfig(const std::string& configFileName)
  */
 bool OpcUaLWM2MLib::decodeDbConfig(const std::string& configFileName)
 {
-  Log (Debug, "OpcUaLWM2MLib::loadDbConfig");
+  Logger::log (Debug, "OpcUaLWM2MLib::loadDbConfig");
 
   Config::SPtr config;
   ConfigXmlManager configXmlManager;
 
   /* read database configuration file */
   if (!configXmlManager.registerConfiguration(configFileName, config)) {
-    Log (Debug, "Error reading Database config")
-        .parameter("Error message", configXmlManager.errorMessage())
-        .parameter("configFilename", configFileName);
+    Logger::log (Error, "Error reading Database configuration file <>. <>", configXmlManager.errorMessage(), configFileName);
     return false;
   }
 
   /* decode Database configuration */
   boost::optional<Config> child = config->getChild("DBModel");
   if (!child) {
-    Log (Debug, "Element missing in config file")
-        .parameter("Element", "DBModel")
-        .parameter("configFileName", config->configFileName());
+    Logger::log (Debug, "Element missing in configuration file <>.", config->configFileName());
     return false;
   }
 
   if (!dbModelConfig_.decode(*child)) {
-    Log (Error, "Decode database configuration error");
+    Logger::log (Error, "Decode database configuration error");
     return false;
   }
 
@@ -509,8 +498,8 @@ void OpcUaLWM2MLib::readSensorValue (ApplicationReadContext* applicationReadCont
  */
 void OpcUaLWM2MLib::readSensorValueLocal (ApplicationReadContext* applicationReadContext)
 {
-  Log(Debug, "OpcUaLWM2MLib::readSensorValue")
-    .parameter("id", applicationReadContext->nodeId_);
+  Logger::log(Debug, "OpcUaLWM2MLib::readSensorValue");
+  Logger::log(Trace, "Read sensor value, has been triggered for node <>", applicationReadContext->nodeId_);
 
   /* get nodeId of OPC UA Node client makes a read request to */
   variableContextMap::iterator it;
@@ -572,7 +561,7 @@ void OpcUaLWM2MLib::readSensorValueLocal (ApplicationReadContext* applicationRea
  */
 void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* applicationHReadContext)
 {
-  Log (Debug, "OpcUaLWM2MLib::readSensorHistoryValue");
+  Logger::log (Debug, "OpcUaLWM2MLib::readSensorHistoryValue");
 
   OpcUaDateTime startTime (applicationHReadContext->startTime_);
   OpcUaDateTime stopTime (applicationHReadContext->stopTime_);
@@ -602,8 +591,8 @@ void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* application
  */
 void OpcUaLWM2MLib::writeSensorValue (ApplicationWriteContext* applicationWriteContext)
 {
-  Log(Debug, "OpcUaLWM2MLib::writeSensorValue")
-    .parameter("id", applicationWriteContext->nodeId_);
+  Logger::log(Debug, "OpcUaLWM2MLib::writeSensorValue");
+  Logger::log(Trace, "Writing value for <>", applicationWriteContext->nodeId_);
 
   /* get nodeId of OPC UA Node client makes a write request to */
   variableContextMap::iterator it;
@@ -668,7 +657,7 @@ void OpcUaLWM2MLib::execSensorMethod(ApplicationReadContext* applicationReadCont
  */
 bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
 {
-  Log(Debug, "OpcUaLWM2MLib::registerCallbacks");
+  Logger::log(Debug, "OpcUaLWM2MLib::registerCallbacks");
 
   OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
@@ -686,14 +675,14 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
 
   service().sendSync(trx);
   if (trx->statusCode() != Success) {
-    Log(Error, "Status code response error");
+    Logger::log(Error, "Status code response error");
     return false;
   }
 
   OpcUaStatusCode statusCode;
   res->statusCodeArray()->get(0, statusCode);
   if (statusCode != Success) {
-    Log(Error, "Status Code Array response error");
+    Logger::log(Error, "Status Code Array response error");
     return false;
   }
 
@@ -706,7 +695,7 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
  */
 bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
 {
-  Log(Debug, "OpcUaLWM2MLib::unregisterCallbacks");
+  Logger::log(Debug, "OpcUaLWM2MLib::unregisterCallbacks");
 
   OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
@@ -724,14 +713,14 @@ bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
 
   service().sendSync(trx);
   if (trx->statusCode() != Success) {
-    Log(Error, "Status code response error");
+    Logger::log(Error, "Status code response error");
     return false;
   }
 
   OpcUaStatusCode statusCode;
   res->statusCodeArray()->get(0, statusCode);
   if (statusCode != Success) {
-    Log(Error, "Status Code Array response error");
+    Logger::log(Error, "Status Code Array response error");
     return false;
   }
 
@@ -744,12 +733,12 @@ bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
  */
 bool OpcUaLWM2MLib::createObjectDictionary(IPSOParser::ipsoDescriptionVec& ipsoDesc)
 {
-  Log(Debug, "OpcUaLWM2MLib::createObjectDictionary");
+  Logger::log(Debug, "OpcUaLWM2MLib::createObjectDictionary");
 
   for (auto& desc : ipsoDesc) {
     if (!objectDictionary_.insert(objectDictionary_t::value_type(
         desc.objectDesc.id, &desc)).second) {
-      Log(Error, "Object dictionary creation from IPSO descriptions failed");
+      Logger::log(Error, "Object dictionary creation from IPSO descriptions failed");
       return false;
     }
   }
@@ -763,7 +752,7 @@ bool OpcUaLWM2MLib::createObjectDictionary(IPSOParser::ipsoDescriptionVec& ipsoD
 bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
 
 {
-  Log(Debug, "OpcUaLWM2MLib::createObjectNode");
+  Logger::log(Debug, "OpcUaLWM2MLib::createObjectNode");
 
   for (auto& objectInfo : objectMap)
   {
@@ -841,7 +830,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
 bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
     objectMaps_t& objectMaps)
 {
-  Log (Debug, "OpcUaLWM2MLib::deleteObjectNode");
+  Logger::log (Debug, "OpcUaLWM2MLib::deleteObjectNode");
 
   uint32_t deviceId;
   objectMaps_t::iterator it = objectMaps_.find(devName);
@@ -883,7 +872,7 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
 bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
 {
 
-  Log(Debug, "OpcUaLWM2MLib::createDeviceObjectNode");
+  Logger::log(Debug, "OpcUaLWM2MLib::createDeviceObjectNode");
 
   OpcUaStackServer::BaseNodeClass::SPtr deviceobjectNode;
   deviceobjectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
@@ -951,7 +940,7 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
  */
 bool OpcUaLWM2MLib::deleteDeviceObjecttNode(uint32_t deviceId)
 {
-  Log (Debug, "OpcUaLWM2MLib::deleteDeviceObjecttNode");
+  Logger::log (Debug, "OpcUaLWM2MLib::deleteDeviceObjecttNode");
 
   OpcUaNodeId deviceIdNode;
   deviceIdNode.set(deviceId, namespaceIndex_);
@@ -966,7 +955,7 @@ bool OpcUaLWM2MLib::deleteDeviceObjecttNode(uint32_t deviceId)
  */
 bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 {
-  Log(Debug, "OpcUaLWM2MLib::createVariableNode");
+  Logger::log(Debug, "OpcUaLWM2MLib::createVariableNode");
 
   /* iterate through resource map and create OPC UA variable nodes */
   for (auto& varInfo : resourceMap)
@@ -1044,10 +1033,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
         /* observe variable nodes */
         if((varInfo.second.dynamicType == "Dynamic") ||
             varInfo.second.dynamicType == "Object"){
-          Log(Debug, "Started LWM2M resource observation.")
-            .parameter("ObjId", variableCtx.resInfo.objectId)
-            .parameter("InstId", variableCtx.resInfo.instanceId)
-            .parameter("RseId", variableCtx.resInfo.resourceId);
+          Logger::log(Trace, "Started LWM2M resource observation for resource <> of object <> with instance <>", variableCtx.resInfo.resourceId, variableCtx.resInfo.objectId,variableCtx.resInfo.instanceId);
 
           bool obsDirect = false;
 
@@ -1057,13 +1043,13 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
             obsDirect = true;
           if( variableCtx.dataObject->observeVal( this, NULL, obsDirect ) == 0 )
           {
-            Log(Debug, "LWM2M Observation has succeeded.");
-            Log(Debug, "Registered a dynamic value observer.");
+            Logger::log(Trace, "LWM2M Observation has succeeded.");
+            Logger::log(Trace, "Registered a dynamic value observer.");
           }
           else
           {
-            Log(Error, "LWM2M observation has failed.");
-            Log(Error, "Registering an observer has failed.");
+            Logger::log(Error, "LWM2M observation has failed.");
+            Logger::log(Error, "Registering an observer has failed.");
             continue;
           }
         }
@@ -1076,7 +1062,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
 
          /* register callback for OPC UA variable nodes */
          if (!registerCallbacks(resourceId)) {
-           Log(Error, "Register callback failed");
+           Logger::log(Error, "Register callback failed");
          }
     }
   }
@@ -1090,7 +1076,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
  */
 bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 {
-  Log (Debug, "OpcUaLWM2MLib::createMethodNode");
+  Logger::log (Debug, "OpcUaLWM2MLib::createMethodNode");
 
   /* create Method node */
   /* iterate through method map and create OPC UA method nodes */
@@ -1171,7 +1157,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
 bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
     resourceMaps_t& resourceMaps)
 {
-  Log (Debug, "OpcUaLWM2MLib::deleteResourceNodes");
+  Logger::log (Debug, "OpcUaLWM2MLib::deleteResourceNodes");
 
   resourceMaps_t::iterator it = resourceMaps_.find(devName);
   if (it != resourceMaps_.end())
@@ -1222,7 +1208,7 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
 OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   (IPSOParser::ipsoResourceDescription opcUaNodeInfo , OpcUaStackServer::BaseNodeClass::SPtr opcUaNode)
 {
-  Log (Debug, "OpcUaLWM2MLib::createDeviceDataLWM2M");
+  Logger::log (Debug, "OpcUaLWM2MLib::createDeviceDataLWM2M");
 
   opcUaNodeContext ctx;
 
@@ -1314,8 +1300,8 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 {
   int8_t ret = 0;
 
-  Log(Debug, "OpcUaLWM2MLib::onDeviceRegister")
-    .parameter("DeviceName", devName);
+  Logger::log(Debug, "OpcUaLWM2MLib::onDeviceRegister");
+  Logger::log(Trace, "Device registered <>", devName);
 
   LWM2MDevice* device;
   device = const_cast<LWM2MDevice*>(
@@ -1329,7 +1315,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     /* create device object */
     if (!createDeviceObjectNode(device))
     {
-      Log (Error, "Creation of device object failed");
+      Logger::log (Error, "Creation of device object failed");
       ret = -1;
     }
   }
@@ -1343,7 +1329,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     {
       /* check id match between LWM2M device and object dictionary objects  */
       if (!matchObjectId((*objectIterator), objectDictionary_, objectMap_)) {
-        Log(Debug, "LWM2M Object ID exist in dictionary");
+        Logger::log(Debug, "LWM2M Object ID exist in dictionary");
       }
     }
 
@@ -1351,7 +1337,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     {
       /* create OPC UA object nodes from object map */
       if (!createObjectNode(objectMap_)) {
-        Log(Debug, "Object node creation failed");
+        Logger::log(Debug, "Object node creation failed");
         ret = -1;
       }
     }
@@ -1360,7 +1346,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     {
       /* create LWM2M resources of LWM2M object instances */
       if(!createLWM2MResources(objectMap_, objectDictionary_, resourceMap_)) {
-        Log(Debug, "Creation of resources failed");
+        Logger::log(Debug, "Creation of resources failed");
         ret = -1;
       }
     }
@@ -1369,7 +1355,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     {
       /* create OPC UA variable nodes from resource map */
       if (!createVariableNode(resourceMap_)) {
-        Log(Debug, "Creation of variable node failed");
+        Logger::log(Debug, "Creation of variable node failed");
         ret = -1;
       }
     }
@@ -1378,7 +1364,7 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
     {
       /* create OPC UA method nodes from method map */
       if (!createMethodNode(resourceMap_)) {
-        Log (Debug, "Creation of method node failed");
+        Logger::log (Debug, "Creation of method node failed");
         ret = -1;
       }
     }
@@ -1391,20 +1377,18 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
         for (auto& objectInfo : it->second )
         {
           if(objectInfo.second.dynamicType == "Dynamic"){
-            Log(Debug, "Started LWM2M object observation.")
-              .parameter("ObjId", objectInfo.second.id)
-              .parameter("InstId", objectInfo.second.instanceId);
+            Logger::log(Trace, "Started LWM2M object observation for object <> with instance <>.",objectInfo.second.id,objectInfo.second.instanceId);
               /* Add the Observer to all the Resources */
 
             if( LWM2MServer::instance()->observe(objectInfo.second.object, true) == 0 )
             {
-              Log(Debug, "LWM2M Observation has succeeded.");
-              Log(Debug, "Registered a dynamic value observer.");
+              Logger::log(Trace, "LWM2M Observation has succeeded.");
+              Logger::log(Trace, "Registered a dynamic value observer.");
             }
             else
             {
-              Log(Error, "LWM2M observation has failed.");
-              Log(Error, "Registering an observer has failed.");
+              Logger::log(Error, "LWM2M observation has failed.");
+              Logger::log(Error, "Registering an observer has failed.");
               continue;
             }
           }
@@ -1422,21 +1406,21 @@ int8_t OpcUaLWM2MLib::onDeviceRegister(std::string devName)
 */
 int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
 {
-  Log(Debug, "OpcUaLWM2MLib::onDeviceUnregister")
-  .parameter("DeviceName", devName);
+  Logger::log(Debug, "OpcUaLWM2MLib::onDeviceUnregister");
+  Logger::log(Trace, "Device <> deregistered.", devName);
 
   std::cout << devName<< " is deregistering from the server"
               << std::endl;
 
   /* delete variable and method nodes from server */
   if (!deleteResourceNodes(devName, resourceMaps_)) {
-    Log(Debug, "deletion of variable and method nodes failed");
+    Logger::log(Debug, "deletion of variable and method nodes failed");
     return -1;
   }
 
   /* delete object and device object nodes from server */
   if (!deleteObjectNode(devName, objectMaps_)) {
-    Log(Debug, "deletion of object nodes failed");
+    Logger::log(Debug, "deletion of object nodes failed");
     return -1;
   }
 
@@ -1467,7 +1451,7 @@ int8_t OpcUaLWM2MLib::onDeviceDeregister(std::string devName)
 bool OpcUaLWM2MLib::matchObjectId(LWM2MObject* lwm2mObj, objectDictionary_t& dictionary
     , objectMap_t& objectMap)
 {
-  Log(Debug, "OpcUaLWM2MLib::matchObjectId");
+  Logger::log(Debug, "OpcUaLWM2MLib::matchObjectId");
 
   bool ret = false;
   /* iterate object dictionary and loop up for Object id matches */
@@ -1511,7 +1495,7 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
     , objectDictionary_t& dictionary
     , resourceMap_t& resourceMap)
 {
-  Log(Debug, "OpcUaLWM2MLib::createLWM2MResources");
+  Logger::log(Debug, "OpcUaLWM2MLib::createLWM2MResources");
 
   /* parent device name */
   std::string deviceName;

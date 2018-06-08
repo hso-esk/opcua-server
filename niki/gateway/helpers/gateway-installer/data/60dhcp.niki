@@ -1,0 +1,31 @@
+
+. $CETIC_6LBR_CONF
+. $1/6lbr-functions
+
+config_default
+
+MODE_6LBR=$2
+DEV=$3
+OS=`uname`
+
+if [ "$BRIDGE" != "1" ]; then
+        exit
+fi
+
+if [ $MODE_6LBR != "tap" ]; then
+        exit
+fi
+
+case $OS in
+        Linux)
+                dhclient $DEV_BRIDGE
+                ;;
+
+        Darwin)
+                dhclient $DEV_BRIDGE
+                ;;
+
+        *)
+                echo Unknown OS
+                ;;
+esac

@@ -1,0 +1,63 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          cc1310-startuph
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start CC1310 modules using GPIO.
+# Description:       Start CC1310 modules using GPIO.
+### END INIT INFO
+
+GPIOPIN=26
+
+do_start()
+{
+
+	if [ ! -d /sys/class/gpio/gpio$GPIOPIN ]; then
+		sh -c "echo $GPIOPIN > /sys/class/gpio/export"
+	fi
+	sh -c "echo out > /sys/class/gpio/gpio$GPIOPIN/direction"
+	sh -c "echo 1 > /sys/class/gpio/gpio$GPIOPIN/value"
+}
+
+
+do_stop()
+{
+
+        if [ ! -d /sys/class/gpio$GPIOPIN ]; then
+                sh -c "echo $GPIOPIN > /sys/class/gpio/export"
+        fi
+        sh -c "echo out > /sys/class/gpio/gpio$GPIOPIN/direction"
+        sh -c "echo 0 > /sys/class/gpio/gpio$GPIOPIN/value"
+}
+
+
+
+
+case "$1" in
+  start|"")
+	do_stop
+	sleep 2
+	do_start
+	;;
+
+  restart|reload|force-reload)
+	do_stop
+	sleep 2
+	do_start
+	;;
+
+  stop)
+   	do_stop
+	;;
+  status)
+   	echo "Error: argument '$1' not supported" >&2
+	exit 3
+	;;
+  *)
+	echo "Usage: cc1310 [start|stop]" >&2
+	exit 3
+	;;
+esac
+exit 0

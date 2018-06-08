@@ -124,7 +124,11 @@ int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
   {
     if( (it->event == ev) &&
         (strcmp(it->param.devName, param.devName) == 0) )
+<<<<<<< HEAD
     	Logger::log(Trace, "Device <>, <>", param.devName, ev);
+=======
+    	Loger::log(Trace, "Device <>, <>", param.devName, ev);
+>>>>>>> df17db2456163b1c318429f16da7ed1b9c2a66e5
       break;
     it++;
   }

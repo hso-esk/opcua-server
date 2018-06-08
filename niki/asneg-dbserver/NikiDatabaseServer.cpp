@@ -7,7 +7,7 @@
  *
  * NIKI 4.0 was financed by the Baden-Württemberg Stiftung gGmbH (www.bwstiftung.de).
  * Project partners are FZI Forschungszentrum Informatik am Karlsruher
- * Institut für Technologie (www.fzi.de), Hahn-Schickard-Gesellschaft
+ * Institut für TechnoLogie (www.fzi.de), Hahn-Schickard-Gesellschaft
  * für angewandte Forschung e.V. (www.hahn-schickard.de) and
  * Hochschule Offenburg (www.hs-offenburg.de).
  * This file was developed by the Institute of reliable Embedded Systems
@@ -39,8 +39,7 @@ namespace OpcUaNikiDB
 /**
  * DbServer ()
  */
-DbServer::DbServer(void) :
-    dbModelConfig_(nullptr)
+DbServer::DbServer(void) : dbModelConfig_(nullptr)
 {
   Log(Debug, "DbServer::DbServer");
 }

@@ -169,7 +169,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
   /* read IPSO resource dynamic data value? */
   if (!objectChild.getConfigParameter("Dynamic", ipsoObject.dynamicType))
   {
-    Logger::log(Debug, "IPSO object dynamic type not defined");
+    Logger::log(Error, "IPSO object dynamic type not defined");
     ipsoObject.dynamicType = "";
   }
 
@@ -199,7 +199,7 @@ bool IPSOParser::processIpsoObject(Config& objectChild
     return false;
   }
 
-  Logger::log(Error, "Got <> resources", resourceVec.size());
+  Logger::log(Debug, "Got <> resources", resourceVec.size());
 
   /* process IPSO resource descriptions */
   for (auto& resourceChild : resourceVec)
@@ -259,7 +259,7 @@ bool IPSOParser::processIpsoResource(Config& resourceChild
   /* read IPSO resource dynamic data value? */
   if (!resourceChild.getConfigParameter("Dynamic", ipsoResource.dynamicType))
   {
-    Logger::log(Debug, "IPSO resource dynamic type not defined");
+    Logger::log(Error, "IPSO resource dynamic type not defined");
     ipsoResource.dynamicType = "";
   }
 

@@ -30,7 +30,7 @@ if [ -z "$3" ]
 	else BOOST_VER=1_67_0
 fi
 
-yes | cp -rf ../gateway-installer/niki-gateway-installer.sh ./niki-gateway-installer_files/
+yes | cp -rf ../gateway-installer/* ./niki-gateway-installer_files/
 
 cp -R ../${EXTRA_LIBS}${BOOST_VER}/* ${OPCUA_SRC_PATH1}/asneg/build/
 

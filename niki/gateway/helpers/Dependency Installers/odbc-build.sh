@@ -9,16 +9,24 @@
 # must be installed
 VERSION=2.3.4
 ODBC_VERSION=unixODBC-2.3.4
-BASE_DIR=../../../../../
-#INSTALL_DIR=/usr/lib/arm-linux-gnueabihf/odbc
+BASE_DIR=../../../../../../
 
-if [ -z "$1" ]
+if [ ! -z "$1" ]
+	then 
+	if [ $1 = 'arm' ]
 	then
-	INSTALL_DIR=$BASE_DIR/odbc-arm
-	ARM_FLAG=1
+		apt-get install -y gcc-4.9-arm-linux-gnueabihf
+		mkdir $BASE_DIR/odbc-arm
+		cd $BASE_DIR/odbc-arm
+		INSTALL_DIR=$(pwd)
+		ARM_FLAG=1
 	else
-	INSTALL_DIR=$BASE_DIR/odbc-x86
-	ARM_FLAG=0
+		apt-get install -y gcc-4.9 g++-4.9 cpp-4.9
+		mkdir $BASE_DIR/odbc-x86
+		cd $BASE_DIR/odbc-x86
+		INSTALL_DIR=$(pwd)
+		ARM_FLAG=0
+	fi
 fi
 
 if [ ! -e $ODBC_VERSION".tar.gz" ]; then

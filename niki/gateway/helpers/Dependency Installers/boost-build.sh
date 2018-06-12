@@ -10,13 +10,13 @@
 # sudo ln -s arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc-x
 # please set VERSION and BOOST_VERSION
 BOOST=boost_
-BASE_DIR=../../../../../
+BASE_DIR=../../../../../../
 
 add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main" 
 add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 apt-get update
 
-apt-get install cmake
+apt-get install -y cmake
 
 if [ ! -z "$1" ]
 	then
@@ -35,12 +35,12 @@ if [ ! -z "$2" ]
 	if [ $2 = 'arm' ]
 		then
 		INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-arm
-		apt-get install gcc-4.9-arm-linux-gnueabihf
+		apt-get install -y gcc-4.9-arm-linux-gnueabihf
 		ARM_FLAG=1
 	fi
 	else 
 	INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-x86
-	apt-get install gcc-4.9 g++-4.9 cpp-4.9
+	apt-get install -y gcc-4.9 g++-4.9 cpp-4.9
 	ARM_FLAG=0
 fi
 
@@ -70,12 +70,12 @@ if [ ! -e "$INSTALL_DIR/${BOOST}${BOOST_VERSION}/lib/libboost_thread.so" ]; then
 	then
 	sed -i '12s/.*/  using gcc : arm : arm-linux-gnueabihf-gcc-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
 	echo "Installing with b2 to" $INSTALL_DIR/boost-arm_${BOOST_VERSION}
-    	./b2 install --prefix=$INSTALL_DIR/boost-arm_${BOOST_VERSION} -link=shared toolset=arm-linux-gnueabihf-gcc-4.9
+    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=arm-linux-gnueabihf-gcc-4.9
 	else 
 	#sed -i '12s/.*/  using gcc : 4.9 : g++-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
-	echo "Installing with b2 to" $INSTALL_DIR/boost-arm_${BOOST_VERSION}
- 	./b2 install --prefix=$INSTALL_DIR/boost-x86_${BOOST_VERSION} -link=shared toolset=gcc-4.9
+	echo "Installing with b2 to" ${INSTALL_DIR}/boost-arm_${BOOST_VERSION}
+ 	./b2 install --prefix=${INSTALL_DIR}/../../boost-x86_${BOOST_VERSION} -link=shared toolset=gcc-4.9
      fi
 fi
 
-rm ${INSTALL_DIR}/${BOOST}${BOOST_VERSION}".tar.bz2" 
+rm ${INSTALL_DIR}/../${BOOST}${BOOST_VERSION}".tar.bz2" 

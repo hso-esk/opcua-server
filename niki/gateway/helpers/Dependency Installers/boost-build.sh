@@ -24,10 +24,10 @@ if [ ! -z "$1" ]
 		then
 		BOOST_VERSION=1_67_0
 		VERSION=1.67.0
+		else 
+		BOOST_VERSION=1_54_0
+		VERSION=1.54.0
 	fi
-	else 
-	BOOST_VERSION=1_54_0
-	VERSION=1.54.0
 fi
 
 if [ ! -z "$2" ]
@@ -37,11 +37,12 @@ if [ ! -z "$2" ]
 		INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-arm
 		apt-get install -y gcc-4.9-arm-linux-gnueabihf
 		ARM_FLAG=1
+
+		else 
+		INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-x86
+		apt-get install -y gcc-4.9 g++-4.9 cpp-4.9
+		ARM_FLAG=0
 	fi
-	else 
-	INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-x86
-	apt-get install -y gcc-4.9 g++-4.9 cpp-4.9
-	ARM_FLAG=0
 fi
 
 # Not the best way to do this, will mess up newer gcc versions... 
@@ -70,7 +71,7 @@ if [ ! -e "$INSTALL_DIR/${BOOST}${BOOST_VERSION}/lib/libboost_thread.so" ]; then
 	then
 	sed -i '12s/.*/  using gcc : arm : arm-linux-gnueabihf-gcc-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
 	echo "Installing with b2 to" $INSTALL_DIR/boost-arm_${BOOST_VERSION}
-    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=arm-linux-gnueabihf-gcc-4.9
+    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=gcc-arm
 	else 
 	#sed -i '12s/.*/  using gcc : 4.9 : g++-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
 	echo "Installing with b2 to" ${INSTALL_DIR}/boost-arm_${BOOST_VERSION}

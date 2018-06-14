@@ -2,7 +2,7 @@
 
 INSTALLER_NAME=niki-gateway-installer_
 OPCUA_SRC_PATH1=.
-OPCUA_SRC_PATH2=../updated_asneg/opcua-server
+OPCUA_SRC_PATH2=../../../../
 PREMSISSIONS=755
 OPCUA_SERVER_NAME=opcua-server-bin-beaglebone_
 EXTRA_LIBS=extra_libs
@@ -21,7 +21,7 @@ fi
 
 if [ -z "$2" ]
 	then OPCUA_SERVER_VERS=v1.3.0
-	else OPCUA_SERVER_VERS="$2"
+	else OPCUA_SERVER_VERS=v"$2"
 		sed -i "8s/1.4.0/${OPCUA_SERVER_VERS}/" "${INSTALLER_NAME}files/niki-gateway-installer.sh"
 fi
 

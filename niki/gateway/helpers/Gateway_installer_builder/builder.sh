@@ -25,7 +25,7 @@ if [ -z "$2" ]
 		sed -i "8s/1.4.0/${OPCUA_SERVER_VERS}/" "${INSTALLER_NAME}files/niki-gateway-installer.sh"
 fi
 
-if [ -z "$3" ]
+if [ ! -z "$3" ]
 	then BOOST_VER=1_54_0
 	else BOOST_VER=1_67_0
 fi

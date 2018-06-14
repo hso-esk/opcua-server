@@ -1,0 +1,15 @@
+diff --git a/src/OpcUaStackCore/Certificate/ApplicationCertificate.cpp b/src/OpcUaStackCore/Certificate/ApplicationCertificate.cpp
+old mode 100644
+new mode 100755
+index 2b51453..7a52ce5
+--- a/src/OpcUaStackCore/Certificate/ApplicationCertificate.cpp
++++ b/src/OpcUaStackCore/Certificate/ApplicationCertificate.cpp
+@@ -420,7 +420,7 @@ namespace OpcUaStackCore
+ 		boost::filesystem::path::iterator it;
+ 		for (it = path.begin(); it != path.end(); it++) {
+ 			std::string str = it->string();
+-			createPath.append(str);
++			createPath.append(str, boost::filesystem::path::codecvt());
+ 
+ 			if (boost::filesystem::exists(createPath)) {
+ 				continue;

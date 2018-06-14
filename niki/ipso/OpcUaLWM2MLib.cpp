@@ -116,7 +116,12 @@ bool OpcUaLWM2MLib::isObserved = false;
 int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
     const e_lwm2m_serverobserver_event_t ev)
 {
+<<<<<<< HEAD
 	Logger::log(Trace, "OpcUaLWM2MLib::notify Notification for event <> received", ev);
+=======
+  Log(Debug, "OpcUaLWM2MLib::Received LWM2M Server event")
+    .parameter("Event Type", ev );
+>>>>>>> upstream/master
 
   s_devEvent_t event = {param, ev};
   pthread_mutex_lock(&m_mutex);
@@ -146,7 +151,13 @@ int8_t OpcUaLWM2MLib::notify( s_lwm2m_serverobserver_event_param_t param,
 int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
     const DeviceData* p_data, void* p_param )
 {
+<<<<<<< HEAD
    const DeviceDataLWM2M* p_lwm2mData = static_cast<const DeviceDataLWM2M*>(p_data);
+=======
+  Log(Debug, "OpcUaLWM2MLib::Received data notification");
+
+  const DeviceDataLWM2M* p_lwm2mData = static_cast<const DeviceDataLWM2M*>(p_data);
+>>>>>>> upstream/master
   LWM2MResource* p_res = p_lwm2mData->getResource();
 
   Logger::log(Trace, "OpcUaLWM2MLib::notify Notification from received.");
@@ -565,13 +576,6 @@ void OpcUaLWM2MLib::readSensorValueLocal (ApplicationReadContext* applicationRea
 void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* applicationHReadContext)
 {
 	Logger::log  (Debug, "OpcUaLWM2MLib::readSensorHistoryValue");
-
-  /* node id of OPC UA node to read history value */
-  variableContextMap::iterator it;
-  it = variables_.find(applicationHReadContext->nodeId_);
-  if (it == variables_.end()) {
-    applicationHReadContext->statusCode_ = BadInternalError;
-  }
 
   OpcUaDateTime startTime (applicationHReadContext->startTime_);
   OpcUaDateTime stopTime (applicationHReadContext->stopTime_);
@@ -1634,8 +1638,11 @@ bool OpcUaLWM2MLib::createLWM2MResources(objectMap_t& objectMap
  */
 OpcUaDataValue::SPtr OpcUaLWM2MLib::createDataValue(const DeviceDataValue* val)
 {
+<<<<<<< HEAD
 	Logger::log(Debug, "OpcUaLWM2MLib::createObjectNode");
 
+=======
+>>>>>>> upstream/master
   OpcUaDataValue::SPtr dataValue = constructSPtr<OpcUaDataValue>();
   OpcUaDateTime dateTime (boost::posix_time::microsec_clock::universal_time());
   dataValue->sourceTimestamp(dateTime);

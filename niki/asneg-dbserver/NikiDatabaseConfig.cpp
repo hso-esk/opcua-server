@@ -42,7 +42,6 @@ NikiDatabaseConfig::NikiDatabaseConfig(void)
   : databaseName_("")
   , databaseTableName_("")
 {
-  Log(Debug, "NikiDatabaseConfig::NikiDatabaseConfig");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -51,7 +50,6 @@ NikiDatabaseConfig::NikiDatabaseConfig(void)
  */
 NikiDatabaseConfig::~NikiDatabaseConfig(void)
 {
-  Log(Debug, "NikiDatabaseConfig::~NikiDatabaseConfig");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -60,8 +58,6 @@ NikiDatabaseConfig::~NikiDatabaseConfig(void)
  */
 std::string NikiDatabaseConfig::dsnName(void)
 {
-  Log(Debug, "NikiDatabaseConfig::dsnName");
-
   return dbaseConfig_.dsnName();
 }
 
@@ -71,8 +67,6 @@ std::string NikiDatabaseConfig::dsnName(void)
  */
 std::string& NikiDatabaseConfig::userName(void)
 {
-  Log(Debug, "NikiDatabaseConfig::userName");
-
   return dbaseConfig_.userName();
 }
 
@@ -82,8 +76,6 @@ std::string& NikiDatabaseConfig::userName(void)
  */
 std::string& NikiDatabaseConfig::password(void)
 {
-  Log(Debug, "NikiDatabaseConfig::password");
-
   return dbaseConfig_.password();
 }
 
@@ -93,8 +85,6 @@ std::string& NikiDatabaseConfig::password(void)
  */
 std::string& NikiDatabaseConfig::databaseName(void)
 {
-  Log(Debug, "NikiDatabaseConfig::databaseName");
-
   return databaseName_;
 }
 
@@ -104,8 +94,6 @@ std::string& NikiDatabaseConfig::databaseName(void)
  */
 std::string& NikiDatabaseConfig::databaseTableName(void)
 {
-  Log(Debug, "NikiDatabaseConfig::databaseTableName");
-
   return databaseTableName_;
 }
 
@@ -115,8 +103,6 @@ std::string& NikiDatabaseConfig::databaseTableName(void)
  */
 bool NikiDatabaseConfig::decode(Config& config)
 {
-  Log(Debug, "NikiDatabaseConfig::decode");
-
   bool success;
   /* decode data source, userName and password */
   dbaseConfig_.decode(config);

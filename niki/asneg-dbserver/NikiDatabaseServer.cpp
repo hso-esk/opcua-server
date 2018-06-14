@@ -165,8 +165,6 @@ bool DbServer::writeDataToDatabase(std::string& dbTableName
     , OpcUaNodeId& nodeId
     , OpcUaDataValue& dataValue)
 {
-  Log(Debug, "DbServer::writeDataToDatabase");
-
   std::string dbNameTableName = str(
   boost::format("%s.%s")
      % dbModelConfig_->databaseConfig().databaseName()
@@ -201,8 +199,6 @@ bool DbServer::readDataFromDatabase(std::string& dbTableName
     , OpcUaDateTime stopTime
     , OpcUaDataValue::Vec& dataValues)
 {
-  Log(Debug, "DbServer::readDataFromDatabase");
-
   std::string dbNameTableName = str(
   boost::format("%s.%s")
     % dbModelConfig_->databaseConfig().databaseName()
@@ -233,8 +229,6 @@ bool DbServer::readDataFromDatabase(std::string& dbTableName
  */
 bool DbServer::execSQLDirect(const std::string& sqlQuery)
 {
-  Log(Debug, "DbServer::execSQLDirect");
-
   bool success;
   OpcUaDB::Connection connection;
 
@@ -271,8 +265,6 @@ bool DbServer::execSQLDirect(const std::string& sqlQuery)
  */
 bool DbServer::execSQLDirect(const std::string& sqlQuery, OpcUaDataValue::Vec& dataValues)
 {
-  Log(Debug, "DbServer::execSQLDirect");
-
   bool success;
   OpcUaDB::Connection connection;
 
@@ -318,8 +310,6 @@ bool DbServer::execSQLDirect(const std::string& sqlQuery, OpcUaDataValue::Vec& d
  */
 bool DbServer::parseDataValue(std::string& inputString, dataMap& dataStrMap)
 {
-  Log(Debug, "DbServer::parseDataValue");
-
   return true;
 }
 
@@ -332,8 +322,6 @@ bool DbServer::createResultSet(OpcUaDB::ResultSet& resultSet
     , OpcUaDataValue::SPtr& header
     , OpcUaDataValue::Vec& dataVec)
 {
-  Log(Debug, "DbServer::createResultSet");
-
   /* create header */
   OpcUaVariantValue::Vec variantVec1;
   for (uint32_t idx=0; idx<resultSet.colDescriptionVec_.size(); idx++) {

@@ -13,4 +13,8 @@
         <DatabaseConfig>@CONF_DIR@/Nodes/dbConfig.xml</DatabaseConfig>
     </Database>
 
+    <LoggerConfig>
+	<LoggingLevel>DEBUG</LoggingLevel>
+    </LoggerConfig>
+
 </OpcUaServerModel>

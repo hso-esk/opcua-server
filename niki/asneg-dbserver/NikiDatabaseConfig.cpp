@@ -26,8 +26,6 @@
  * limitations under the License.
 */
 
-
-#include "OpcUaStackCore/Base/Log.h"
 #include "NikiDatabaseConfig.h"
 
 using namespace OpcUaStackCore;

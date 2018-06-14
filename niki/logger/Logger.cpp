@@ -28,10 +28,10 @@ std::map<std::string, LogLevel> Logger::logLevels = {
 		{ "debug", Debug },
 		{ "trace", Trace }
 };
+std::map<std::string, LogLevel>::iterator LoggerIterator;
 
-// Getting the default logLevel
-// NOT SAFE; NO WAY OF KNOWING IF FileLogger HAS BEEN INSTANCED!
-LogLevel Logger::displayLevel_ = FileLogger::logLevel();
+//Set the initial logging level
+LogLevel Logger::displayLevel_ = Debug;
 
 Logger::Logger() :
 		Logger(Error) {
@@ -60,6 +60,9 @@ void Logger::replaceWithParameters(std::string &message,
 
 LogLevel Logger::getLogLevel(std::string key) {
 
+	// make sure key value is in lower cases
+	std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+
 	// find the appropriate level to the argument
 	auto it = logLevels.find(key);
 
@@ -68,6 +71,10 @@ LogLevel Logger::getLogLevel(std::string key) {
 		return it->second;
 	else
 		return Error;
+}
+
+LogLevel Logger::getLogLevel() {
+	return Logger::displayLevel_;
 }
 
 

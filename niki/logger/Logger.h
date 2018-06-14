@@ -46,6 +46,7 @@ public:
 	static void log() {}
 	static bool setLoggerDisplayLevel(LogLevel loggingLevel);
 	static LogLevel getLogLevel(std::string key);
+	static LogLevel getLogLevel();
 
 // --------------------- TEMPLATE INSTANTIATION ----------------------------
 

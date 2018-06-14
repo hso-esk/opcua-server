@@ -1,0 +1,121 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:             leshan-bootstrap
+# Required-Start:
+# Required-Stop:
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    Leshan Bootstrap Server
+### END INIT INFO
+
+set -e
+
+# /etc/init.d/leshan-bootstrap: start and stop the Leshan Bootstrap Server
+WEBPORT=5556
+COAPPORT=55583
+COAPSPORT=55584
+CFGFILE=/etc/leshan/bootstrap.json
+
+NAME=leshan-bsserver-demo
+DAEMON_PATH=/opt/leshan
+DAEMON=$DAEMON_PATH/$NAME.jar
+DAEMON_OPT="-wp $WEBPORT -lp $COAPPORT -slp $COAPSPORT -cfg $CFGFILE"
+PIDFILE=/var/run/$NAME.pid
+
+
+umask 022
+
+# Get IPV6 address
+IF=br0
+IPV6=$(ip addr show dev $IF | sed -e 's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | head -n1)
+
+
+# Port configurations
+#export PORT=8888 
+#export COAPIFACE=$IPV6:5583
+#export COAPSIFACE=$IPV6:5584
+
+
+if [ -f /lib/lsb/init-functions ]; then
+        . /lib/lsb/init-functions
+elif [ -f /etc/init.d/functions ]; then
+        . /etc/init.d/functions
+else
+        log_daemon_msg () {
+            if [ -z "${1:-}" ]; then
+                return 1
+            fi
+            echo "$@"
+        }
+
+        log_end_msg () {
+            if [ -z "${1:-}" ]; then
+                return 1
+            fi
+            if [ $1 -eq 0 ]; then
+                echo "... done"
+            else
+                echo "... failed"
+            fi
+        }
+
+        log_action_msg () {
+            if [ -z "${1:-}" ]; then
+                return 1
+            fi
+            echo "$@"
+        }
+
+fi
+
+test -f $DAEMON || exit 0
+
+d_start () {
+        log_daemon_msg "Starting Leshan Bootstrap Server"
+        start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --background --exec /usr/bin/java -- -jar $DAEMON $DAEMON_OPT
+        sleep 5
+		# Configure the Bootstrap server with objects for the client endpoint
+		log_daemon_msg "Inserting objects into the Bootstrap Server"
+		curl -X POST -H "Accept: application/json" -d @data.json http://localhost:$WEBPORT/api/bootstrap/0a18de70-0ce0-4570-bce9-7f5895db6c70
+        log_end_msg $?
+}
+
+d_stop() {
+        log_daemon_msg "Stopping Leshan Bootstrap Server"
+        start-stop-daemon --stop --pidfile $PIDFILE
+        rm -rf $PIDFILE
+        log_end_msg $?
+}
+
+case "$1" in
+  start)
+    d_start
+        ;;
+  stop)
+    d_stop
+        ;;
+
+  reload|force-reload|restart)
+    d_stop
+    sleep 1
+    d_start
+        ;;
+
+  force-stop)
+    d_stop
+    killall -q $NAME || true
+    sleep 2
+    killall -q -9 $NAME || true
+    ;;
+
+  status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+
+  *)
+        log_action_msg "Usage: /etc/init.d/leshan {start|stop|reload|force-reload|restart|status}"
+        exit 1
+esac
+
+exit 0

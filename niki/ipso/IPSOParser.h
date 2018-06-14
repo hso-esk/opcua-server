@@ -132,7 +132,7 @@ public:
     DeviceDataValue::u_val value;
 
     /* IPSO resource range enumeration */
-    boost::optional<std::string> rangeEnum;
+    std::string rangeEnum;
 
     /* IPSO resource dynamic data value? */
     std::string dynamicType;

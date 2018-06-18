@@ -71,11 +71,11 @@ if [ ! -e "$INSTALL_DIR/${BOOST}${BOOST_VERSION}/lib/libboost_thread.so" ]; then
 	then
 	sed -i '12s/.*/  using gcc : arm : arm-linux-gnueabihf-gcc-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
 	echo "Installing with b2 to" $INSTALL_DIR/boost-arm_${BOOST_VERSION}
-    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=gcc-arm --with-thread --with-chrono --with-date_time
+    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=gcc-arm --with-thread --with-chrono --with-date_time --with-system --with-test --with-filesystem --with-program_options --with-regex
 	else 
 	#sed -i '12s/.*/  using gcc : 4.9 : g++-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
 	echo "Installing with b2 to" ${INSTALL_DIR}/boost-arm_${BOOST_VERSION}
- 	./b2 install --prefix=${INSTALL_DIR}/../../boost-x86_${BOOST_VERSION} -link=shared toolset=gcc-4.9 --with-thread --with-chrono --with-date_time
+ 	./b2 install --prefix=${INSTALL_DIR}/../../boost-x86_${BOOST_VERSION} -link=shared toolset=gcc-4.9 --with-thread --with-chrono --with-date_time --with-system --with-test --with-filesystem --with-program_options --with-regex
      fi
 fi
 

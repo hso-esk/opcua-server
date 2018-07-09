@@ -11,7 +11,7 @@
 
 
 
-NAME=OpcUaServer3
+NAME=OpcUaServer4
 DAEMON_PATH=/opt/opcua/asneg/build
 DAEMON=$DAEMON_PATH/$NAME
 DAEMON_OPT="$DAEMON_PATH/etc/OpcUaStack/OpcUaServer.xml"

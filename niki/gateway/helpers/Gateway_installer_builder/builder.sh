@@ -40,6 +40,10 @@ cp -R ${INSTALLER_NAME}files/* ./${INSTALLER_NAME}${INSTALLER_VERS}/
 cp -R $OPCUA_SRC_PATH1/asneg/build/* ./tmp/opcua/asneg/build/ 
 cp -R $OPCUA_SRC_PATH2/cfg/* ./tmp/opcua/cfg 
 cp -R $OPCUA_SRC_PATH2/opcua-run-arm-release.sh ./tmp/opcua/
+mv ./tmp/opcua/opcua-run-arm-release.sh ./tmp/opcua/opcua-run.sh
+sed -i "4s/build-arm-release/build/" "./tmp/opcua/opcua-run.sh"
+sed -i "8s/build-arm-release/build/" "./tmp/opcua/opcua-run.sh"
+sed -i "10s/build-arm-release/build/" "./tmp/opcua/opcua-run.sh"
 
 cd ./tmp/ 
 chmod $PREMSISSIONS ./*

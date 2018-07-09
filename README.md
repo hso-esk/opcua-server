@@ -9,10 +9,6 @@ The OPC UA Server as it is published here is based on the Open-Source implementa
 
 This work was originated from the NIKI 4.0 project. NIKI 4.0 was financed by the Baden-Württemberg Stiftung gGmbH (www.bwstiftung.de).  Project partners are FZI Forschungszentrum  Informatik am Karlsruher Institut für Technologie (www.fzi.de), Hahn-Schickard-Gesellschaft für angewandte Forschung e.V. (www.hahn-schickard.de) and Hochschule Offenburg (www.hs-offenburg.de).
 
-
-#
-
-
 ## How to build and run the OPC UA server implementation ##
 
 This README file describes the steps to build and run the  OPC UA server implementation. It also describes the client applications to connect to the OPC UA server. The [opcua-server repository](https://redmine.ivesk.hs-offenburg.de/projects/niki4-0/repository) is organized as follows:
@@ -34,124 +30,52 @@ This README file describes the steps to build and run the  OPC UA server impleme
 - UAExpert
 - MySQL
 
-### 2. boost compilation ### 
+### 2. Environment setup 
 
-- **Get gcc 4.9 with:** 
-
- ``sudo apt-get install gcc-4.9 g++4.9 cpp-4.9``
-
-- **Create symbolic links for gcc with:**
-```
- cd /usr/bin
- rm gcc g++ cpp
- ln -s gcc-4.9 gcc
- ln -s g++-4.9 g++
- ln -s cpp-4.9 cpp
-```
-
-- **Check if gcc is working with:**
-
- ``gcc -v``
-
-- **For cross compilation tools install:**
-
-``sudo apt install gcc-4.9-arm-linux-gnueabihf``
-
-**and**
- 
-``sudo apt install g++-4.9-arm-linux-gnueabihf``
-
-*On ubuntu 16.04 you will have to downlod and install g++ package manualy, you can get it from [xenial](https://packages.ubuntu.com/xenial/amd64/g++-4.9-arm-linux-gnueabihf/download)*
-
-- **For cross compilation to work you will also need to make a symbolic link to opnesslconf.h file with:**
-
-``sudo ln -s /usr/include/x86_64-linux-gnu/openssl/opensslconf.h /usr/include/openssl/``
-
-- **Get boost 1.54 from:**
-
-[sourceforge](https://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.bz2/download) 
-
-- **Untar it in /usr/local/ or in a directory of you choice with:**
-
- ``tar --bzip2 -xf /path/to/boost_1_61_0.tar.bz2``
-
-- **Downlad and install liboost dev tools from:**
-
-[libboost-all-dev](https://launchpad.net/ubuntu/trusty/amd64/libboost-all-dev/1.54.0.1ubuntu1)
-
-- **Modify BOOST_ROOT/boost/cstdint.hpp from:**
-
- ``#if defined(BOOST_HAS_STDINT_H) && (!defined(__GLIBC__) || defined(__GLIBC_HAVE_LONG_LONG))``
-
-**to:**
-
- ``#if defined(BOOST_HAS_STDINT_H)``
-
-- **Go to boost directory and run bootstrap.sh with:**
-
- ``./bootstrap.sh --prefix=/usr/local/ --toolset=gcc`` 
-
-- **Build and install boost libraries with:**
-
- ``./b2 install --toolset=ARCHITECHTURE_TOOLSET --target-os=linux``
-
-*ARCHITECHTURE_TOOLSET - your chosen architechture, **gcc** for x86/amd64, **gcc-arm** for arm*
-
-- **When crosscompileing for arm, you have to modify project-config.jam, to do so run:** 
-
-`` sudo gedit BOOST_ROOT/project-config.jam `` 
-
-**and change the line:** 
-
-``using gcc`` 
-
-**to** 
-
-``using gcc : arm : /usr/bin/arm-linux-gnueabihf-g++-4.9 ;`` 
-
-**and then run with:**
-
-``./b2 install toolset=gcc-arm``
-
-- **If boost cross compilation for arm fails due to openssl not being recognized** 
-*If you do not have openssl compiled for arm architechture you will have to cross compile it as well, or else boost compilation will fail. There is a scrip to compile openssl sources, get the source tar ball from [openssl](https://www.openssl.org/source/) and Build_for_arm.sh*
+Automation tools can be used to set up the environemt for the compilatiuon of the project. To use the automated environemt setup run: 
+`/[OPCUA_ROOT]/niki/gateway/helpers/Dependency\ Installers/dependency_installer.sh full 1_54_0` 
 
 ### 3. MySQL database installation and configuration ###
 
-* `` sudo apt-get install mysql-server mysql-client``.
+* ``sudo apt-get install mysql-server mysql-client``.
 * ``sudo apt-get install unixodbc-dev``
 * ``sudo apt-get install libmyodbc``
 * Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database user name (UserName) and database user password (nikiPassword) should match the configuration in *cfg/etc/OpcUaStack/Nodes/dbConfig.xml*.
 
-		[nikiDataSource]
-		Description = MySQL connection to  database
-		Driver      = MySQL
-		Server      = localhost
-		User        = nikiUserName
-		Password    = nikiPassword
-		Port        = 3306
-		Socket      = /var/run/mysqld/mysqld.sock
-		ReadOnly    = No
-
+```
+[nikiDataSource]
+Description = MySQL connection to  database
+Driver      = MySQL
+Server      = localhost
+User        = nikiUserName
+Password    = nikiPassword
+Port        = 3306
+Socket      = /var/run/mysqld/mysqld.sock
+ReadOnly    = No
+``` 
 
 * Edit */etc/odbcinst.ini* as below. Edit the MySQL odbc driver path (Driver = " ") and unix ODBC Driver (Setup = ""). For armhf platform, *Driver="/usr/lib/arm-linux-gnueabihf/odbc/libmyodbc.so"* and *Setup="/usr/lib/arm-linux-gnueabihf/odbc/libodbcmyS.so"*
 
-		[MySQL]
-		Description=ODBC for MySQL
-		Driver=/usr/lib/i386-linux-gnu/odbc/libmyodbc.so
-		Setup=/usr/lib/i386-linux-gnu/odbc/libodbcmyS.so
-		FileUsage=1
-		UsageCount=2
-
+```
+[MySQL]
+Description=ODBC for MySQL
+Driver=/usr/lib/i386-linux-gnu/odbc/libmyodbc.so
+Setup=/usr/lib/i386-linux-gnu/odbc/libodbcmyS.so
+FileUsage=1
+UsageCount=2
+```
 * Verify that the settings works `` odbcinst -q -d``. It should return the ouput as shown below.
 
-		[MySQL]
+	```[MySQL]```
 
 * Log in to MySQL with root privileges to create niki database user name and password and the according  privileges by executing the following in the command line.
-* ``mysql -u root -p``
-* ``CREATE USER 'nikiUserName'@'localhost' IDENTIFIED BY 'nikiPassword';``
-* ``GRANT ALL PRIVILEGES ON * . * TO 'nikiUserName'@'localhost';``
-* ``FLUSH PRIVILEGES;``
+
+```
+mysql -u root -p
+CREATE USER 'nikiUserName'@'localhost' IDENTIFIED BY 'nikiPassword';
+GRANT ALL PRIVILEGES ON * . * TO 'nikiUserName'@'localhost';
+FLUSH PRIVILEGES;
+```
 
 ### 4. Build process (Automated) ###
 

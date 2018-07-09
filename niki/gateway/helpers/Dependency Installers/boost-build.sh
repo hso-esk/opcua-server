@@ -16,7 +16,7 @@ add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
 add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 apt-get update
 
-apt-get install -y cmake
+apt-get install -y cmake libboost-all-dev build-essential
 
 if [ ! -z "$1" ]
 	then
@@ -35,7 +35,7 @@ if [ ! -z "$2" ]
 	if [ $2 = 'arm' ]
 		then
 		INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-arm
-		apt-get install -y gcc-4.9-arm-linux-gnueabihf
+		apt-get install -y gcc-4.9-arm-linux-gnueabihf g++-4.9-arm-linux-gnueabihf 
 		ARM_FLAG=1
 
 		else 
@@ -71,12 +71,13 @@ if [ ! -e "$INSTALL_DIR/${BOOST}${BOOST_VERSION}/lib/libboost_thread.so" ]; then
 	then
 	sed -i '12s/.*/  using gcc : arm : arm-linux-gnueabihf-gcc-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
 	echo "Installing with b2 to" $INSTALL_DIR/boost-arm_${BOOST_VERSION}
-    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=gcc-arm --with-thread --with-chrono --with-date_time --with-system --with-test --with-filesystem --with-program_options --with-regex
+    	./b2 install --prefix=${INSTALL_DIR}/../../boost-arm_${BOOST_VERSION} -link=shared toolset=gcc-arm 
 	else 
-	#sed -i '12s/.*/  using gcc : 4.9 : g++-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
-	echo "Installing with b2 to" ${INSTALL_DIR}/boost-arm_${BOOST_VERSION}
+	sed -i '12s/.*/  using gcc : 4.9 : g++-4.9 : <compileflags>-std=c++11 ;/' project-config.jam
+	echo "Installing with b2 to" ${INSTALL_DIR}/boost-x86_${BOOST_VERSION}
  	./b2 install --prefix=${INSTALL_DIR}/../../boost-x86_${BOOST_VERSION} -link=shared toolset=gcc-4.9 --with-thread --with-chrono --with-date_time --with-system --with-test --with-filesystem --with-program_options --with-regex
      fi
 fi
 
 rm ${INSTALL_DIR}/../${BOOST}${BOOST_VERSION}".tar.bz2" 
+chmod 777 -R ${INSTALL_DIR}/../../boost* 

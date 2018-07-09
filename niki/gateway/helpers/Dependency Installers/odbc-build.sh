@@ -53,6 +53,8 @@ if [ ! -e "$INSTALL_DIR/lib/libodbc.a" ]; then
     fi
     make
     make install
+
+    chmod 777 -R ${BASE_DIR}/odbc*
 fi
 if [ ! -e "$INSTALL_DIR/lib/libodbc.a" ]; then
 echo "======================================="

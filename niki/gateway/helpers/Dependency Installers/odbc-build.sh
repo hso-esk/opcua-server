@@ -22,10 +22,11 @@ if [ ! -z "$1" ]
 		ARM_FLAG=1
 	else
 		apt-get install -y gcc-4.9 g++-4.9 cpp-4.9
-		mkdir $BASE_DIR/odbc-x86
-		cd $BASE_DIR/odbc-x86
-		INSTALL_DIR=$(pwd)
+		wget -c http://launchpadlibrarian.net/141005765/libmyodbc_5.1.10-3_amd64.deb
+		dpkg -i libmyodbc_5.1.10-3_amd64.deb
+		apt-get install -f
 		ARM_FLAG=0
+		exit 0
 	fi
 fi
 

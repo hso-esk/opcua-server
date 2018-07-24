@@ -10,6 +10,7 @@
 VERSION=2.3.4
 ODBC_VERSION=unixODBC-2.3.4
 BASE_DIR=../../../../../../
+FILES_DIR=$(pwd)
 
 if [ ! -z "$1" ]
 	then 
@@ -30,7 +31,9 @@ if [ ! -z "$1" ]
 		apt-get install -f
 		wget -c https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit.tar.gz 
 		tar -xvzf mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit.tar.gz 
-		cp mysql*/lib/libmyodbc* /usr/lib/x86_64-linux-gnu
+		cp mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit/lib/libmyodbc* /usr/lib/x86_64-linux-gnu/odbc
+		rm ./*tar.gz
+		cp $FILES_DIR/odbc.ini $FILES_DIR/odbcinst.ini /etc/
 		chmod 777 -R $INSTALL_DIR
 		ARM_FLAG=0
 		exit 0

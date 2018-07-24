@@ -28,6 +28,9 @@ if [ ! -z "$1" ]
 		wget -c http://launchpadlibrarian.net/141005765/libmyodbc_5.1.10-3_amd64.deb
 		dpkg -i libmyodbc_5.1.10-3_amd64.deb
 		apt-get install -f
+		wget -c https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit.tar.gz 
+		tar -xvzf mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit.tar.gz 
+		cp mysql*/lib/libmyodbc* /usr/lib/x86_64-linux-gnu
 		chmod 777 -R $INSTALL_DIR
 		ARM_FLAG=0
 		exit 0

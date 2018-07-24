@@ -7,7 +7,7 @@ if ([ ! -z "$1" ] && [ ! -z "$2" ])
 	then 
 	if [ $1 = 'full' ] 
 		then 
-		apt-get install -y libssl-dev libicu-dev libicu55 
+		apt-get install -y libssl-dev libicu-dev libicu55 mysql-client mysql-server
 		if [ $2 = '1_54_0' ]
 			then
 			./boost-build.sh 1_54_0 x86
@@ -48,7 +48,7 @@ if ([ ! -z "$1" ] && [ ! -z "$2" ])
 		
 		elif [ $1 = 'x86' ]
 			then 
-			apt-get install -y libssl-dev libicu-dev libicu55
+			apt-get install -y libssl-dev libicu-dev libicu55  mysql-client mysql-server
 			if [ $2 = '1_54_0' ]
 				then
 				./boost-build.sh 1_54_0 x86

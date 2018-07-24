@@ -34,6 +34,16 @@ if [ ! -z "$1" ]
 		cp mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit/lib/libmyodbc* /usr/lib/x86_64-linux-gnu/odbc
 		rm ./*tar.gz
 		cp $FILES_DIR/odbc.ini $FILES_DIR/odbcinst.ini /etc/
+		echo -e "\033[1;35m Please enter the SQL root pasword: \033[0m"
+		read -s rootPswd
+
+		sqlUserName=nikiUserName
+		sqlPassword=nikiPassword
+
+		mysql --user=root --password=$rootPswd -e "CREATE USER '$sqlUserName'@'localhost' IDENTIFIED BY '$sqlPassword';"
+		mysql --user=root --password=$rootPswd -e "GRANT ALL PRIVILEGES ON * . * TO '$sqlUserName'@'localhost';"
+		mysql --user=root --password=$rootPswd -e "FLUSH PRIVILEGES;"
+
 		chmod 777 -R $INSTALL_DIR
 		ARM_FLAG=0
 		exit 0

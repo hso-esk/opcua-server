@@ -1,0 +1,51 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Copy cfg directory",
+            "type": "shell",
+            "command": "cp -rf ${workspaceFolder}/cfg/* ${workspaceFolder}/asneg/build-x86-amd64-release/"
+        },
+        {
+            "label": "Create loging directory",
+            "type": "shell",
+            "command": "mkdir -p ${workspaceFolder}/asneg/build-x86-amd64-release/var/log/OpcUaStack"
+        },
+        {
+            "label": "Setup OPC UA run",
+            "dependsOn": [
+                "Create loging directory",
+                "Copy cfg directory"
+            ]
+        },
+        {
+            "label": "Build debug",
+            "type": "shell",
+            "command": "${workspaceFolder}/opcua-build-x86-amd64-debug.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build x86 release",
+            "type": "shell",
+            "command": "${workspaceFolder}/opcua-build-x86-amd64-release.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build ARM release",
+            "type": "shell",
+            "command": "${workspaceFolder}/opcua-build-arm-release.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

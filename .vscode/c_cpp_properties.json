@@ -3,8 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**", 
-                "${workspaceFolder}/../../boost-x86_1_54_0/include"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../boost-x86_1_54_0/include",
+                "${workspaceFolder}/niki/logger"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -65,6 +65,7 @@ LIST(APPEND OpcUaDB_SRC
 add_library(OpcUaDB SHARED ${OpcUaDB_SRC})
 
 target_link_libraries(
+    OpcUaLogger
     OpcUaDB
     ${pthread}
     OpcUaStackCore

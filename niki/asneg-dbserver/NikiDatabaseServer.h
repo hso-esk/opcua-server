@@ -110,6 +110,12 @@ public:
     , OpcUaDateTime stopTime
     , OpcUaDataValue::Vec& dataValues);
 
+  bool connectDatabase();
+
+  bool disconnectDatabase();
+
+  bool isConnectedDatabase();
+
 
 private:
   /**
@@ -149,8 +155,9 @@ private:
 
   OpcUaDB::DBServer dbServer_;
   NikiDBModelConfig* dbModelConfig_;
-
-
+  OpcUaDB::Connection connection;
+  // Not the cleanest sollution, but asneg does not provide a connection check
+  bool databaseConected = false; 
 };
 
 } /* namespace OpcUaNikiDB */

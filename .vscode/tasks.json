@@ -6,16 +6,22 @@
         {
             "label": "Copy cfg directory",
             "type": "shell",
-            "command": "cp -rf ${workspaceFolder}/cfg/* ${workspaceFolder}/asneg/build-x86-amd64-release/"
+            "command": "cp -rf ${workspaceFolder}/cfg/* ${workspaceFolder}/asneg/build-x86-amd64-debug/"
+        },
+        {
+            "label": "Copy boost libs",
+            "type": "shell",
+            "command": "cp -rf ${workspaceFolder}/../../boost-x86_1_54_0/lib/* ${workspaceFolder}/asneg/build-x86-amd64-debug/"
         },
         {
             "label": "Create loging directory",
             "type": "shell",
-            "command": "mkdir -p ${workspaceFolder}/asneg/build-x86-amd64-release/var/log/OpcUaStack"
+            "command": "mkdir -p ${workspaceFolder}/asneg/build-x86-amd64-debug/var/log/OpcUaStack"
         },
         {
             "label": "Setup OPC UA run",
             "dependsOn": [
+                "Copy boost libs",
                 "Create loging directory",
                 "Copy cfg directory"
             ]
@@ -27,7 +33,8 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "Build x86 release",

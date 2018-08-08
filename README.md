@@ -53,7 +53,7 @@ Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database u
 
 ```
 [nikiDataSource]
-Description = MySQL connection to  database
+Description = MySQL connection to database
 Driver      = MySQL
 Server      = localhost
 User        = nikiUserName

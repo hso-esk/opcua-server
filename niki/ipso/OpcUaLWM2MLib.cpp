@@ -49,8 +49,6 @@
 #include <string>
 #include <csignal>
 
-#include "Logger.h"
-
 void signalHandler(int signum)
 {
   std::cout << "Application will close..., received external interrupt"
@@ -362,6 +360,14 @@ bool OpcUaLWM2MLib::loadServerConfig(void)
     Logger::log(Error, "read OPC UA server configuration error");
     return false;
   }
+    /* read logging level */
+  if (!config->getConfigParameter("OpcUaServerModel.LoggerConfig.LoggingLevel",loggerConfigValue)){
+	  Logger::log(Warning, "No Logger value set in config file: <>, using default value: ", applicationInfo()->configFileName());
+  }
+  else {
+	  Logger::setLoggerDisplayLevel(Logger::getLogLevel(loggerConfigValue));
+	  Logger::log(Trace, "Logging value has been set to : <>", Logger::getLogLevel());
+  }
 
   /*  load and decode IPSO config file */
   std::string ipsoConfigfile;
@@ -383,14 +389,6 @@ bool OpcUaLWM2MLib::loadServerConfig(void)
   if (!decodeDbConfig(dbConfigfile)) {
     Logger::log (Error, "decode database configuration error");
     return false;
-  }
-  /* read logging level */
-  if (!config->getConfigParameter("OpcUaServerModel.LoggerConfig.LoggingLevel",loggerConfigValue)){
-	  Logger::log(Warning, "No Logger value set in config file: <>, using default value: ", applicationInfo()->configFileName());
-  }
-  else {
-	  Logger::setLoggerDisplayLevel(Logger::getLogLevel(loggerConfigValue));
-	  Logger::log(Trace, "Logging value has been set to : <>", Logger::getLogLevel());
   }
 
   return true;

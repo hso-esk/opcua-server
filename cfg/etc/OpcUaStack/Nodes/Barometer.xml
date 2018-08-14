@@ -7,12 +7,13 @@
 		<ObjectURN>urn:oma:lwm2m:ext:3315</ObjectURN>
 		<MultipleInstances>Multiple</MultipleInstances>
 		<Mandatory>Optional</Mandatory>
+		<Dynamic>Static</Dynamic>
 		<Resources>
 			<Item ID="5700">
 				<Name>Sensor Value</Name>
 				<Operations>R</Operations>
 				<MultipleInstances>Single</MultipleInstances>
-				<Dynamic>Static</Dynamic>
+				<Dynamic>Dynamic</Dynamic>
 				<Mandatory>Mandatory</Mandatory>
 				<Type>Float</Type>
 				<RangeEnumeration></RangeEnumeration>

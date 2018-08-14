@@ -7,6 +7,7 @@
         <ObjectURN>urn:oma:lwm2m:ext:1024</ObjectURN>
         <MultipleInstances>Multiple</MultipleInstances>
         <Mandatory>Optional</Mandatory>
+	<Dynamic>Static</Dynamic>
         <Resources>
             <Item ID="1">
                 <Name>test</Name>

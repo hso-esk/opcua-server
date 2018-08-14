@@ -209,8 +209,6 @@ bool OpcUaLWM2MLib::startup(void)
     return false;
   }
 
-
-
   /* start the the LWM2M server */
   LWM2MServer::instance()->startServer();
   Logger::log (Debug, "LWM2M server started");
@@ -713,7 +711,6 @@ bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
 
   OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
-
   ServiceTransactionRegisterForwardNode::SPtr trx
       = constructSPtr<ServiceTransactionRegisterForwardNode>();
   RegisterForwardNodeRequest::SPtr  req = trx->request();
@@ -781,7 +778,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
       objectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
       objectNode->setNodeId(objectNodeId);
 
-      /* set object node attributes */
+      /* set object node attributes */ 
       OpcUaQualifiedName browseName(objectInfo.second.name, namespaceIndex_);
       objectNode->setBrowseName(browseName);
 
@@ -878,7 +875,6 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
 
   return true;
 }
-
 /*---------------------------------------------------------------------------*/
 /**
  * createObjectNode()

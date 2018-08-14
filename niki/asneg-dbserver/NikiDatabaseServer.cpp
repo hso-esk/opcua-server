@@ -124,7 +124,7 @@ bool DbServer::createDatabaseTable(std::string &dbTableName)
       boost::format("%s.%s") % dbModelConfig_->databaseConfig().databaseName() % dbTableName);
 
   std::string sqlQuery = str(
-      boost::format("CREATE TABLE %s (id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+      boost::format("CREATE TABLE IF NOT EXISTS %s (id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                     "nodeId varchar(255), sourceTimeStamp varchar(255),"
                     "ServerTimeStamp varchar(255),  dataValue varchar(255))") %
       dbNameTableName);

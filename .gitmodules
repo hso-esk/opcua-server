@@ -1,21 +1,12 @@
-[submodule "niki/opcua-sensor-interface"]
-	path = niki/opcua-sensor-interface
-	url = https://github.com/hso-esk/opcua-sensor-interface.git
-[submodule "niki/opcua-lwm2m-server"]
-	path = niki/opcua-lwm2m-server
-	url = https://github.com/hso-esk/opcua-lwm2m-server.git
-[submodule "asneg-dbserver"]
-	path = asneg-dbserver
-	url = https://github.com/hso-esk/asneg-dbserver
 [submodule "asneg"]
 	path = asneg
-	url = https://dg1024@redmine.hahn-schickard.de/opc-ua-gateway/asneg.git
+	url = https://redmine.hahn-schickard.de/opc-ua-gateway/asneg.git
 [submodule "asneg-db-server"]
 	path = asneg-db-server
-	url = https://dg1024@redmine.hahn-schickard.de/opc-ua-gateway/asneg-db-server.git
+	url = https://redmine.hahn-schickard.de/opc-ua-gateway/asneg-db-server.git
 [submodule "opcua-plugin/lwm2m-server"]
 	path = opcua-plugin/lwm2m-server
-	url = https://dg1024@redmine.hahn-schickard.de/opc-ua-gateway/lwm2m-server.git
+	url = https://redmine.hahn-schickard.de/opc-ua-gateway/lwm2m-server.git
 [submodule "opcua-plugin/lwm2m-server-interface"]
 	path = opcua-plugin/lwm2m-server-interface
-	url = https://dg1024@redmine.hahn-schickard.de/opc-ua-gateway/lwm2m-server-interface.git
+	url = https://redmine.hahn-schickard.de/opc-ua-gateway/lwm2m-server-interface.git

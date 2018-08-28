@@ -1,5 +1,5 @@
 /**
- * EDDL description file for a sample NIKI Current Sensor. Currently
+ * EDDL description file for a sample Current Sensor. Currently
  * only two variables are supported namely the actual current
  * and its unit.
  */

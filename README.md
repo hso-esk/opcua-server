@@ -14,7 +14,7 @@ This work was originated from the NIKI 4.0 project. NIKI 4.0 was financed by the
 This README file describes the steps to build and run the  OPC UA server implementation. It also describes the client applications to connect to the OPC UA server. The [opcua-server repository](https://redmine.ivesk.hs-offenburg.de/projects/niki4-0/repository) is organized as follows:
 
 - asneg --> represents the AsNeG OPC UA implementation.
-- asneg-dbserver --> contains AsNeG database server implementation.
+- asneg-db-server --> contains AsNeG database server implementation.
 - cfg -> contains the configuration files to run the server implementation.
 - opcua-build-x86-amd64.sh --> script to build the implementation on x86 platform.
 - opcua-build-arm.sh --> script to build the implementation on arm platform.

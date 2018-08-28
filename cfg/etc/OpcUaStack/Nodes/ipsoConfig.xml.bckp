@@ -13,6 +13,6 @@
     <IPSOPath File="@CONF_DIR@/Nodes/Temperature.xml" />
     <IPSOPath File="@CONF_DIR@/Nodes/Voltage.xml" />
     <IPSOPath File="@CONF_DIR@/Nodes/deviceObject.xml" />
-    <IPSOPath File="@CONF_DIR@/Nodes/testObj.xml" />
+
 </IPSOModel>
 

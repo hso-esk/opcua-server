@@ -3,11 +3,11 @@
 
   <Database>
 
-      <DsnName>nikiDataSource</DsnName>        <!-- data source name -->
-      <UserName>nikiUserName</UserName>        <!-- mysql DBMS user name -->
-      <Password>nikiPassword</Password>        <!-- mysql DBMS password  -->
-      <DbName>nikiDatabase</DbName>            <!-- database name for niki sensors -->
-      <DbTableName>nikiDbTable</DbTableName>   <!-- database table name for niki sensors -->
+      <DsnName>opcuaDataSource</DsnName>        <!-- data source name -->
+      <UserName>opcuaUser</UserName>        <!-- mysql DBMS user name -->
+      <Password>opcua_Password</Password>        <!-- mysql DBMS password  -->
+      <DbName>opcuaDatabase</DbName>            <!-- database name for sensors -->
+      <DbTableName>opcuaTable</DbTableName>   <!-- database table name for sensors -->
 
   </Database>
 

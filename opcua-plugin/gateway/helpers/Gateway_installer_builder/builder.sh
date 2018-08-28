@@ -22,7 +22,7 @@ fi
 if [ -z "$2" ]
 	then OPCUA_SERVER_VERS=v1.3.0
 	else OPCUA_SERVER_VERS=v"$2"
-		sed -i "8s/1.4.0/${OPCUA_SERVER_VERS}/" "${INSTALLER_NAME}files/niki-gateway-installer.sh"
+		sed -i "8s/1.4.0/${OPCUA_SERVER_VERS}/" "${INSTALLER_NAME}files/gateway-installer.sh"
 fi
 
 if [ ! -z "$3" ]

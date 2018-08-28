@@ -1,6 +1,3 @@
-[submodule "asneg"]
-	path = asneg
-	url = https://github.com/hso-esk/asneg.git
 [submodule "niki/opcua-sensor-interface"]
 	path = niki/opcua-sensor-interface
 	url = https://github.com/hso-esk/opcua-sensor-interface.git

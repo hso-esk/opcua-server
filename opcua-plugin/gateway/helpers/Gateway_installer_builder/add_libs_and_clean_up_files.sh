@@ -30,22 +30,27 @@ if [ ! -z "$2" ]
 	BOOST_VER='1_54_0' 
 fi
 
+buildDir=$(pwd)
+
 if [ ! -d ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs ]
 	then
-	mkdir ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs	
-	cp -r ../../../../../../openssl/lib/* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp -r ../../../../../../odbc-$BUILD_OS/lib/libodbc.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/ 
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_atomic.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_chrono.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_date* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_filesystem.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_prg_exec_monitor.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_regex.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_serialization.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_system.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_test_exec_monitor.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_thread.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
-	cp ../../../../../../boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_wserialization.* ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs/
+	mkdir ${INSTALLER_ASSEMBLY_DIRECTORY}extra_libs
+	cd ../../../../../../
+	echo "Getting extra lib files from " $(pwd) 	
+	cp -r ./openssl/lib/* ${buildDir}/extra_libs/
+	cp -r ./odbc-$BUILD_OS/lib/libodbc.* ${buildDir}/extra_libs/ 
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_chrono.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_date* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_filesystem.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_prg_exec_monitor.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_regex.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_serialization.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_system.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_test_exec_monitor.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_thread.* ${buildDir}/extra_libs/
+	cp ./boost-${BUILD_OS}_${BOOST_VER}/lib/libboost_wserialization.* ${buildDir}/extra_libs/
+
+	cd $buildDir
 fi
 
 if [ -d $INSTALLER_ASSEMBLY_DIRECTORY/asneg ]; then 

@@ -58,6 +58,8 @@ bool DbServer::startup(void)
     return false;
   }
 
+    Logger::log(Debug, "Connection to the database over odbc driver was succsesfull");
+
   if (!createDatabase(dbModelConfig_->databaseConfig().databaseName()))
   {
     return false;
@@ -122,6 +124,8 @@ bool DbServer::createDatabaseTable(std::string &dbTableName)
 
   std::string dbNameTableName = str(
       boost::format("%s.%s") % dbModelConfig_->databaseConfig().databaseName() % dbTableName);
+
+  Logger::log(Debug, "Got table name <> from config", dbNameTableName);
 
   std::string sqlQuery = str(
       boost::format("CREATE TABLE IF NOT EXISTS %s (id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
@@ -215,7 +219,7 @@ bool DbServer::execSQLDirect(const std::string &sqlQuery, OpcUaDataValue::Vec &d
 
   if (!isConnectedDatabase())
   {
-    Logger::log(Debug, "Error not connected to the database");
+    Logger::log(Error, "Error could not connect to the database with odbc driver details");
     return false;
   }
 
@@ -306,13 +310,17 @@ bool DbServer::createResultSet(OpcUaDB::ResultSet &resultSet, OpcUaDataValue::SP
 
 bool DbServer::connectDatabase()
 {
+  Logger::log(Debug, "Trying to disconnect.");
   // Check if there was a previous connection, if there was terminates it
   connection.disconnect();
+
+  Logger::log(Debug, "Trying to set odbc driver details, Dsn name is <>, userName is <> and password is <>.", dbModelConfig_->databaseConfig().dsnName(), dbModelConfig_->databaseConfig().userName(), dbModelConfig_->databaseConfig().password()); 
 
   connection.dnsName(dbModelConfig_->databaseConfig().dsnName());
   connection.userName(dbModelConfig_->databaseConfig().userName());
   connection.password(dbModelConfig_->databaseConfig().password());
 
+  Logger::log(Debug, "Trying to connect with odbc driver details...");
   if (connection.connect())
   {
     databaseConected = true;

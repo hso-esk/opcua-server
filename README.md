@@ -19,7 +19,7 @@ This README file describes the steps to build and run the  OPC UA server impleme
 - opcua-build-x86-amd64.sh --> script to build the implementation on x86 platform.
 - opcua-build-arm.sh --> script to build the implementation on arm platform.
 - opcua-run.sh --> script to run the implementation.
-- niki --> contains the NIKI asneg server, EDDL, IPSO, LWM2M, Interface to Sensor device implementations and Environment setup and gateway installation helpers.
+- opcua-plugin --> contains the asneg server plugin manager, EDDL, IPSO, LWM2M, database, Interface to Sensor device implementations and Environment setup and gateway installation helpers.
 
 ### 1. Tools Required ###
 
@@ -52,12 +52,12 @@ sudo apt-get install libmyodbc
 Edit */etc/odbc.ini* as below. The Data source name (nikiDataSource), database user name (UserName) and database user password (nikiPassword) should match the configuration in *cfg/etc/OpcUaStack/Nodes/dbConfig.xml*.
 
 ```
-[nikiDataSource]
+[opcuaDataSource]
 Description = MySQL connection to database
 Driver      = MySQL
 Server      = localhost
-User        = nikiUserName
-Password    = nikiPassword
+User        = opcuaUser
+Password    = opua_Password
 Port        = 3306
 Socket      = /var/run/mysqld/mysqld.sock
 ReadOnly    = No
@@ -98,14 +98,14 @@ Verify that the settings for the driver have been set correctlly, run `` odbcins
 
 To verify the source settings for the odbc driver, run `` odbcinst -q -s `` 
 
-```[nikiDataSource]```
+```[opcuaDataSource]```
 
 Log in to MySQL with root privileges to create niki database user name and password and the according  privileges by executing the following in the command line.
 
 ```
 mysql -u root -p
-CREATE USER 'nikiUserName'@'localhost' IDENTIFIED BY 'nikiPassword';
-GRANT ALL PRIVILEGES ON * . * TO 'nikiUserName'@'localhost';
+CREATE USER 'opcuaUser'@'localhost' IDENTIFIED BY 'opcua_Password';
+GRANT ALL PRIVILEGES ON * . * TO 'opcuaUser'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
@@ -114,7 +114,7 @@ FLUSH PRIVILEGES;
 1. Clone the *opcua-server repository* and change to the *opcua-server* directory.
 2. Initialize sub direcotries with ``git submodule update --init --recursive``
 3. Apply asneg patch with ``git apply asnegPatch.txt``
-4. Change to the *niki/opcua-lwm2m-server* directory.
+4. Change to the *opcua-plugin/opcua-lwm2m-server* directory.
 5. Apply wakaama patch with `` git apply wakaama.patch``
 6. Change back to the opcua-server directory.
 7. Build a release with ``./opcua-build-x86-amd64-realease.sh`` or ``./opcua-build-arm-release.sh`` (depending on the target platform)

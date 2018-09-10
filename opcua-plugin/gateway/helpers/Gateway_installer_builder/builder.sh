@@ -1,61 +1,74 @@
-#!/bin/bash 
+#!/bin/sh
+#  @author: Dovydas Girdvainis 
+#  @date  : 2018-09-10 
 
-INSTALLER_NAME=gateway-installer_
-OPCUA_SRC_PATH1=.
-OPCUA_SRC_PATH2=../../../../
-PREMSISSIONS=755
-OPCUA_SERVER_NAME=opcua-server-bin-beaglebone_
-EXTRA_LIBS=extra_libs
-if [ -z "$1" ]
+## Paths
+PACKER_DIR=$(pwd) 
+PACKAGE_DIR=${PACKER_DIR}/gateway-installer
+BINARIES_ROOT_DIR=../../../../asneg/ 
+GATEWAY_INSTALLER_DIR=${PACKER_DIR}/gateway-installer_files/
+
+## Private variable declaration 
+MIN_ARG_COUNT=2
+PACKAGE_TYPE="none" 
+PACKAGE_VERSION="none"
+
+## Color codes
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+PURPLE='\033[1;35m'
+NC='\033[0m'
+
+doPackaging () {
+
+## Package opcua server
+${PACKER_DIR}/../opcua_packager/packageOPCUA.sh $PACKAGE_TYPE $PACKAGE_VERSION
+
+## Check if directory exists
+if [ ! -d "$PACKAGE_DIR" ]; 
+then 
+	## IF NOT create the directory
+	mkdir $PACKAGE_DIR
+else 
+	## IF YES delete the old one and create a new 
+	rm -rf $PACKAGE_DIR 
+	mkdir $PACKAGE_DIR
+fi
+
+## Copy the gateway installer files to packaging directory 
+cp -rf ${GATEWAY_INSTALLER_DIR}* $PACKAGE_DIR
+
+## Move the tar file to data directory
+mv ${PACKER_DIR}/*.tar ${PACKAGE_DIR}/data
+
+## Edit the installer file 
+sed -i "8s/1.4.0/${PACKAGE_VERSION}/" "${GATEWAY_INSTALLER_DIR}/gateway-installer.sh"
+
+cd $PACKAGE_DIR
+tar -cvzf ../gateway-installer-v${PACKAGE_VERSION}.tar.gz *
+
+## Remove the package directory
+rm -rf $PACKAGE_DIR
+
+}
+
+if [ $# -lt $MIN_ARG_COUNT ]
 	then 
-		INSTALLER_VERS=v0.5 
-	elif [ "$1" == "--help" ]
-	then
-		echo "1st argumt - gateway installer version"
-		echo "2nd argument - opcua server argument"
-		echo "3ed argument - boost version"
-		exit 1
+		echo "$RED Please provide the package type: $BLUE[ --DEBUG_arm | --RELEASE_arm ] and the package version, for examle $BLUE [0.1] $NC"
+		exit
 	else 
-		INSTALLER_VERS=v"$1"
+		PACKAGE_VERSION=$2
 fi
 
-if [ -z "$2" ]
-	then OPCUA_SERVER_VERS=v1.3.0
-	else OPCUA_SERVER_VERS=v"$2"
-		sed -i "8s/1.4.0/${OPCUA_SERVER_VERS}/" "${INSTALLER_NAME}files/gateway-installer.sh"
-fi
+case $1 in 
+	--DEBUG_arm)
+		PACKAGE_TYPE="--DEBUG_arm"
+		doPackaging
+		;; 
+	--RELEASE_arm)
+		PACKAGE_TYPE="--RELEASE_arm"
+		doPackaging
+		;;
+esac
 
-if [ ! -z "$3" ]
-	then BOOST_VER=1_54_0
-	else BOOST_VER=1_67_0
-fi
-
-yes | cp -rf ../gateway-installer/* ./gateway-installer_files/
-
-cp -R ./${EXTRA_LIBS}/* ${OPCUA_SRC_PATH1}/asneg/build/
-
-mkdir -p ${INSTALLER_NAME}${INSTALLER_VERS} tmp/opcua/asneg/build/ tmp/opcua/cfg
-cp -R ${INSTALLER_NAME}files/* ./${INSTALLER_NAME}${INSTALLER_VERS}/
-
-cp -R $OPCUA_SRC_PATH1/asneg/build/* ./tmp/opcua/asneg/build/ 
-cp -R $OPCUA_SRC_PATH2/cfg/* ./tmp/opcua/cfg 
-cp -R $OPCUA_SRC_PATH2/opcua-run-arm-release.sh ./tmp/opcua/
-mv ./tmp/opcua/opcua-run-arm-release.sh ./tmp/opcua/opcua-run.sh
-sed -i "4s/build-arm-release/build/" "./tmp/opcua/opcua-run.sh"
-sed -i "7s/build-arm-release/build/" "./tmp/opcua/opcua-run.sh"
-sed -i "10s/build-arm-release/build/" "./tmp/opcua/opcua-run.sh"
-
-cd ./tmp/ 
-chmod $PREMSISSIONS ./*
-tar -pcvf ${OPCUA_SERVER_NAME}${OPCUA_SERVER_VERS}.tar * 
-mv ./${OPCUA_SERVER_NAME}${OPCUA_SERVER_VERS}.tar ../${INSTALLER_NAME}${INSTALLER_VERS}/data/ 
-
-cd ../ 
-rm -Rf ./tmp/ 
-
-cd ./${INSTALLER_NAME}${INSTALLER_VERS}/
-tar -pcvzf ./${INSTALLER_NAME}${INSTALLER_VERS}.tar.gz * 
-mv ${INSTALLER_NAME}${INSTALLER_VERS}.tar.gz ../ 
-
-cd ../ 
-rm -Rf ./${INSTALLER_NAME}${INSTALLER_VERS} 

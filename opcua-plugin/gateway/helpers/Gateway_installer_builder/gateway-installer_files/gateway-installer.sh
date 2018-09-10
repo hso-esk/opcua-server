@@ -202,7 +202,7 @@ if [[ "$continue_flag" == y* ]]; then
 
 	do	
 
-		tar -pxvf $rootDir/$dataDir/opcua-server-bin-beaglebone_v$opcuaVersion.tar -C /opt/ 
+		tar -pxvf $rootDir/$dataDir/*.tar -C /opt/ 
 
 		counter=$(expr $counter - 1)
 

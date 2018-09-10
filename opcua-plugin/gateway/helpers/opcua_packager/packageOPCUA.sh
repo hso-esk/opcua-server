@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 #  @author: Dovydas Girdvainis 
 #  @date  : 2018-09-10
 

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
+	<Object ObjectType="MODefinition">
+		<Name>ParsiFAL_PressureObject</Name>
+		<Description1>BME280 Barometer sensor</Description1>
+		<ObjectID>3315</ObjectID>
+		<ObjectURN>urn:oma:lwm2m:ext:3315</ObjectURN>
+		<MultipleInstances>Multiple</MultipleInstances>	
+		<Mandatory>Optional</Mandatory>
+		<Resources>
+			<Item ID="5601">
+				<Name>rMaintenanceLastResetS3LabelBarometerMinVal</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Minimum measured value since last reset</Description>
+			</Item>
+			<Item ID="5602">
+				<Name>rMaintenanceLastResetS3LabelBarometerMaxVal</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Maximum measured value since last reset</Description>
+			</Item>
+			<Item ID="5603">
+				<Name>rS3LabelSensorBarometerMinRange</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Minimal sensor value</Description>
+			</Item>
+			<Item ID="5604">
+				<Name>rS3LabelSensorBarometerMaxRange</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Maximum sensor value</Description>
+			</Item>
+			<Item ID="5700">
+				<Name>rMaintenanceLastCycleS3LabelBarometerCurrVal</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Current pressure of S3Label@ActuatorEnvironment (S3Label system)</Description>
+			</Item>
+			<Item ID="5701">
+				<Name>strS3LabelSensorBarometerUnit</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>String</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>Unit of sensor value (z.B. hPa)</Description>
+			</Item>
+			<Item ID="9980">
+				<Name>rMaintenanceLastCycleS3LabelBarometerVDMALimitL1</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>active limit value (LimitLow1 is manually set) for VDMA status generation '21'</Description>
+			</Item>
+			<Item ID="9981">
+				<Name>rMaintenanceLastCycleS3LabelBarometerVDMALimitH1</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Static</Dynamic>
+				<Mandatory>Optional</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration></RangeEnumeration>
+				<Units></Units>
+				<Description>active limit value (LimitHigh1 is manually set) for VDMA status generation '22'</Description>
+			</Item>
+		</Resources>
+	</Object>
+</LWM2M>
+
+

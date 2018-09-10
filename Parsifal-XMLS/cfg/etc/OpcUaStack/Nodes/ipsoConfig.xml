@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IPSOModel xmlns="http://ipso/IPSOModel.xsd">
+
+    <IPSOPath File="@CONF_DIR@/Nodes/Barometer.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Current.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/EIS.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/EIS-Values.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/EMeter-Values.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Humidity.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Illuminance.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/ipsoWakaamaTestObj.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Power.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Temperature.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Voltage.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/deviceObject.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/testObj.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_3301.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_3303.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_3304.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_3315.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10002.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10005.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10006.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10007.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10008.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10010.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10011.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10013.xml" />
+	<IPSOPath File="@CONF_DIR@/Nodes/Parsifal_10014.xml" />
+</IPSOModel>
+

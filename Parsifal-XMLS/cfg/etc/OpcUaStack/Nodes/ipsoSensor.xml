@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
+    <Object ObjectType="MODefinition">
+        <Name>Profibus I/O</Name>
+        <Description1>This object represents an I/O data from a Profibus Slave.</Description1>
+        <ObjectID>1024</ObjectID>
+        <ObjectURN>urn:oma:lwm2m:ext:3503</ObjectURN>
+        <MultipleInstances>Multiple</MultipleInstances>
+        <Mandatory>Optional</Mandatory>
+	<Dynamic>Static</Dynamic>
+        <Resources>
+            <Item ID="6030">
+                <Name>Device Address</Name>
+                <Operations>R</Operations>
+                <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
+                <Mandatory>Mandatory</Mandatory>
+                <Type>Integer</Type>
+                <RangeEnumeration></RangeEnumeration>
+                <Units></Units>
+                <Description>Address of Profibus Slave.</Description>
+            </Item>
+            <Item ID="6031">
+                <Name>Module ID</Name>
+                <Operations>E</Operations>
+                <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Static</Dynamic>
+                <Mandatory>Optional</Mandatory>
+                <Type></Type>
+                <RangeEnumeration></RangeEnumeration>
+                <Units></Units>
+                <Description>Module ID of the Profibus Slave where this data is originated from.</Description>
+            </Item>
+            <Item ID="6032">
+                <Name>Module Data</Name>
+                <Operations>R</Operations>
+                <MultipleInstances>Single</MultipleInstances>
+		<Dynamic>Dynamic</Dynamic>
+                <Mandatory>Optional</Mandatory>
+                <Type>Float</Type>
+                <RangeEnumeration></RangeEnumeration>
+                <Units>s</Units>
+                <Description>The data payload coming from the Profibus Slave.</Description>
+            </Item>
+         </Resources>
+        <Description2></Description2>
+    </Object>
+</LWM2M>

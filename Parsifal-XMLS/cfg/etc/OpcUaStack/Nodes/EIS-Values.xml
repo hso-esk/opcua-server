@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
+	<Object ObjectType="MODefinition">
+		<Name>EIS-Values</Name>
+		<Description1>Actual Values of all EIS sensors</Description1>
+		<ObjectID>3666</ObjectID>
+		<ObjectURN>urn:oma:lwm2m:ext:3666</ObjectURN>
+		<MultipleInstances>Multiple</MultipleInstances>
+		<Mandatory>Optional</Mandatory>
+		<Dynamic>Dynamic</Dynamic>
+		<Resources>
+			<Item ID="3301">
+				<Name>Illuminance Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from Illuminance Sesnsor</Description>
+			</Item>
+			<Item ID="3303">
+				<Name>Temperature Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from Temperature Sesnsor</Description>
+			</Item>
+			<Item ID="3304">
+				<Name>Humidity Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from Humidity Sensor</Description>
+			</Item>	
+			<Item ID="3315">
+				<Name>Barometer Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from Barometer</Description>
+			</Item>			
+			<Item ID="3601">
+				<Name>FlowX Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from FlowX Sensor</Description>
+			</Item>
+			<Item ID="3602">
+				<Name>FlowY Value</Name>
+				<Operations>R</Operations>
+				<MultipleInstances>Single</MultipleInstances>
+				<Dynamic>Dynamic</Dynamic>
+				<Mandatory>Mandatory</Mandatory>
+				<Type>Float</Type>
+				<RangeEnumeration/>
+				<Units>Defined by “Units” resource.</Units>
+				<Description>Last or Current Measured Value from FlowY Sensor</Description>
+			</Item>
+		</Resources>
+	</Object>	
+</LWM2M>
+
+

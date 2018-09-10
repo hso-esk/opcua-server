@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LWM2M  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openmobilealliance.org/tech/profiles/LWM2M.xsd">
+    <Object ObjectType="MODefinition">
+        <Name>ApplicationConfigStatus</Name>
+        <Description1>Description of the object.</Description1>
+        <ObjectID>9980</ObjectID>
+        <ObjectURN>urn:oma:lwm2m:ext:9980</ObjectURN>
+        <MultipleInstances>Multiple</MultipleInstances>
+        <Mandatory>Optional</Mandatory>
+        <Resources>
+            <Item ID="9960">
+                <Name>Application Configuration Index</Name>
+                <Operations>R</Operations>
+                <MultipleInstances>Single</MultipleInstances>
+		        <Dynamic>Dynamic</Dynamic>
+                <Mandatory>Mandatory</Mandatory>
+                <Type>Integer</Type>
+                <RangeEnumeration></RangeEnumeration>
+                <Units>Defined by “Units” resource.</Units>
+                <Description>Application configuration index</Description>
+            </Item>
+            <Item ID="9961">
+                <Name>Application Configuration Data</Name>
+                <Operations>R</Operations>
+                <MultipleInstances>Single</MultipleInstances>
+		        <Dynamic>Dynamic</Dynamic>
+                <Mandatory>Optional</Mandatory>
+                <Type>Integer</Type>
+                <RangeEnumeration></RangeEnumeration>
+                <Units></Units>
+                <Description>Application configuration data</Description>
+            </Item>
+            <Item ID="9962">
+                <Name>Application Status</Name>
+                <Operations>R</Operations>
+                <MultipleInstances>Single</MultipleInstances>
+		        <Dynamic>Dynamic</Dynamic>
+                <Mandatory>Optional</Mandatory>
+                <Type>Integer</Type>
+                <RangeEnumeration></RangeEnumeration>
+                <Units>Defined by “Units” resource.</Units>
+                <Description>Status of application</Description>
+            </Item>
+        </Resources>
+        <Description2></Description2>
+    </Object>
+</LWM2M>
+
+

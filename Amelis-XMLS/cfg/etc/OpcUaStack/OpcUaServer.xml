@@ -1,0 +1,84 @@
+<OpcUaServer>
+
+  <Logging>
+    <FileLogger>
+      <LogFileName>@CONF_DIR@/../../var/log/OpcUaStack/OpcUaServer.log</LogFileName>
+    </FileLogger>
+
+    <Log4cxxLogger>
+    </Log4cxxLogger>
+
+  </Logging>
+
+  <Applications>
+    <!-- <Application>
+      <Name>OpcUaEddl</Name>
+      <Library>OpcUaEddl</Library>
+      <Config>@CONF_DIR@/Nodes/NIKI-Temp-Sensor.xml</Config>
+    </Application>
+    <Application>
+      <Name>OpcUaEddl2</Name>
+      <Library>OpcUaEddl</Library>
+      <Config>@CONF_DIR@/Nodes/NIKI-Current-Sensor.xml</Config>
+    </Application> -->
+    <Application>
+      <Name>OpcUaIPSO</Name>
+      <Library>OpcUaIPSO</Library>
+      <Config>@CONF_DIR@/OpcUaServerConfig.xml</Config>
+    </Application> 
+  </Applications>
+
+  <Endpoints>
+    <EndpointDescription>
+	  <EndpointUrl>opc.tcp://0.0.0.0:8888</EndpointUrl>
+	  <ApplicationUri>urn:localhost:OpcUaServer::TestAppl</ApplicationUri>
+	  <ProductUri>urn:company:OpcUaServer</ProductUri>
+	  <ApplicationName>OpcUaServer</ApplicationName>
+	  <DiscoveryUrl>opc.tcp://localhost:4841/0.0.0.0</DiscoveryUrl>
+	  <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri>
+	  <UserTokenPolicy>
+	    <PolicyId>OpcUaStack</PolicyId>
+	    <TokenType>Anonymous</TokenType>
+	  </UserTokenPolicy>
+	  <TransportProfileUri>http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary</TransportProfileUri>
+	  <SecurityLevel>0</SecurityLevel>
+	</EndpointDescription>
+
+	<!--
+    <EndpointDescription>
+	  <EndpointUrl>opc.tcp://0.0.0.0:4888/0.0.0.0</EndpointUrl>
+	  <ApplicationUri>urn:localhost:OpcUaServer::TestAppl</ApplicationUri>
+	  <ProductUri>urn:company:OpcUaServer</ProductUri>
+	  <ApplicationName>OpcUaServer</ApplicationName>
+	  <DiscoveryUrl>opc.tcp://localhost:4841/0.0.0.0</DiscoveryUrl>
+	  <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri>
+	  <UserTokenPolicy>
+	    <PolicyId>OpcUaStack</PolicyId>
+		<TokenType>Anonymous</TokenType>
+	  </UserTokenPolicy>
+	  <TransportProfileUri>http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary</TransportProfileUri>
+	  <SecurityLevel>1</SecurityLevel>
+	</EndpointDescription>
+
+    <EndpointDescription>
+	  <EndpointUrl>opc.tcp://0.0.0.0:4888/0.0.0.0</EndpointUrl>
+	  <ApplicationUri>urn:localhost:OpcUaServer::TestAppl</ApplicationUri>
+	  <ProductUri>urn:company:OpcUaServer</ProductUri>
+	  <ApplicationName>OpcUaServer</ApplicationName>
+	  <DiscoveryUrl>opc.tcp://localhost:4841/0.0.0.0</DiscoveryUrl>
+	  <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri>
+	  <UserTokenPolicy>
+	    <PolicyId>OpcUaStack</PolicyId>
+		<TokenType>Anonymous</TokenType>
+	  </UserTokenPolicy>
+	  <TransportProfileUri>http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary</TransportProfileUri>
+	  <SecurityLevel>2</SecurityLevel>
+	</EndpointDescription>
+	-->
+  </Endpoints>
+
+  <InformationModel>
+    <NodeSetFile>@CONF_DIR@/OpcUaNodeSet.xml</NodeSetFile>
+  </InformationModel>
+
+</OpcUaServer>

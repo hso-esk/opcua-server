@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IPSOModel xmlns="http://ipso/IPSOModel.xsd">
+
+    <IPSOPath File="@CONF_DIR@/Nodes/Barometer.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Current.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/EIS.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/EIS-Values.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/EMeter-Values.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Humidity.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Illuminance.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/ipsoWakaamaTestObj.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Power.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Temperature.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/Voltage.xml" />
+    <IPSOPath File="@CONF_DIR@/Nodes/deviceObject.xml" />
+
+</IPSOModel>
+

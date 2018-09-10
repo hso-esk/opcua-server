@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBModel Id="Client" xmlns="http://ASNeG.de/DBModel.xsd">
+
+  <Database>
+
+      <DsnName>nikiDataSource</DsnName>        <!-- data source name -->
+      <UserName>nikiUserName</UserName>        <!-- mysql DBMS user name -->
+      <Password>nikiPassword</Password>        <!-- mysql DBMS password  -->
+      <DbName>nikiDatabase</DbName>            <!-- database name for niki sensors -->
+      <DbTableName>nikiDbTable</DbTableName>   <!-- database table name for niki sensors -->
+
+  </Database>
+
+</DBModel>

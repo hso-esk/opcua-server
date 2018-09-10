@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpcUaServerModel xmlns="http://ASNeG.de/DBModel.xsd">
+
+    <LoggerConfig>
+	<LoggingLevel>DEBUG</LoggingLevel>
+    </LoggerConfig>
+
+    <IPSOConfig>
+        <IPSOConfigPath>@CONF_DIR@/Nodes/ipsoConfig.xml</IPSOConfigPath>
+    </IPSOConfig>
+
+    <EDDLConfig>
+        <EDDLConfigPath>@CONF_DIR@/Nodes/sample_EDDL.xml</EDDLConfigPath>
+    </EDDLConfig>
+
+    <Database>
+        <DatabaseConfig>@CONF_DIR@/Nodes/dbConfig.xml</DatabaseConfig>
+    </Database>
+
+</OpcUaServerModel>

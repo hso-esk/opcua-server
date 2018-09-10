@@ -39,7 +39,7 @@ if [ ! -z "$2" ]
 		ARM_FLAG=1
 
 		else 
-		INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-x86
+		INSTALL_DIR=$BASE_DIR/boost_$BOOST_VERSION-x86-amd64
 		apt-get install -y gcc-4.9 g++-4.9 cpp-4.9
 		ARM_FLAG=0
 	fi

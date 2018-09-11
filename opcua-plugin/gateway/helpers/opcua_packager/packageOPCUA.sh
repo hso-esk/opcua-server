@@ -56,7 +56,7 @@ then
 	cp -rf ${DEPENDENCY_BASE_DIR}/openssl/lib/* $PACKAGE_DIR/bin
 else 
 	echo "$RED NO OPENSSL for arm has been found! Try running the Dependency_Installer! $NC"
-	exit
+	exit 1
 fi 
 
 ## Check if odbc-arm libs exist
@@ -65,7 +65,7 @@ then
 	cp ${DEPENDENCY_BASE_DIR}/odbc-$ARCH/lib/libodbc.* $PACKAGE_DIR/bin
 else 
 	echo "$RED NO ODBC for arm has been found! Try running the Dependency_Installer! $NC"
-	exit
+	exit 1
 fi 
 }
 
@@ -101,7 +101,7 @@ packageBinaries () {
 		cp ${DEPENDENCY_BASE_DIR}boost-${ARCH}_${BOOST_VER}/lib/* $PACKAGE_DIR/bin
 	else 
 		echo "$RED Boost libraries not found at ${DEPENDENCY_BASE_DIR}boost-${ARCH}_${BOOST_VER}/lib! Try the Dependency_Installer! $NC"
-		exit
+		exit 1
 	fi
 	
 	if [ "$ARCH" = "arm" ];
@@ -136,12 +136,13 @@ packageBinaries () {
 	sed -i "7s/cfg/Parsifal-XMLS\/cfg/" "${PACKAGE_DIR}opcua-run_Parsifal.sh"
 
 	## Tar the files 
-	tar -cvf opcua-server_v${PACKAGE_VERSION}.tar opcua
+	tar -cvf opcua-server_v${PACKAGE_VERSION}_${PACKAGE_TYPE}.tar opcua
 
 	## Remove the package directory 
 	rm -rf ${PACKAGE_DIR}
 
 	echo "$GREEN Packaging complete! $NC"
+	exit 0
 }
 
 doPackaging () {
@@ -157,7 +158,7 @@ doPackaging () {
 if [ $# -lt $MIN_ARG_COUNT ]
 	then 
 		echo "$RED Please provide the package type: $BLUE[--DEBUG_x86 | --RELEASE_x86 | --DEBUG_arm | --RELEASE_arm] and the package version, for examle $BLUE [0.1] $NC"
-		exit
+		exit 1
 	else 
 		PACKAGE_VERSION=$2
 fi

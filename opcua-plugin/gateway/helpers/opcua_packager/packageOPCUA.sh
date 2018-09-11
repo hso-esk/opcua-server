@@ -148,7 +148,7 @@ packageBinaries () {
 doPackaging () {
 	if [ -d "${BINARIES_ROOT_DIR}$BINARIES_DIR" ]; 
 	then
-		cd ${BINARIES_ROOT_DIR}build-x86-amd64-debug
+		cd ${BINARIES_ROOT_DIR}${BINARIES_DIR}
 		packageBinaries
 	else 
 		echo "$RED Directory $BINARIES_DIR in $BINARIES_ROOT_DIR does not exist! $NC"

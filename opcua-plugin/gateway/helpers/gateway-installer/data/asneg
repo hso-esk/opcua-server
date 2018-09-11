@@ -12,7 +12,7 @@
 
 
 NAME=OpcUaServer4
-DAEMON_PATH=/opt/opcua/asneg/build
+DAEMON_PATH=/opt/opcua/bin
 DAEMON=$DAEMON_PATH/$NAME
 DAEMON_OPT="$DAEMON_PATH/etc/OpcUaStack/OpcUaServer.xml"
 PIDFILE=/var/run/$NAME.pid

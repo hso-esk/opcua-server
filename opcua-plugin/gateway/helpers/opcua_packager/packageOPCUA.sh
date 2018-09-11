@@ -136,7 +136,7 @@ packageBinaries () {
 	sed -i "7s/cfg/Parsifal-XMLS\/cfg/" "${PACKAGE_DIR}opcua-run_Parsifal.sh"
 
 	## Tar the files 
-	tar -cvf opcua-server_v${PACKAGE_VERSION}_${PACKAGE_TYPE}.tar opcua
+	tar -cvf opcua-server_v${PACKAGE_VERSION}_${ARCH}_${PACKAGE_TYPE}.tar opcua
 
 	## Remove the package directory 
 	rm -rf ${PACKAGE_DIR}

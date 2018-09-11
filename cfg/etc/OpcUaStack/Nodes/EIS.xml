@@ -84,6 +84,7 @@
 		<ObjectURN>urn:oma:lwm2m:ext:3602</ObjectURN>
 		<MultipleInstances>Multiple</MultipleInstances>
 		<Mandatory>Optional</Mandatory>
+		<Dynamic>Static</Dynamic>
 		<Resources>			
 			<Item ID="5700">
 				<Name>Sensor Value</Name>

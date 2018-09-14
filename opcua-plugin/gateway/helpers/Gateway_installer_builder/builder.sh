@@ -48,7 +48,7 @@ fi
 cp -rf ${GATEWAY_INSTALLER_DIR}* $PACKAGE_DIR
 
 ## Move the tar file to data directory
-v ${PACKER_DIR}/*.tar ${PACKAGE_DIR}/data
+mv ${PACKER_DIR}/*.tar ${PACKAGE_DIR}/data
 
 ## Edit the installer file 
 sed -i "8s/1.4.0/${PACKAGE_VERSION}/" "${GATEWAY_INSTALLER_DIR}/gateway-installer.sh"

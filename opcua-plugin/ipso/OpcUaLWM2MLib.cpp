@@ -232,6 +232,7 @@ bool OpcUaLWM2MLib::startup(void)
 
   if (!dbServer_.startup()) {
     Logger::log (Error, "Database server startup failed");
+    std::cout << "mySQL Database failed to start!" << std::endl;
     return false;
   }
 
@@ -296,7 +297,7 @@ void OpcUaLWM2MLib::thread( void )
         case e_lwm2m_serverobserver_event_register:
         {
           Logger::log(Trace, "Device registration triggered, for <> device", ev.param.devName);
-
+          std::cout << "Device: " << ev.param.devName << " registering..." << std::endl;
           /* execute onDeviceRegister function */
           onDeviceRegister(ev.param.devName);
         }

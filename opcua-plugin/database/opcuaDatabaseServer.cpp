@@ -324,9 +324,12 @@ bool DbServer::connectDatabase()
   if (connection.connect())
   {
     databaseConected = true;
+    std::cout << "ODBC conected!" << std::endl;
+    Logger::log(Debug, "Logging some connection with odbc driver...");
     return true;
   }
   else
+    Logger::log(Debug,"Connecting to odbc driver failed in a weird way...");
     return false;
 }
 

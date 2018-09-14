@@ -66,7 +66,21 @@ then
 else 
 	echo "$RED NO ODBC for arm has been found! Try running the Dependency_Installer! $NC"
 	exit 1
-fi 
+fi
+
+## Add remote debuging startup 
+touch ${PACKAGE_DIR}/startGDBServer.sh
+cat << EOF > ${PACKAGE_DIR}/startGDBServer.sh 
+#!/bin/bash
+#  @author      : Dovydas Girdvainis 
+#  @date        : 2018-09-10 
+#  @description : Start a remote debuging server on the host
+
+cd ./bin 
+gdbserver :9091 OpcUaServer4 etc/OpcUaStack/OpcUaServer.xml
+        
+EOF
+
 }
 
 packageBinaries () {

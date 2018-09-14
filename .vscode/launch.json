@@ -9,16 +9,17 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/asneg/build-arm-debug/OpcUaServer4",
-            "miDebuggerServerAddress": "192.168.178.105:9091",
+            "miDebuggerServerAddress": "192.168.100.108:9091",
             "args": [
-                "${workspaceFolder}/asneg/build-x86-amd64-debug/etc/OpcUaStack/OpcUaServer.xml"
+                "${workspaceFolder}/asneg/build-arm-debug/etc/OpcUaStack/OpcUaServer.xml"
             ],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
             "miDebuggerPath":"/usr/bin/gdb-multiarch",
+            
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

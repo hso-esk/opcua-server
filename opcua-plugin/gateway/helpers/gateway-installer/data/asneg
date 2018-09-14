@@ -18,7 +18,7 @@ DAEMON_OPT="$DAEMON_PATH/etc/OpcUaStack/OpcUaServer.xml"
 PIDFILE=/var/run/$NAME.pid
 
 LOGDIR=$DAEMON_PATH/var/log/OpcUaStack
-CFGSRC=$DAEMON_PATH/../../cfg/etc
+CFGSRC=$DAEMON_PATH/../cfg/etc
 
 
 if [ -f /lib/lsb/init-functions ]; then
@@ -102,4 +102,4 @@ case "$1" in
         exit 1
 esac
 
-exit 0
+REATE USER 'opcuaUser'@'localhost' IDENTIFIED BY 'opcua_Password'; GRANT ALL PRIVILEGES ON * . * TO 'opcuaUser'@'localhost'; FLUSH PRIVILEGES; 

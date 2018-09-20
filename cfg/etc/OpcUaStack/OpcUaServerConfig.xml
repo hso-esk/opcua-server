@@ -6,12 +6,8 @@
     </LoggerConfig>
 
     <IPSOConfig>
-        <IPSOConfigPath>@CONF_DIR@/Nodes/ipsoConfig.xml</IPSOConfigPath>
+        <IPSOConfigPath>@CONF_DIR@/Nodes/sensor_xml_descriptions/ipsoConfig.xml</IPSOConfigPath>
     </IPSOConfig>
-
-    <EDDLConfig>
-        <EDDLConfigPath>@CONF_DIR@/Nodes/sample_EDDL.xml</EDDLConfigPath>
-    </EDDLConfig>
 
     <Database>
         <DatabaseConfig>@CONF_DIR@/Nodes/dbConfig.xml</DatabaseConfig>

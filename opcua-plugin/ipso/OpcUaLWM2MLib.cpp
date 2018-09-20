@@ -168,7 +168,7 @@ int8_t OpcUaLWM2MLib::notify( const DeviceDataValue* p_val,
 
      /* update value of observed node */
      OpcUaStackServer::BaseNodeClass::SPtr observedNode;
-     observedNode = informationModel()->find(nodeId);
+     observedNode = getInformationModel()->find(nodeId);
      if( observedNode != NULL )
      {
        observedNode->setValue(*item.second.data);
@@ -779,7 +779,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
     OpcUaNodeId objectNodeId;
     objectNodeId.set(objectInfo.first, namespaceIndex_);
 
-    OpcUaStackServer::BaseNodeClass::SPtr objectNode = informationModel()->find(objectNodeId);
+    OpcUaStackServer::BaseNodeClass::SPtr objectNode = getInformationModel()->find(objectNodeId);
     if (objectNode.get() == nullptr) {
 
       OpcUaStackServer::BaseNodeClass::SPtr objectNode;
@@ -816,7 +816,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
       parentObjectId.set(objectInfo.second.deviceId, namespaceIndex_);
 
       /* check existence of parent object */
-      OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(parentObjectId);
+      OpcUaStackServer::BaseNodeClass::SPtr baseObject = getInformationModel()->find(parentObjectId);
       if (baseObject.get() != nullptr) {
 
         /* set reference to parent object */
@@ -836,7 +836,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
       }
 
       /* add object node to OPC UA server information model */
-      informationModel()->insert(objectNode);
+      getInformationModel()->insert(objectNode);
     }
   }
   return true;
@@ -862,7 +862,7 @@ bool OpcUaLWM2MLib::deleteObjectNode(std::string devName,
         /* delete object node */
         OpcUaNodeId objectNodeId;
         objectNodeId.set(it2->first, namespaceIndex_);
-        informationModel()->remove(objectNodeId);
+        getInformationModel()->remove(objectNodeId);
 
         /* store parent id of deleted object node */
         deviceId = it2->second.deviceId;
@@ -924,7 +924,7 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
   deviceobjectNode->setUserWriteMask(writemask);
 
   /* set node id of OPC UA address space base object */
-  OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(baseObjectId);
+  OpcUaStackServer::BaseNodeClass::SPtr baseObject = getInformationModel()->find(baseObjectId);
 
   if (baseObject.get() != nullptr) {
 
@@ -947,7 +947,7 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
   }
 
    /* add object node to OPC UA server information model */
-   informationModel()->insert(deviceobjectNode);
+   getInformationModel()->insert(deviceobjectNode);
 
   return true;
 }
@@ -962,7 +962,7 @@ bool OpcUaLWM2MLib::deleteDeviceObjecttNode(uint32_t deviceId)
 
   OpcUaNodeId deviceIdNode;
   deviceIdNode.set(deviceId, namespaceIndex_);
-  informationModel()->remove(deviceIdNode);
+  getInformationModel()->remove(deviceIdNode);
 
   return true;
 }
@@ -1033,7 +1033,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
       uint32_t parentObjectId = varInfo.second.opcuaObjectId;
       objectNodeId.set(parentObjectId, namespaceIndex_);
 
-      OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
+      OpcUaStackServer::BaseNodeClass::SPtr parentObject = getInformationModel()->find(objectNodeId);
       if (parentObject.get() != nullptr) {
 
         /* create references to object node */
@@ -1076,7 +1076,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
          variables_.insert(std::make_pair(varNodeId, variableCtx));
 
          /* add variable node to OPC UA server information model */
-         informationModel()->insert(variableNode);
+         getInformationModel()->insert(variableNode);
 
          /* register callback for OPC UA variable nodes */
          if (!registerCallbacks(resourceId)) {
@@ -1140,7 +1140,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
       uint32_t parentObjectId = methodInfo.second.opcuaObjectId;
       objectNodeId.set(parentObjectId, namespaceIndex_);
 
-      OpcUaStackServer::BaseNodeClass::SPtr parentObject = informationModel()->find(objectNodeId);
+      OpcUaStackServer::BaseNodeClass::SPtr parentObject = getInformationModel()->find(objectNodeId);
       if (parentObject.get() != nullptr) {
 
         /* create references to object node */
@@ -1159,7 +1159,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
        methods_.insert(std::make_pair(methodNodeId, methodCtx));
 
       /* add the method node to the information model */
-      informationModel()->insert(methodNode);
+      getInformationModel()->insert(methodNode);
     }
   }
 
@@ -1190,7 +1190,7 @@ bool OpcUaLWM2MLib::deleteResourceNodes(std::string devName,
         /* delete resource node */
         OpcUaNodeId resourceNodeId;
         resourceNodeId.set(it2->first, namespaceIndex_);
-        informationModel()->remove(resourceNodeId);
+        getInformationModel()->remove(resourceNodeId);
 
         /* remove item from variable map */
         variableContextMap::iterator it3 = variables_.find(it2->first);

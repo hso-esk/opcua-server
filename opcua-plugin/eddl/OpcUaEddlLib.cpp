@@ -218,7 +218,7 @@ bool OpcUaEddlLib::createObjectNode(objectNodeCreateInfo const& info)
   OpcUaNodeId baseObjectId;
   baseObjectId.set(info.parentNodeId, namespaceIndex_);
   /* set node id of OPC UA address space base object */
-  OpcUaStackServer::BaseNodeClass::SPtr baseObject = informationModel()->find(baseObjectId);
+  OpcUaStackServer::BaseNodeClass::SPtr baseObject = getInfromationModel()->find(baseObjectId);
   if (baseObject.get() != nullptr) {
     /* set reference to address space base object */
     baseObject->referenceItemMap().add(OpcUaStackServer::ReferenceType::
@@ -234,7 +234,7 @@ bool OpcUaEddlLib::createObjectNode(objectNodeCreateInfo const& info)
   }
 
   /* add object node to OPC UA server information model */
-  informationModel()->insert(objectNode);
+  getInfromationModel()->insert(objectNode);
 
   root_node_ = objectNode;
   return true;
@@ -330,7 +330,7 @@ bool OpcUaEddlLib::createVariableNode(variableNodeCreateInfo const& info)
   variableNode->setValue(*ctx.data_);
 
   /* add variable node to OPC UA server information model */
-  informationModel()->insert(variableNode);
+  getInfromationModel()->insert(variableNode);
 
   /* store variable node info into variableContextMap */
   variables_.insert(std::make_pair(varNodeId, ctx));

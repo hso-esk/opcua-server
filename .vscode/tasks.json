@@ -11,7 +11,7 @@
         {
             "label": "Copy boost libs",
             "type": "shell",
-            "command": "cp -rf ${workspaceFolder}/../../boost-x86_1_54_0/lib/* ${workspaceFolder}/asneg/build-x86-amd64-debug/"
+            "command": "cp -rf ${workspaceFolder}/../../boost-x86-amd64_1_54_0/lib/* ${workspaceFolder}/asneg/build-x86-amd64-debug/"
         },
         {
             "label": "Create loging directory",

@@ -1,1 +1,0 @@
-## niki4-0/gateway-installer

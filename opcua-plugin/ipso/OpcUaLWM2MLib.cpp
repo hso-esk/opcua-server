@@ -947,7 +947,7 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
   }
 
    /* add object node to OPC UA server information model */
-   infmrmationModel()->insert(deviceobjectNode);
+   informationModel()->insert(deviceobjectNode);
 
   return true;
 }

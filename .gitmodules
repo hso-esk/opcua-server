@@ -15,4 +15,4 @@
 	url = https://redmine.hahn-schickard.de/opc-ua-gateway/sensor_xml_descriptions.git
 [submodule "opcua-plugin/gateway/helpers"]
 	path = opcua-plugin/gateway/helpers
-	url = https://dg1024@redmine.hahn-schickard.de/opc-ua-gateway/helpers.git
+	url = https://redmine.hahn-schickard.de/opc-ua-gateway/helpers.git

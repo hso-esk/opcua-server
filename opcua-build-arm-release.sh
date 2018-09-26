@@ -12,5 +12,5 @@ mkdir -p asneg/build-arm-release
 cd asneg/build-arm-release
 
 #build
-cmake -DCMAKE_TOOLCHAIN_FILE=../../arm-linux-toolchain.cmake -DCMAKE_BUILD_TYPE=$BUILDTYPE ../src
+cmake -DCMAKE_TOOLCHAIN_FILE=../../arm-linux-toolchain.cmake -DCMAKE_BUILD_TYPE=$BUILDTYPE ../src 
 make --jobs=5

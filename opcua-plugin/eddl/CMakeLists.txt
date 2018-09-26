@@ -26,7 +26,7 @@ target_link_libraries(
     OpcUaStackServer
     OpcUaStackClient
     OpcUaSensorInterface
-    ${pthread}
+    #${pthread}
     ${Boost_LIBRARIES}
 )
 

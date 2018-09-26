@@ -22,7 +22,7 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 SET(NO_CMAKE_SYSTEM_PATH    ON)
 
 #set boost library path
-SET(BOOST_ROOT              "${CMAKE_SOURCE_DIR}/../../../../boost-arm_1_54_0")
+SET(BOOST_ROOT              "${CMAKE_SOURCE_DIR}/../../../../boost-arm_1_67_0")
 SET(Boost_NO_SYSTEM_PATHS   ON)
 
 #set OpenSSL Library path
@@ -31,3 +31,4 @@ SET(OPENSSL_ROOT_DIR        "${CMAKE_SOURCE_DIR}/../../../../openssl")
 #set linker flags for ODBC
 SET(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${CMAKE_SOURCE_DIR}/../../../../odbc-arm/lib")
 
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

@@ -21,7 +21,7 @@ add_library(OpcUaLogger SHARED ${OpcUaLogger_SRC})
 target_link_libraries(
     OpcUaLogger
     OpcUaStackCore
-    ${pthread}
+    #${pthread}
     ${Boost_LIBRARIES}
 )
 

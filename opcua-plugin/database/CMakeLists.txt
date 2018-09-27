@@ -67,7 +67,7 @@ add_library(OpcUaDB SHARED ${OpcUaDB_SRC})
 target_link_libraries(
     OpcUaLogger
     OpcUaDB
-   # ${pthread}
+    ${CMAKE_THREAD_LIBS_INIT}
     OpcUaStackCore
     OpcUaStackServer
     OpcUaStackClient

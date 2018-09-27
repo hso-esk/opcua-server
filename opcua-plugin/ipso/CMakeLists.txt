@@ -30,27 +30,6 @@ target_link_libraries(
     OpcUalwm2m
     OpcUaDB
     OpcUaLogger
-    ${pthread}
+    ${CMAKE_THREAD_LIBS_INIT}
     ${Boost_LIBRARIES}
 )
-
-
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-#
-# install
-# 
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-#file(GLOB INC_OpcUaEddl ${PROJECT_SOURCE_DIR}/OpcUaIPSO/*.h)
-
-
-#install(TARGETS OpcUaEddl DESTINATION ${LIB_DIR}/OpcUaStack)
-#install(FILES ${PROJECT_SOURCE_DIR}/OpcUaIPSO/Config/OpcUaServer.xml DESTINATION ${CONF_DIR}/OpcUaStack) 
-#install(FILES ${PROJECT_SOURCE_DIR}/OpcUaIPSO/Config/Opc.Ua.NodeSet.xml DESTINATION ${CONF_DIR}/OpcUaStack) 
-#install(FILES ${PROJECT_SOURCE_DIR}/OpcUaIPSO/Config/Opc.Ua.NodeSetRaspberry.xml DESTINATION ${CONF_DIR}/OpcUaStack) 
-#install(FILES ${PROJECT_SOURCE_DIR}/OpcUaIPSO/Config/Opc.Ua.NodeSetTest.xml DESTINATION ${CONF_DIR}/OpcUaStack) 
-#install(FILES ${INC_OpcUaEddl} DESTINATION ${INC_DIR}/OpcUaStack/OpcUaIPSO)
-
-
-

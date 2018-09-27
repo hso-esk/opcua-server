@@ -9,4 +9,4 @@ cp -rf cfg/etc asneg/build-arm-debug
 #run the OPC UA server
 cd asneg/build-arm-debug
 #./OpcUaServer OpcUaStack etc/OpcUaStack/OpcUaServer.xml
-./OpcUaServer4 etc/OpcUaStack/OpcUaServer.xml
+./OpcUaServer3 etc/OpcUaStack/OpcUaServer.xml

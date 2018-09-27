@@ -8,7 +8,7 @@
             "name": "(gdb) Remote Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/asneg/build-arm-debug/OpcUaServer4",
+            "program": "${workspaceFolder}/asneg/build-arm-debug/OpcUaServer3",
             "miDebuggerServerAddress": "192.168.100.108:9091",
             "args": [
                 "${workspaceFolder}/asneg/build-arm-debug/etc/OpcUaStack/OpcUaServer.xml"
@@ -32,7 +32,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/asneg/build-x86-amd64-debug/OpcUaServer4",
+            "program": "${workspaceFolder}/asneg/build-x86-amd64-debug/OpcUaServer3",
             "args": [
                 "${workspaceFolder}/asneg/build-x86-amd64-debug/etc/OpcUaStack/OpcUaServer.xml"
             ],

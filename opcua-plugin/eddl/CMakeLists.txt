@@ -26,7 +26,7 @@ target_link_libraries(
     OpcUaStackServer
     OpcUaStackClient
     OpcUaSensorInterface
-    #${pthread}
+    ${CMAKE_THREAD_LIBS_INIT}
     ${Boost_LIBRARIES}
 )
 

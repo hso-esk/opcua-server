@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<EddlModel xmlns="http://eddl/EddlModel.xsd">
-
-    <EddlPath File="@CONF_DIR@/Nodes/NIKI-Current-Sensor.ddl" />
-    <ObjectNode Id="998" BrowseName="NIKI Current Sensor" DisplayName="NIKI Current Sensor" Description="NIKI Current Sensor" />
-    <VariableNodes FirstId="1200" />
-
-</EddlModel>
-

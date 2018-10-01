@@ -10,7 +10,7 @@ A clear and concise description of what you want to happen. Add any considered d
 If you can, explain how users will be able to use this and possibly write out a version the docs.
 Maybe a screenshot or design sollution?
 
-/labe ~feature ~new ~"Normal Priority" 
+/labe ~Feature ~New ~"Normal Priority" 
 /confidential
 /assign @user
 /subscribe

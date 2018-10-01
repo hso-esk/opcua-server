@@ -30,5 +30,4 @@
 ## Possible Implementation
 <!--- Not obligatory, but suggest an idea for implementing addition or change -->
 
-/label ~bug ~new 
-/cc @project-manager 
+/label ~bug ~new ~"Normal Priority" 

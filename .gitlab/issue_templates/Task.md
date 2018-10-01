@@ -4,6 +4,4 @@
 ## Possible sollution 
 <!--- Not obligatory, quick brainstorm for possible implementation/sollution -->
 
-/label ~task ~new 
-/cc @project-manager
-
+/label ~task ~new ~"Normal Priority" 

@@ -4,4 +4,8 @@
 ## Possible sollution 
 <!--- Not obligatory, quick brainstorm for possible implementation/sollution -->
 
-/label ~task ~new ~"Normal Priority" 
+/label ~task ~new ~"Normal Priority"
+/confidential 
+/weight 3 
+/assign @user 
+/subscribe 

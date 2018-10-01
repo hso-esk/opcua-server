@@ -30,4 +30,9 @@
 ## Possible Implementation
 <!--- Not obligatory, but suggest an idea for implementing addition or change -->
 
-/label ~bug ~new ~"Normal Priority" 
+/label ~bug ~new ~"Normal Priority"
+/confidential
+/weight 3
+/assign @user
+/subscribe
+ 

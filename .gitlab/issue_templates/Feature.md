@@ -11,3 +11,8 @@ If you can, explain how users will be able to use this and possibly write out a 
 Maybe a screenshot or design sollution?
 
 /labe ~feature ~new ~"Normal Priority" 
+/confidential
+/weight 3
+/assign @user
+/subscribe
+

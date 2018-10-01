@@ -2,10 +2,9 @@
 <!--- Provide a general summary for the task -->
 
 ## Possible solution 
-<!--- Not obligatory, quick brainstorm for possible implementation/sollution -->
+<!--- Not obligatory, quick brainstorm for possible implementation/sollution use @user to mention a specific user-->
 
 /label ~task ~new ~"Normal Priority"
 /confidential 
-/weight 3 
 /assign @user 
-/subscribe 
+/subscribe @user  

@@ -12,7 +12,6 @@ Maybe a screenshot or design sollution?
 
 /labe ~feature ~new ~"Normal Priority" 
 /confidential
-/weight 3
 /assign @user
 /subscribe
 

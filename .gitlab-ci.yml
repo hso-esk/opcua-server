@@ -3,6 +3,7 @@ stages:
  - build
 
 before_script: 
+ - ~/Documents/OPCUA_Dev
  - ./.check-dependencies
 
 build_x86_server_release: 

@@ -3,7 +3,8 @@ stages:
  - build
 
 before_script: 
- - ~/Documents/OPCUA_Dev
+ - ~/opcua-dev-workspace/opcua_project
+ - git submodule update --init --recursive
  - ./.check-dependencies
 
 build_x86_server_release: 

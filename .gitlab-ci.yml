@@ -1,3 +1,5 @@
 build_x86_server_release: 
  stage: build
- script: "./opcua-build-x86-amd64-release.sh"
+ script: 
+  - ~/Documents/OPCUA_Dev
+  - ./opcua-build-x86-amd64-release.sh

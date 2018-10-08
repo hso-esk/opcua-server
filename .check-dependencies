@@ -1,0 +1,138 @@
+#! /bin/bash
+# @description	: Checks for build dependencies (boost, openssl, odbc 
+#		  libs and submodules) before running a pipline build.
+# @returns	: return code	|	description
+#			0	|	check successful 
+#			1	|	boost binaries not found
+#			2	|	openssl binaries not found
+#			3	|	odbc binaries not found
+#			4	|	asneg submodule not initialised
+#			5	|	asneg-db-server	submodule not initialised
+#			6	|	sensor descriptions submodule not initialised
+#			7	|	LwM2M server submodule not initialised
+#			8 	|	LwM2M server interface submodule not initialised 
+#			9	|	Helpers	submodule not initialised
+# @author	: Dovydas Girdvainis	
+# @date		: 2018-10-08
+
+## Path definitions
+BASE_DIR=../../
+BOOST_VER=["1_54_0","1_67_0"]
+BOOST_ARCH=["arm","x86-amd64"]
+
+check_boost () {
+
+i=0
+returnCode=1
+
+while [ $i -lt 2 ];
+do
+	if [ -d "${BASE_DIR}boost-${BOOST_ARCH}_${BOOST_VER}" ];
+	then 
+		returnCode=0
+	else 
+		returnCode=1
+	fi
+
+	(( i++ ))
+done
+
+}
+
+check_openssl () {
+
+returnCode=2 
+
+if [ -d "${BASE_DIR}openssl/bin" ]; 
+then 
+	returnCode=0
+fi
+	
+}
+
+check_odbc () {
+
+returnCode=3 
+
+if [ -d "${BASE_DIR}/odbc-arm/bin" ];
+then
+	returnCode=0
+fi 
+
+}
+
+check_asneg_submodule () {
+
+returnCode=4
+
+if [ -d "./asneg/src" ];
+then 
+	returnCode=0
+fi
+
+}
+
+check_asneg_db_submodule () {
+
+returnCode=5 
+
+if [ -d "./asneg-db-server/OpcUaDB/src" ];
+then
+	returnCode=0
+fi
+
+}
+
+check_sensor_descriptions_submodule () {
+
+returnCode=6 
+
+if [ -d "./cfg/etc/OpcUaStack/Nodes/sensor_xml_descriptions/ipso-descriptions" ];
+then 
+	returnCode=0
+fi
+
+}
+
+check_lwm2m_server_submodule () {
+
+returnCode=7 
+
+if [ -d "./opcua-plugin/lwm2m-server/wakaama" ];
+then 
+	returnCode=0
+fi
+
+}
+
+check_lwm2m_server_interface_submodule () {
+
+returnCode=8 
+
+if [ -f "./opcua-plugin/lwm2m-server-interface/CMakeLists.txt" ];
+then
+	returnCode=0
+fi
+
+}
+
+check_helpers_submodule () {
+
+returnCode=9 
+
+if [ -d "opcua-plugin/gateway/helpers/gateway-installer" ];
+then 
+	returnCode=0
+fi
+
+}
+
+check_boost
+check_openssl
+check_odbc
+check_asneg_submodule
+check_asneg_db_submodule
+check_sensor_descriptions_submodule
+check_lwm2m_server_submodule
+check_lwm2m_server_interface_submodule
+check_helpers_submodule

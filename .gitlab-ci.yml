@@ -1,5 +1,5 @@
 before_script: 
- script: ".check-dependencies"
+ - ./.check-dependencies
 
 build_x86_server_release: 
  stage: build

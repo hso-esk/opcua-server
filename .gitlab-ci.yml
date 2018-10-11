@@ -1,13 +1,12 @@
 variables: 
  GIT_STRATEGY: fetch
-
+ GIT_SUBMODULE_STRATEGY: recursive
+ 
 stages: 
- - test
  - build
 
 before_script: 
  - ~/opcua-dev-workspace/opcua_project
- - git submodule update --init --recursive
  - ./.check-dependencies
 
 build_x86_server_release: 

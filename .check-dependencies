@@ -1,17 +1,17 @@
 #! /bin/bash
 # @description	: Checks for build dependencies (boost, openssl, odbc 
-#		  libs and submodules) before running a pipline build.
+#		  libs and submodules) before running a pipeline build.
 # @returns	: return code	|	description
 #			0	|	check successful 
 #			1	|	boost binaries not found
 #			2	|	openssl binaries not found
 #			3	|	odbc binaries not found
-#			4	|	asneg submodule not initialised
-#			5	|	asneg-db-server	submodule not initialised
-#			6	|	sensor descriptions submodule not initialised
-#			7	|	LwM2M server submodule not initialised
-#			8 	|	LwM2M server interface submodule not initialised 
-#			9	|	Helpers	submodule not initialised
+#			4	|	asneg submodule not initialized
+#			5	|	asneg-db-server	submodule not initialized
+#			6	|	sensor descriptions submodule not initialized
+#			7	|	LwM2M server submodule not initialized
+#			8 	|	LwM2M server interface submodule not initialized 
+#			9	|	Helpers	submodule not initialized
 # @author	: Dovydas Girdvainis	
 # @date		: 2018-10-08
 

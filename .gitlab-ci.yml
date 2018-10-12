@@ -1,18 +1,33 @@
+variables: 
+ GIT_STRATEGY: fetch
+ GIT_SUBMODULE_STRATEGY: recursive
+ 
+stages: 
+ - build
+
 before_script: 
- script: ".check-dependencies"
+ - ~/opcua-dev-workspace/opcua_project
+ - ./.check-dependencies
+ - cd ./opcua-plugin/lwm2m-server 
+ - git applay wakaama.patch 
+ - cd ../../
 
 build_x86_server_release: 
  stage: build
- script: "./opcua-build-x86-amd64-release.sh"
+ script: 
+  - ./opcua-build-x86-amd64-release.sh
 
 build_x86_server_debug: 
  stage: build
- script: "./opcua-build-x86-amd64-debug.sh"
+ script: 
+  - ./opcua-build-x86-amd64-debug.sh 
 
 build_arm_server_release: 
- stage: build 
- script: "./opcua-build-arm-release.sh"
+ stage: build
+ script: 
+  - ./opcua-build-arm-release.sh
 
 build_arm_server_debug:
- stage: build 
- script: "./opcua-build-arm-debug.sh"
+ stage: build
+ script: 
+  - ./opcua-build-arm-debug.sh

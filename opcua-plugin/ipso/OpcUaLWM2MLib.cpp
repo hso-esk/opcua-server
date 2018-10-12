@@ -47,7 +47,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include <csignal>
+#include <signal.h>
 
 void signalHandler(int signum)
 {
@@ -190,7 +190,14 @@ bool OpcUaLWM2MLib::startup(void)
 {
   Logger::log(Debug, "OpcUaLWM2MLib::startup");
 
-  signal(SIGINT, signalHandler);
+  // Setup the external interup handler
+  struct sigaction sigIntHandler;
+  
+  sigIntHandler.sa_handler = signalHandler; 
+  sigemptyset(&sigIntHandler.sa_mask); 
+  sigIntHandler.sa_flags = 0;
+
+  sigaction(SIGINT, &sigIntHandler, NULL); 
 
   /* load config file */
   if (!loadServerConfig()) {

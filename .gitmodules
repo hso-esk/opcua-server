@@ -13,6 +13,3 @@
 [submodule "opcua-plugin/lwm2m-server-interface"]
 	path = opcua-plugin/lwm2m-server-interface
 	url = git@git.hahn-schickard.de/opc_ua_dev_group/lwm2m-server-interface.git
-[submodule "opcua-plugin/gateway/helpers"]
-	path = opcua-plugin/gateway/helpers
-	url = git@git.hahn-schickard.de/opc_ua_dev_group/helpers.git

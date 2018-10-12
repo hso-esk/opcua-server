@@ -4,8 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../../boost-x86_1_54_0/include",
-                "${workspaceFolder}/niki/logger"
+                "${workspaceFolder}/opcua-plugin/ipso/",
+                "${workspaceFolder}/../../boost-x86-amd64_1_67_0/include/",
+                "${workspaceFolder}/asneg/src"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -8,6 +8,9 @@ stages:
 before_script: 
  - ~/opcua-dev-workspace/opcua_project
  - ./.check-dependencies
+ - cd ./opcua-plugin/lwm2m-server 
+ - git applay wakaama.patch 
+ - cd ../../
 
 build_x86_server_release: 
  stage: build

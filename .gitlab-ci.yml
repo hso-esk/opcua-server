@@ -1,4 +1,5 @@
 variables: 
+ CI_PROJECT_DIR: ~/opcua-dev-workspace/opcua_project/ 
  GIT_STRATEGY: fetch
  GIT_SUBMODULE_STRATEGY: recursive
  
@@ -6,7 +7,7 @@ stages:
  - build
 
 before_script: 
- - ~/opcua-dev-workspace/opcua_project
+ - cd ~/opcua-dev-workspace/opcua_project
  - ./.check-dependencies
  - cd ./opcua-plugin/lwm2m-server 
  - git applay wakaama.patch 

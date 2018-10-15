@@ -9,7 +9,7 @@ before_script:
  - cd ~/opcua-dev-workspace/opcua_project/opcua-plugin
  - ./.check-dependencies
  - cd ./opcua-plugin/lwm2m-server 
- - git applay wakaama.patch 
+ - git apply wakaama.patch 
  - cd ../../
 
 build_x86_server_release: 

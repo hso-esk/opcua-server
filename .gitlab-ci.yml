@@ -44,43 +44,43 @@ build_arm_server_debug:
 package_arm_debug: 
  stage: package
  variables: 
- TYPE: '-t DEBUG'
- ARCH: '-a arm'
- VER: '-v n_$CI_PIPELINE_ID'
- BOOST: '-b 1_67_0'
- PROJECTS: '-p Ameli -p Parsifal'
+  TYPE: '-t DEBUG'
+  ARCH: '-a arm'
+  VER: '-v n_$CI_PIPELINE_ID'
+  BOOST: '-b 1_67_0'
+  PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
  
 package_arm_release: 
  stage: package
  variables: 
- TYPE: '-t RELEASE'
- ARCH: '-a arm'
- VER: '-v n_$CI_PIPELINE_ID'
- BOOST: '-b 1_67_0'
- PROJECTS: '-p Ameli -p Parsifal'
+  TYPE: '-t RELEASE'
+  ARCH: '-a arm'
+  VER: '-v n_$CI_PIPELINE_ID'
+  BOOST: '-b 1_67_0'
+  PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
  
 package_x86_debug:
  stage: package
  variables: 
- TYPE: '-t DEBUG'
- ARCH: '-a x86'
- VER: '-v n_$CI_PIPELINE_ID'
- BOOST: '-b 1_67_0'
- PROJECTS: '-p Ameli -p Parsifal'
+  TYPE: '-t DEBUG'
+  ARCH: '-a x86'
+  VER: '-v n_$CI_PIPELINE_ID'
+  BOOST: '-b 1_67_0'
+  PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
 
 package_x86_release: 
  stage: package
  variables: 
- TYPE: '-t RELEASE'
- ARCH: '-a x86'
- VER: '-v n_$CI_PIPELINE_ID'
- BOOST: '-b 1_67_0'
- PROJECTS: '-p Ameli -p Parsifal'
+  TYPE: '-t RELEASE'
+  ARCH: '-a x86'
+  VER: '-v n_$CI_PIPELINE_ID'
+  BOOST: '-b 1_67_0'
+  PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'

@@ -54,7 +54,7 @@ package_arm_debug:
  
 package_arm_release: 
  stage: package
-  variables: 
+ variables: 
  TYPE: '-t RELEASE'
  ARCH: '-a arm'
  VER: '-v n_$CI_PIPELINE_ID'

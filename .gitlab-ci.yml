@@ -1,8 +1,7 @@
 variables: 
  GIT_STRATEGY: fetch
  GIT_SUBMODULE_STRATEGY: recursive
- CI_PROJECT_DIR: "/home/gitlab-runner/opcua-dev-workspace/opcua_project/opcua-plugin"
- 
+
 stages: 
  - prep
  - build

@@ -26,7 +26,7 @@
 <!--- reproduce this bug. Include code to reproduce, if relevant -->
 1.
 2.
-3.vim
+3.
 4.
 
 ## Context (Environment)

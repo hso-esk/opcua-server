@@ -4,7 +4,4 @@
 ## Possible solution 
 <!--- Not obligatory, quick brainstorm for possible implementation/sollution use @user to mention a specific user-->
 
-/label ~Task ~New ~"Normal Priority"
-/confidential 
-/assign @user 
-/subscribe @user  
+~Task ~New ~"Normal Priority"

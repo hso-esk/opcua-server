@@ -200,7 +200,7 @@ OpcUaEddlLib::processEddl(uint32_t parentNodeId)
 bool OpcUaEddlLib::createObjectNode(objectNodeCreateInfo const& info)
 {
   OpcUaStackServer::BaseNodeClass::SPtr objectNode;
-  objectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
+  objectNode = boost::make_shared<OpcUaStackServer::ObjectNodeClass>();
 
   /* set node id of object */
   OpcUaNodeId objectNodeId;
@@ -247,7 +247,7 @@ bool OpcUaEddlLib::createVariableNode(variableNodeCreateInfo const& info)
 {
   /* add variable node to the information model */
   OpcUaStackServer::BaseNodeClass::SPtr variableNode;
-  variableNode = constructSPtr<OpcUaStackServer::VariableNodeClass>();
+  variableNode = boost::make_shared<OpcUaStackServer::VariableNodeClass>();
 
   OpcUaNodeId varNodeId;
   varNodeId.set(info.variableNodeId, namespaceIndex_);
@@ -273,7 +273,7 @@ bool OpcUaEddlLib::createVariableNode(variableNodeCreateInfo const& info)
      ReferenceType_HasComponent, true, varNodeId);
 
   variableContext ctx;
-  ctx.data_ = constructSPtr<OpcUaDataValue>();
+  ctx.data_ = boost::make_shared<OpcUaDataValue>();
   ctx.data_->statusCode(Success);
   ctx.data_->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
   ctx.data_->serverTimestamp(boost::posix_time::microsec_clock::universal_time());
@@ -310,7 +310,7 @@ bool OpcUaEddlLib::createVariableNode(variableNodeCreateInfo const& info)
     /* set dataType to Float */
     dataTypeNodeId.set(OpcUaId_Float, namespaceIndex_);
   } else if (info.type == DeviceDataValue::TYPE_STRING) {
-    OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+    OpcUaString::SPtr str = boost::make_shared<OpcUaString>();
     str->value(info.value.cStr);
     ctx.data_->variant()->variant(str);
 
@@ -380,7 +380,7 @@ bool OpcUaEddlLib::registerCallbacks(void)
   Log(Debug, "OpcUaEddlLib::registerCallbacks");
 
   ServiceTransactionRegisterForwardNode::SPtr trx
-         = constructSPtr<ServiceTransactionRegisterForwardNode>();
+         = boost::make_shared<ServiceTransactionRegisterForwardNode>();
   RegisterForwardNodeRequest::SPtr  req = trx->request();
   RegisterForwardNodeResponse::SPtr res = trx->response();
 
@@ -391,7 +391,7 @@ bool OpcUaEddlLib::registerCallbacks(void)
   uint32_t pos = 0;
   variableContextMap::iterator it;
   for (it = variables_.begin(); it != variables_.end(); it++) {
-    OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
+    OpcUaNodeId::SPtr nodeId = boost::make_shared<OpcUaNodeId>();
     *nodeId = it->first;
 
     req->nodesToRegister()->set(pos, nodeId);
@@ -445,7 +445,7 @@ void OpcUaEddlLib::readValue(ApplicationReadContext* applicationReadContext)
     it->second.data_->variant()->variant(readSensorVal);
   } else if (p_val->getType() == DeviceDataValue::TYPE_STRING) {
     std::string readSensorVal(p_val->getVal().cStr);
-    OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+    OpcUaString::SPtr str = boost::make_shared<OpcUaString>();
     str->value(readSensorVal);
     it->second.data_->variant()->variant(str);
   }

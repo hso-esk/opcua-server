@@ -7,6 +7,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 //////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ===============================================================================
 
+## [1.2.2] - uncommited
+### Added 
+ - opcua-build-binaries.sh 
+ - gitlab integration to opcua.code.workspace
+ - OPC UA Reports submodule
+ - OPC UA Documentation submodule
+ - OPC UA Scripts submodule
+ - new resoursce to Position Object in Sensor Xml Descriptions submodule
+
+### Changed 
+ - .gitlab-ci.yml
+	- fixed typos
+	- added build stages (prep, build, package)
+	- changed build directory 
+	- fixed environment variables and runner configuration
+ - .gitlab/issue_templates 
+	- fixed typos
+ - make --jobs parameter
+	- changed hardcoded number of processors to a linux query
+ - asneg submodule
+	- resinced with Asneg 3.3.4
+ - all build scripts
+	- they now work of the new opcua-build-binaries.sh 
+ - README.md 
+	- updated documentation
+
+### Added 
+ - opcua-build-binaries.sh 
+	- parametrized building command for automation
+ - .gitlab/issue_templates/Crash_Report.md
+	- added crash report  
 ## [1.2.1] - 2018.10.12 
 ### Added 
  - Changelog

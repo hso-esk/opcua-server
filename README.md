@@ -1,5 +1,5 @@
 # OPC UA Server
-The OPC UA Server as it is published here is based on the Open-Source implementation from ANSNeG [http://asneg.de/]. It usese the core repositories [https://81.169.197.52:8443/repositories/;jsessionid=1nnyhqp3g8p1pyndp1qgy8k3t] with slight modifications. Furthermore additional modules have been created e.g. to enable an abstractsensor interface and an adapter to connect to LWM2M devices. Therefore it uses the following submodules:
+The OPC UA Server as it is published here is based on the Open-Source implementation from ANSNeG [http://asneg.de/]. It usese the core repositories from [Asneg](https://81.169.197.52:8443/repositories/;jsessionid=1nnyhqp3g8p1pyndp1qgy8k3t) with slight modifications. Furthermore additional modules have been created e.g. to enable an abstractsensor interface and an adapter to connect to LWM2M devices. Therefore it uses the following submodules:
  - asneg (the core of the OPC UA Server)
  - asneg-db (database interaction for historical data)
  - wakaama (as the LWM2M server)
@@ -68,20 +68,25 @@ Edit */etc/odbcinst.ini* as below. Edit the MySQL odbc driver path (Driver = " "
 For armhf platform, these lines should look like this: 
 
 ```
-Driver="/usr/lib/arm-linux-gnueabihf/odbc/libmyodbc.so" 
-Setup="/usr/lib/arm-linux-gnueabihf/odbc/libodbcmyS.so"
+Driver=/usr/lib/arm-linux-gnueabihf/odbc/libmyodbc.so
+Setup=/usr/lib/arm-linux-gnueabihf/odbc/libodbcmyS.so
 ```
 
 For an x86 system, these lines should look like this: 
 
 ```
-Driver="/usr/lib/x86_64-linux-gnu/odbc/libmyodbc.so" 
-Setup="/usr/lib/x86_64-linux-gnu/odbc/libodbcmyS.so"
+Driver=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc.so
+Setup=/usr/lib/x86_64-linux-gnu/odbc/libodbcmyS.so
 ```
 
-Please take note, that for Ubuntu 16.04 and later odbc driver should be installed manually, by downloading it from [dev.mysql.com](https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit.tar.gz). Once downloaded untar this archive, copy the entire content of ```lib/``` sub-directory to ```/usr/lib/x86_64-linux-gnu/odbc/```, also please take note, that the library file names from the odbc connector archive will be slighly different, from ``libmyodbc.so`` to ``libmyodbc8w.so``
+Please take note, that for Ubuntu 16.04 and later odbc driver should be installed manually, by downloading it from [dev.mysql.com](https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.11-linux-ubuntu16.04-x86-64bit.tar.gz). Once downloaded untar this archive, copy the entire content of ```lib/``` sub-directory to ```/usr/lib/x86_64-linux-gnu/odbc/```, also please take note, that the library file names from the odbc connector archive will be slighly different, from ``libmyodbc.so`` to ``libmyodbc8w.so``.  For this case the file should contain 
 
-Finally, the file should look like this: 
+```
+Driver=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc8a.so
+Setup=/usr/lib/x86_64-linux-gnu/odbc/libodbcmy8S.so
+```
+
+Finally, the file should look something simmilar to this: 
 
 ```
 [MySQL]
@@ -113,7 +118,6 @@ FLUSH PRIVILEGES;
 
 1. Clone the *opcua-server repository* and change to the *opcua-server* directory.
 2. Initialize sub direcotries with ``git submodule update --init --recursive``
-3. Apply asneg patch with ``git apply asnegPatch.txt``
 4. Change to the *opcua-plugin/opcua-lwm2m-server* directory.
 5. Apply wakaama patch with `` git apply wakaama.patch``
 6. Change back to the opcua-server directory.

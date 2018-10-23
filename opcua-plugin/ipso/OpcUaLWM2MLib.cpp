@@ -47,7 +47,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include <signal.h>
+#include <csignal>
 
 void signalHandler(int signum)
 {
@@ -190,14 +190,10 @@ bool OpcUaLWM2MLib::startup(void)
 {
   Logger::log(Debug, "OpcUaLWM2MLib::startup");
 
-  // Setup the external interup handler
-  struct sigaction sigIntHandler;
-  
-  sigIntHandler.sa_handler = signalHandler; 
-  sigemptyset(&sigIntHandler.sa_mask); 
-  sigIntHandler.sa_flags = 0;
-
-  sigaction(SIGINT, &sigIntHandler, NULL); 
+  //signal(SIGINT, signalHandler);
+  //signal(SIGKILL, signalHandler);
+  //signal(SIGTERM, signalHandler);
+  signal(SIGABRT, signalHandler);
 
   /* load config file */
   if (!loadServerConfig()) {
@@ -553,7 +549,7 @@ void OpcUaLWM2MLib::readSensorValueLocal (ApplicationReadContext* applicationRea
 
     } else if (p_val->getType() == DeviceDataValue::TYPE_STRING) {
       std::string readSensorVal(p_val->getVal().cStr);
-      OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+      OpcUaString::SPtr str = boost::make_shared<OpcUaString>();
       str->value(readSensorVal);
       it->second.data->variant()->variant(str);
     }
@@ -599,7 +595,7 @@ void OpcUaLWM2MLib::readHistorySensorValue (ApplicationHReadContext* application
       , dataValues);
 
    /* create result array */
-   applicationHReadContext->dataValueArray_ = constructSPtr<OpcUaDataValueArray>();
+   applicationHReadContext->dataValueArray_ = boost::make_shared<OpcUaDataValueArray>();
    applicationHReadContext->dataValueArray_->resize(dataValues.size());
    for (uint32_t idx = 0; idx < dataValues.size(); idx++) {
      applicationHReadContext->dataValueArray_->set(idx, dataValues[idx]);
@@ -686,11 +682,11 @@ bool OpcUaLWM2MLib::registerCallbacks(OpcUaUInt32 id)
 {
   Logger::log(Debug, "OpcUaLWM2MLib::registerCallbacks");
 
-  OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
+  OpcUaNodeId::SPtr nodeId = boost::make_shared<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
 
   ServiceTransactionRegisterForwardNode::SPtr trx
-       = constructSPtr<ServiceTransactionRegisterForwardNode>();
+       = boost::make_shared<ServiceTransactionRegisterForwardNode>();
   RegisterForwardNodeRequest::SPtr  req = trx->request();
   RegisterForwardNodeResponse::SPtr res = trx->response();
 
@@ -724,10 +720,10 @@ bool OpcUaLWM2MLib::unregisterCallbacks(OpcUaUInt32 id)
 {
   Logger::log(Debug, "OpcUaLWM2MLib::unregisterCallbacks");
 
-  OpcUaNodeId::SPtr nodeId = constructSPtr<OpcUaNodeId>();
+  OpcUaNodeId::SPtr nodeId = boost::make_shared<OpcUaNodeId>();
   nodeId->set(id, namespaceIndex_);
   ServiceTransactionRegisterForwardNode::SPtr trx
-      = constructSPtr<ServiceTransactionRegisterForwardNode>();
+      = boost::make_shared<ServiceTransactionRegisterForwardNode>();
   RegisterForwardNodeRequest::SPtr  req = trx->request();
   RegisterForwardNodeResponse::SPtr res = trx->response();
 
@@ -790,7 +786,7 @@ bool OpcUaLWM2MLib::createObjectNode(objectMap_t& objectMap)
     if (objectNode.get() == nullptr) {
 
       OpcUaStackServer::BaseNodeClass::SPtr objectNode;
-      objectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
+      objectNode = boost::make_shared<OpcUaStackServer::ObjectNodeClass>();
       objectNode->setNodeId(objectNodeId);
 
       /* set object node attributes */ 
@@ -900,7 +896,7 @@ bool OpcUaLWM2MLib::createDeviceObjectNode(const LWM2MDevice* device)
   Logger::log(Debug, "OpcUaLWM2MLib::createDeviceObjectNode");
 
   OpcUaStackServer::BaseNodeClass::SPtr deviceobjectNode;
-  deviceobjectNode = constructSPtr<OpcUaStackServer::ObjectNodeClass>();
+  deviceobjectNode = boost::make_shared<OpcUaStackServer::ObjectNodeClass>();
 
   /* set node id of object */
   OpcUaNodeId deviceObjectNodeId;
@@ -986,7 +982,7 @@ bool OpcUaLWM2MLib::createVariableNode (resourceMap_t& resourceMap)
   for (auto& varInfo : resourceMap)
   {
     OpcUaStackServer::BaseNodeClass::SPtr variableNode;
-    variableNode = constructSPtr<OpcUaStackServer::VariableNodeClass>();
+    variableNode = boost::make_shared<OpcUaStackServer::VariableNodeClass>();
 
     if (varInfo.second.operation == "RW" || varInfo.second.operation == "W" ||
             varInfo.second.operation == "R") {
@@ -1110,7 +1106,7 @@ bool OpcUaLWM2MLib::createMethodNode(resourceMap_t& resourceMap)
   {
 
     OpcUaStackServer::BaseNodeClass::SPtr methodNode;
-    methodNode = constructSPtr<OpcUaStackServer::MethodNodeClass>();
+    methodNode = boost::make_shared<OpcUaStackServer::MethodNodeClass>();
 
     if (methodInfo.second.operation == "E") {
 
@@ -1241,7 +1237,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
   /* set resource information */
   ctx.resInfo = opcUaNodeInfo;
 
-  ctx.data = constructSPtr<OpcUaDataValue>();
+  ctx.data = boost::make_shared<OpcUaDataValue>();
   ctx.data->statusCode(Success);
   ctx.data->sourceTimestamp(boost::posix_time::microsec_clock::universal_time());
   ctx.data->serverTimestamp(boost::posix_time::microsec_clock::universal_time());
@@ -1300,7 +1296,7 @@ OpcUaLWM2MLib::opcUaNodeContext OpcUaLWM2MLib::createDeviceDataLWM2M
 
     } else if (opcUaNodeInfo.type == DeviceDataValue::TYPE_STRING) {
 
-      OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+      OpcUaString::SPtr str = boost::make_shared<OpcUaString>();
       str->value(opcUaNodeInfo.value.cStr);
       ctx.data->variant()->variant(str);
 
@@ -1649,7 +1645,7 @@ OpcUaDataValue::SPtr OpcUaLWM2MLib::createDataValue(const DeviceDataValue* val)
 {
   Logger::log(Debug, "OpcUaLWM2MLib::createObjectNode");
 
-  OpcUaDataValue::SPtr dataValue = constructSPtr<OpcUaDataValue>();
+  OpcUaDataValue::SPtr dataValue = boost::make_shared<OpcUaDataValue>();
   OpcUaDateTime dateTime (boost::posix_time::microsec_clock::universal_time());
   dataValue->sourceTimestamp(dateTime);
   dataValue->serverTimestamp(dateTime);
@@ -1665,7 +1661,7 @@ OpcUaDataValue::SPtr OpcUaLWM2MLib::createDataValue(const DeviceDataValue* val)
 
   } else if (val->getType() == DeviceDataValue::TYPE_STRING) {
     std::string readSensorVal(val->getVal().cStr);
-    OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+    OpcUaString::SPtr str = boost::make_shared<OpcUaString>();
     str->value(readSensorVal);
     dataValue->variant()->variant(str);
   }

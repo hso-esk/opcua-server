@@ -233,8 +233,8 @@ bool DbServer::execSQLDirect(const std::string &sqlQuery, OpcUaDataValue::Vec &d
 
   /* get result set */
   OpcUaDB::ResultSet &resultSet = connection.resultSet();
-  OpcUaDataValue::SPtr statusCode = constructSPtr<OpcUaDataValue>();
-  OpcUaDataValue::SPtr header = constructSPtr<OpcUaDataValue>();
+  OpcUaDataValue::SPtr statusCode = boost::make_shared<OpcUaDataValue>();
+  OpcUaDataValue::SPtr header = boost::make_shared<OpcUaDataValue>();
 
   if (!createResultSet(resultSet, statusCode, header, dataValues))
   {
@@ -256,7 +256,7 @@ bool DbServer::createResultSet(OpcUaDB::ResultSet &resultSet, OpcUaDataValue::SP
   OpcUaVariantValue::Vec variantVec1;
   for (uint32_t idx = 0; idx < resultSet.colDescriptionVec_.size(); idx++)
   {
-    OpcUaString::SPtr value = constructSPtr<OpcUaString>();
+    OpcUaString::SPtr value = boost::make_shared<OpcUaString>();
     value->value((char *)resultSet.colDescriptionVec_[idx].colName_);
 
     std::cout << "Value header is: " << value->value() << std::endl;
@@ -274,7 +274,7 @@ bool DbServer::createResultSet(OpcUaDB::ResultSet &resultSet, OpcUaDataValue::SP
   {
     for (uint32_t j = 0; j < resultSet.colDescriptionVec_.size(); j++)
     {
-      OpcUaString::SPtr value = constructSPtr<OpcUaString>();
+      OpcUaString::SPtr value = boost::make_shared<OpcUaString>();
       value->value(resultSet.tableData_[i][j]);
       valueVec.push_back(value->value());
 
@@ -289,10 +289,10 @@ bool DbServer::createResultSet(OpcUaDB::ResultSet &resultSet, OpcUaDataValue::SP
         boost::posix_time::ptime timestamp2(boost::posix_time::from_iso_string(timestamp));
 
         /* create dataValue */
-        OpcUaDataValue::SPtr data = constructSPtr<OpcUaDataValue>();
+        OpcUaDataValue::SPtr data = boost::make_shared<OpcUaDataValue>();
         data->sourceTimestamp(timestamp2);
         data->serverTimestamp(timestamp2);
-        OpcUaString::SPtr str = constructSPtr<OpcUaString>();
+        OpcUaString::SPtr str = boost::make_shared<OpcUaString>();
         str->value(value->value());
         data->variant()->variant(str);
         data->statusCode(Success);
@@ -303,7 +303,7 @@ bool DbServer::createResultSet(OpcUaDB::ResultSet &resultSet, OpcUaDataValue::SP
   }
 
   /* create status code */
-  statusCode->variant()->set(constructSPtr<OpcUaString>("Success"));
+  statusCode->variant()->set(boost::make_shared<OpcUaString>("Success"));
 
   return true;
 }

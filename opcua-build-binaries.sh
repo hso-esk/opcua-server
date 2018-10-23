@@ -6,6 +6,9 @@ MIN_ARGS=6
 BUILD_TYPES=("release","debug")
 ARCHS=("arm","x86-amd64")
 
+PROC_COUNT="$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l)"
+PROC_COUNT=$((PROC_COUNT + 1))
+
 ## Internal functions 
 
 usage () {
@@ -83,5 +86,5 @@ fi
 cd asneg/build-${ARCH,,}-${BUILD_TYPE,,}
 
 #build
-cmake -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src
-make --jobs=5
+cmake -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src 
+make --jobs=$PROC_COUNT

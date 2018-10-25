@@ -53,6 +53,7 @@ do
 				else
 					ARCH="x86-amd64"
 					TOOLCHAIN="x86-amd64-linux-toolchain.cmake"
+					ARM_FLAG=0
 				fi
 			else
 				usage
@@ -117,5 +118,5 @@ else
 	sed -i "34s/..\/..\/..\/..\/odbc-arm\/lib/${ODBC_ROOT}/" $(pwd)/../../$TOOLCHAIN
 fi
 
-cmake -DOPENSSL_ROOT_DIR=$OPENSSL_ROOT -D -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src 
+cmake -DOPENSSL_ROOT_DIR=$OPENSSL_ROOT -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src 
 make --jobs=$PROC_COUNT

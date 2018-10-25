@@ -1,11 +1,12 @@
-
 <!--- Provide a general summary of the issue in the Title above -->
+<!--- DELETE UNUSED PARTS !!! -->
 
 ## Expected Behavior
 <!--- Tell us what should happen -->
 
-## Current Behavior
-<!--- Tell us what happens instead of the expected behavior -->
+## Current Behavior                                                                                                                     |
+
+<!--- Write your comments in free style bellow  -->
 
 ## Possible Solution
 <!--- Not obligatory, but suggest a fix/reason for the bug, -->
@@ -30,8 +31,4 @@
 ## Possible Implementation
 <!--- Not obligatory, but suggest an idea for implementing addition or change -->
 
-/label ~Bug ~New ~"Normal Priority"
-/confidential
-/assign @user
-/subscribe
- 
+~Bug ~New ~"Normal Priority"

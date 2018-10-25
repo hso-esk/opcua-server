@@ -44,8 +44,10 @@ build_arm_server_release:
   TYPE: '-t RELEASE'
   ARCH: '-a arm'
   BOOST: '-b /home/gitlab-runner/opcua-dev-workspace/boost-arm_1_67_0'
+  OPENSSL: '-s /home/gitlab-runner/opcua-dev-workspace/openssl'
+  ODBC: '-d \/home\/gitlab-runner\/opcua-dev-workspace\/odbc-arm\/lib'
  script: 
-  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
+  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST $OPENSSL $ODBC'
 
 build_arm_server_debug:
  stage: build
@@ -53,8 +55,10 @@ build_arm_server_debug:
   TYPE: '-t DEBUG'
   ARCH: '-a arm'
   BOOST: '-b /home/gitlab-runner/opcua-dev-workspace/boost-arm_1_67_0'
+   OPENSSL: '-s /home/gitlab-runner/opcua-dev-workspace/openssl'
+  ODBC: '-d \/home\/gitlab-runner\/opcua-dev-workspace\/odbc-arm\/lib'
  script: 
-  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
+  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST $OPENSSL $ODBC'
   
 package_arm_debug: 
  stage: package

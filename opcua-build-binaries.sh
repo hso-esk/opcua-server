@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 
 ## Internal variables
 
@@ -15,7 +15,9 @@ usage () {
 
 	echo "-t | --type	- specifies the build type (Release | Debug)"
 	echo "-a | --arch	- specifies the architechture for which the build will be done (arm | x86-amd64)"
-	echo "-b | --boost	- specifies the path to boost libaries"
+	echo "-b | --boost	- specifies the path to boost libraries"
+	echo "-s | --openssl	- specifies the path to openssl libraries (only for arm builds)"
+	echo "-d | --odbc	- specifies the path to the odbc librarie (only for arm builds)"
 	echo "-h | --help	- prints this message"
 
 }
@@ -47,6 +49,7 @@ do
 				then 
 					ARCH="arm"
 					TOOLCHAIN="arm-linux-toolchain.cmake"
+					ARM_FLAG=1
 				else
 					ARCH="x86-amd64"
 					TOOLCHAIN="x86-amd64-linux-toolchain.cmake"
@@ -61,6 +64,26 @@ do
 			if [ -n "$1" ];
 			then 
 				BOOST_ROOT=$1
+			else
+				usage
+				exit 1
+			fi
+			;;
+		-s | --openssl)
+			shift 
+			if [ -n "$1" ];
+			then
+				OPENSSL_ROOT=$1
+			else
+				usage
+				exit 1
+			fi 
+			;;
+		-d | --odbc)
+			shift
+			if [ -n "$1" ];
+			then 
+				ODBC_ROOT=$1
 			else
 				usage
 				exit 1
@@ -86,5 +109,13 @@ fi
 cd asneg/build-${ARCH,,}-${BUILD_TYPE,,}
 
 #build
-cmake -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src 
+
+if [ $ARM_FLAG -eq 0 ];
+then
+	OPENSSL_ROOT="/usr/lib/x86_64-linux-gnu/libssl.so"
+else
+	sed -i "34s/..\/..\/..\/..\/odbc-arm\/lib/${ODBC_ROOT}/" $(pwd)/../../$TOOLCHAIN
+fi
+
+cmake -DOPENSSL_ROOT_DIR=$OPENSSL_ROOT -D -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src 
 make --jobs=$PROC_COUNT

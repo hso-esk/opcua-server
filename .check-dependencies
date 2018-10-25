@@ -19,6 +19,12 @@
 BASE_DIR=../../
 BOOST_VER=["1_54_0","1_67_0"]
 BOOST_ARCH=["arm","x86-amd64"]
+MIN_ARG_COUNT=1
+
+usage () {
+    
+    echo "-b | --boost      specify the path to boost libs"
+}
 
 check_boost () {
 
@@ -126,6 +132,28 @@ then
 fi
 
 }
+
+if [ $# -lt $MIN_ARG_COUNT ];
+then 
+    usage 
+    exit 0
+fi
+
+while [ -n "$1" ];
+do 
+    case $1 in 
+        -b | --boost)
+            shift
+                if [ -n "$1" ];
+                then
+                    BASE_DIR=$1
+                else
+                    usage
+                fi
+                ;;
+    esac
+    shift
+done
 
 check_boost
 check_openssl

@@ -115,7 +115,7 @@ if [ $ARM_FLAG -eq 0 ];
 then
 	OPENSSL_ROOT="/usr/local/ssl"
 else
-	sed -i "34s/..\/..\/..\/..\/odbc-arm\/lib/${ODBC_ROOT}/" $(pwd)/../../$TOOLCHAIN
+	sed -i '/SET(ENV{LDFLAGS} "*/c\SET(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${ODBC_ROOT}")' $(pwd)/../../$TOOLCHAIN
 fi
 
 cmake -DOPENSSL_ROOT_DIR=$OPENSSL_ROOT -DOPENSSL_LIBRARIES=${OPENSSL_ROOT}/lib -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_TOOLCHAIN_FILE=../../$TOOLCHAIN -DCMAKE_BUILD_TYPE=${BUILD_TYPE^^} ../src 

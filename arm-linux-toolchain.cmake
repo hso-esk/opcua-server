@@ -19,10 +19,10 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 #exlude system libraries
-SET(NO_CMAKE_SYSTEM_PATH    ON)
+SET(NO_CMAKE_SYSTEM_PATH    TRUE)
 
 #set boost library path
-SET(Boost_NO_SYSTEM_PATHS   ON)
+SET(Boost_NO_SYSTEM_PATHS   TRUE)
 
 #set OpenSSL Library path
 SET(OPENSSL_ROOT_DIR        "${CMAKE_SOURCE_DIR}/../../../../openssl")

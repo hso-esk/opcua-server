@@ -27,7 +27,7 @@ build_x86_server_release:
   ARCH: '-a x86-amd64'
   BOOST: '-b $(pwd)/../../../../../../boost-x86-amd64_1_67_0'
  script: 
-  - 'ls $(pwd)/../../../../../../boost*'
+  - 'ls $(pwd)/../../../../boost*'
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
 
 build_x86_server_debug: 

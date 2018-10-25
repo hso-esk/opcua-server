@@ -22,7 +22,6 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 SET(NO_CMAKE_SYSTEM_PATH    ON)
 
 #set boost library path
-SET(BOOST_ROOT              "${CMAKE_SOURCE_DIR}/../../../../boost-arm_1_54_0")
 SET(Boost_NO_SYSTEM_PATHS   ON)
 
 #set OpenSSL Library path

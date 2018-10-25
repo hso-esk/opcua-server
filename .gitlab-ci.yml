@@ -25,7 +25,7 @@ build_x86_server_release:
  variables: 
   TYPE: '-t RELEASE'
   ARCH: '-a x86-amd64'
-  BOOST: '-b $(pwd)/../../../../../../boost-x86-amd64_1_67_0'
+  BOOST: '-b $(pwd)/../../../../boost-x86-amd64_1_67_0'
  script: 
   - 'ls $(pwd)/../../../../boost*'
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
@@ -35,7 +35,7 @@ build_x86_server_debug:
  variables: 
   TYPE: '-t DEBUG'
   ARCH: '-a x86-amd64'
-  BOOST: '-b $(pwd)/../../../../../../boost-x86-amd64_1_67_0'
+  BOOST: '-b $(pwd)/../../../../boost-x86-amd64_1_67_0'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
 
@@ -44,7 +44,7 @@ build_arm_server_release:
  variables: 
   TYPE: '-t RELEASE'
   ARCH: '-a arm'
-  BOOST: '-b $(pwd)/../../../../../../boost-arm_1_67_0'
+  BOOST: '-b $(pwd)/../../../../boost-arm_1_67_0'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
 
@@ -53,7 +53,7 @@ build_arm_server_debug:
  variables: 
   TYPE: '-t DEBUG'
   ARCH: '-a arm'
-  BOOST: '-b $(pwd)/../../../../../../boost-arm_1_67_0'
+  BOOST: '-b $(pwd)/../../../../boost-arm_1_67_0'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
   

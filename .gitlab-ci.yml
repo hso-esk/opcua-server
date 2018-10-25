@@ -18,8 +18,7 @@ apply_patches:
 check_dependencies: 
  stage: prep
  script: 
- - cd ~/opcua-dev-workspace/opcua_project/opcua-plugin
- - ./.check-dependencies
+ - './.check-dependencies -b ./../../../'
 
 build_x86_server_release: 
  stage: build

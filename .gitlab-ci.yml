@@ -22,23 +22,39 @@ check_dependencies:
 
 build_x86_server_release: 
  stage: build
+ variables: 
+  TYPE: '-t RELEASE'
+  ARCH: '-a x86-amd64'
+  BOOST: '-b ./../../../boost-x86-amd64_1_67_0'
  script: 
-  - ./opcua-build-x86-amd64-release.sh
+  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
 
 build_x86_server_debug: 
  stage: build
+ variables: 
+  TYPE: '-t DEBUG'
+  ARCH: '-a x86-amd64'
+  BOOST: '-b ./../../../boost-x86-amd64_1_67_0'
  script: 
-  - ./opcua-build-x86-amd64-debug.sh 
+  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
 
 build_arm_server_release: 
  stage: build
+ variables: 
+  TYPE: '-t RELEASE'
+  ARCH: '-a arm'
+  BOOST: '-b ./../../../boost-arm_1_67_0'
  script: 
-  - ./opcua-build-arm-release.sh
+  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
 
 build_arm_server_debug:
  stage: build
+ variables: 
+  TYPE: '-t DEBUG'
+  ARCH: '-a arm'
+  BOOST: '-b ./../../../boost-arm_1_67_0'
  script: 
-  - ./opcua-build-arm-debug.sh
+  - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
   
 package_arm_debug: 
  stage: package

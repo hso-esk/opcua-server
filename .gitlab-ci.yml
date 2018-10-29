@@ -28,6 +28,9 @@ build_x86_server_release:
   BOOST: '-b /home/gitlab-runner/opcua-dev-workspace/boost-x86-amd64_1_67_0'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
+  artifacts:
+    paths:
+     - asneg/build-x86-amd64-release/
 
 build_x86_server_debug: 
  stage: build
@@ -37,6 +40,9 @@ build_x86_server_debug:
   BOOST: '-b /home/gitlab-runner/opcua-dev-workspace/boost-x86-amd64_1_67_0'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST'
+  artifacts:
+    paths:
+     - asneg/build-x86-amd64-debug/
 
 build_arm_server_release: 
  stage: build
@@ -48,6 +54,9 @@ build_arm_server_release:
   ODBC: '-d \/home\/gitlab-runner\/opcua-dev-workspace\/odbc-arm\/lib'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST $OPENSSL $ODBC'
+  artifacts:
+    paths:
+     - asneg/build-arm-release/
 
 build_arm_server_debug:
  stage: build
@@ -59,6 +68,10 @@ build_arm_server_debug:
   ODBC: '-d \/home\/gitlab-runner\/opcua-dev-workspace\/odbc-arm\/lib'
  script: 
   - './opcua-build-binaries.sh $TYPE $ARCH $BOOST $OPENSSL $ODBC'
+  artifacts:
+    paths:
+     - asneg/build-arm-debug/
+
   
 package_arm_debug: 
  stage: package
@@ -70,6 +83,8 @@ package_arm_debug:
   PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
+ dependencies:
+  - [asneg/build-arm-debug/]
  
 package_arm_release: 
  stage: package
@@ -81,6 +96,8 @@ package_arm_release:
   PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
+ dependencies:
+  - [asneg/build-arm-release/]
  
 package_x86_debug:
  stage: package
@@ -92,6 +109,8 @@ package_x86_debug:
   PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
+ dependencies:
+  - [asneg/build-x86-amd64-debug/]
 
 package_x86_release: 
  stage: package
@@ -103,3 +122,5 @@ package_x86_release:
   PROJECTS: '-p Ameli -p Parsifal'
  script: 
  - './opcua-plugin/gateway/helpers/opcua_packager/packageOPCUA.sh $TYPE $ARCH $VER $BOOST $PROJECT'
+ dependencies:
+  - [asneg/build-x86-amd64-release/]

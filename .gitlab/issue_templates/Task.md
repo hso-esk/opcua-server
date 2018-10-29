@@ -4,4 +4,4 @@
 ## Possible solution 
 <!--- Not obligatory, quick brainstorm for possible implementation/sollution use @user to mention a specific user-->
 
-~Task ~New ~"Normal Priority"
+/label ~Task ~New ~"Normal Priority"

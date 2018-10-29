@@ -7,8 +7,8 @@
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/lwm2m-server-interface)
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/lwm2m-server)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/opcua-sensor-interface)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/opcua-lwm2m-server)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/database)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/logger)
 

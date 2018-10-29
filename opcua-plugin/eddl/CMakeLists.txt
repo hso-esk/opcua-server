@@ -7,7 +7,7 @@
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/lwm2m-server-interface)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../opcua-plugin/opcua-sensor-interface)
 
 LIST(APPEND OpcUaEddl_SRC
   ${PROJECT_SOURCE_DIR}/../../opcua-plugin/eddl/OpcUaEddlLib.cpp

@@ -104,7 +104,7 @@ check_lwm2m_server_submodule () {
 
 returnCode=7 
 
-if [ -d "./opcua-plugin/lwm2m-server/wakaama" ];
+if [ -d "./opcua-plugin/opcua-lwm2m-server/wakaama" ];
 then 
 	returnCode=0
 fi
@@ -115,7 +115,7 @@ check_lwm2m_server_interface_submodule () {
 
 returnCode=8 
 
-if [ -f "./opcua-plugin/lwm2m-server-interface/CMakeLists.txt" ];
+if [ -f "./opcua-plugin/opcua-sensor-interface/CMakeLists.txt" ];
 then
 	returnCode=0
 fi

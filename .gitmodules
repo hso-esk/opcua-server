@@ -1,8 +1,8 @@
 [submodule "asneg"]
 	path = asneg
 	url = https://github.com/Hahn-Schickard/asneg
-[submodule "asneg-dbserver"]
-	path = asneg-dbserver
+[submodule "asneg-db-server"]
+	path = asneg-db-server
 	url = https://github.com/Hahn-Schickard/asneg-dbserver
 [submodule "opcua-plugin/opcua-lwm2m-server"]
 	path = opcua-plugin/opcua-lwm2m-server

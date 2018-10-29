@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBModel Id="Client" xmlns="http://ASNeG.de/DBModel.xsd">
+
+  <Database>
+  
+    <!--<DsnName>PostgreSQL TestData</DsnName>-->
+    <DsnName>Test</DsnName>
+    <UserName>TestUser</UserName>
+    <Password>geheim1234@</Password>
+
+  </Database>
+
+  <OpcUaAccess>
+		
+    <NamespaceUris>
+      <Uri>http://ASNeG.de/DBServer/</Uri>
+	</NamespaceUris>
+	
+	<IdentAccess>
+      <Server Service="Call" NodeId="ns=1;s=DBAccess.IdentAccessString" ObjectNodeId="ns=1;s=DBAccess"/>
+      
+      <SQLQuerys>
+        <SQLQuery Id="TestData1">select * from "TestData"</SQLQuery>
+        <SQLQuery Id="TestData2">select * from "TestData" where "Feld1" > %1</SQLQuery>
+        <SQLQuery Id="TestData3">select * from "TestData" where "Feld1" > %1 AND "Feld2" > %2</SQLQuery>
+      </SQLQuerys>
+      
+	</IdentAccess>
+	
+	<SQLAccess>
+      <Server Service="Call" NodeId="ns=1;s=DBAccess.SQLAccessString" ObjectNodeId="ns=1;s=DBAccess"/>
+	</SQLAccess>
+	
+  </OpcUaAccess>
+
+</DBModel>

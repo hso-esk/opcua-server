@@ -1,18 +1,18 @@
 [submodule "asneg"]
 	path = asneg
-	url = https://github.com/Hahn-Schickard/asneg
+	url = https://github.com/hso-esk/asneg
 [submodule "asneg-db-server"]
 	path = asneg-db-server
-	url = https://github.com/Hahn-Schickard/asneg-dbserver
+	url = https://github.com/hso-esk/asneg-dbserver
 [submodule "opcua-plugin/opcua-lwm2m-server"]
 	path = opcua-plugin/opcua-lwm2m-server
-	url = https://github.com/Hahn-Schickard/opcua-lwm2m-server.git
+	url = https://github.com/hso-esk/opcua-lwm2m-server.git
 [submodule "opcua-plugin/opcua-sensor-interface"]
 	path = opcua-plugin/opcua-sensor-interface
-	url = https://github.com/Hahn-Schickard/opcua-sensor-interface
+	url = https://github.com/hso-esk/opcua-sensor-interface
 [submodule "opcua-plugin/gateway/helpers"]
 	path = opcua-plugin/gateway/helpers
-	url = https://github.com/Hahn-Schickard/Helpers.git
+	url = https://github.com/hso-esk/Helpers.git
 [submodule "cfg/etc/OpcUaStack/Nodes/sensor_xml_descriptions"]
 	path = cfg/etc/OpcUaStack/Nodes/sensor_xml_descriptions
-	url = https://github.com/Hahn-Schickard/Sensor_XML_Descriptions-.git
+	url = https://github.com/hso-esk/Sensor_XML_Descriptions-.git
